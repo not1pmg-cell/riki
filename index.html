@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>RIKI — NFT Gifts</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
+<filter id="g3d" x="-15%" y="-15%" width="130%" height="130%" color-interpolation-filters="sRGB">
+ <feGaussianBlur in="SourceAlpha" stdDeviation="1.8" result="b"/>
+ <feSpecularLighting in="b" surfaceScale="3.5" specularConstant=".85" specularExponent="18" lighting-color="#ffffff" result="sp"><fePointLight x="-30" y="-50" z="80"/></feSpecularLighting>
+ <feComposite in="sp" in2="SourceAlpha" operator="in" result="sp2"/>
+ <feComposite in="SourceGraphic" in2="sp2" operator="arithmetic" k1="0" k2="1" k3=".5" k4="0"/>
+</filter>
+</defs></svg>
+<div class="app">
+
+<header id="hMain">
+  <div class="avw"><span class="av big me-av myav"></span><span class="avb" data-icon="gem2"></span></div>
+  <div class="bal"><small>Your balance</small><div class="bv"><span class="gm"></span><span class="balv">0</span></div></div>
+  <button class="depbtn" data-dep><span data-icon="wallet"></span>Deposit</button>
+</header>
+<header id="hPill">
+  <div class="hic" id="hIcons">
+    <span class="av me-av myav" id="hAv"></span>
+    <button class="ib" id="hHist" data-icon="hist"></button>
+    <button class="ib" id="hHelp" data-icon="help"></button>
+    <button class="ib" id="hTop" data-icon="trophy2" style="display:none"></button>
+  </div>
+  <div class="pill"><span class="gw"><span class="gm"></span></span><span class="balv">0</span><button class="plus" data-dep>+</button></div>
+</header>
+
+<!-- HOME -->
+<section class="screen on" id="home">
+  <div class="live"><div class="lbl">Live</div><div class="feed" id="feed"></div></div>
+  <button class="ban b-rocket" data-go="rocket">
+    <span class="tex"></span>
+    <span class="tag"><span data-icon="flame"></span>HOT</span>
+    <span class="streak" style="left:46%;top:16px;width:67px"></span><span class="streak" style="left:30%;top:52px;width:44px"></span><span class="streak" style="left:55%;top:71px;width:52px"></span>
+    <span class="xm" style="right:111px;top:7px">x1.71</span><span class="xm" style="right:101px;top:61px">x2.45</span>
+    <span class="xm" style="right:3px;top:44px">x1.14</span><span class="xm sm" style="right:44px;bottom:-3px">x2.24</span>
+    <span class="shp" data-g="Stellar Rocket"></span>
+    <h3><span data-icon="rocket"></span>ROCKET</h3>
+  </button>
+  <button class="ban b-pvp" data-go="pvphub">
+    <span class="tex"></span>
+    <span class="tag" style="color:#f59e0b"><span data-icon="bolt"></span>NEW</span>
+    <div class="solo"><span class="crw">👑</span>
+      <span class="sav s1"><span class="av" style="background:radial-gradient(circle at 40% 35%,#fde68a,#b45309)">S</span><em>3.4%</em></span>
+      <span class="sav s2"><span class="av" style="background:radial-gradient(circle at 40% 35%,#fca5a5,#7f1d1d)">R</span><em>22.5%</em></span>
+      <span class="sav s3"><span class="av" style="background:radial-gradient(circle at 40% 35%,#c4b5fd,#3b0764)">K</span><em>2.4%</em></span><b>SOLO</b></div>
+    <div class="team"><span class="tice"></span><span class="tfire"></span><span class="vs">VS</span><b>TEAM</b></div>
+    <h3><span data-icon="swords"></span>PVP HUB</h3>
+  </button>
+  <button class="ban b-play" data-go="playhub">
+    <span class="tex"></span>
+    <div class="pt p1"><span data-hero="ring"></span><em>Upgrade</em></div>
+    <div class="pt p2"><span data-hero="pyramid"></span><em>Plinko</em></div>
+    <div class="pt p3"><div class="tiles3"><i></i><i></i><i></i><i></i><i></i><i></i></div><em>Mines</em></div>
+    <h3><span data-icon="pad"></span>PLAY HUB</h3>
+  </button>
+  
+  <div class="half">
+    <button class="promo" data-go="earn"><span class="rays"></span><span class="ft">FREE<i>24</i></span><span class="art big" data-g="Signet Ring" style="width:89px;height:89px"></span><span class="spark" style="left:30%;top:46%"></span><span class="spark" style="left:70%;top:62%"></span><small>Daily bonus</small></button>
+    <button class="promo g" data-go="cases"><span class="rays"></span><span class="ft">FREE</span><span class="bundle"><i data-g="Hypno Lollipop" style="left:4%;top:12%"></i><i data-g="Spy Agaric" style="right:2%;top:4%"></i><i data-g="Desk Calendar" style="right:6%;bottom:2%"></i><i data-g="Tama Gadget" style="left:8%;bottom:0"></i><i class="c" data-g="Neko Helmet"></i></span><small>Cases</small></button>
+  </div>
+</section>
+
+<!-- PLAY HUB -->
+<section class="screen" id="playhub">
+  <div class="pc c-upg" data-go="upgrade"><span class="tex"></span><span class="tag"><span data-icon="flame"></span>HOT</span><span class="uring" data-hero="ring2"></span><span class="ugift" data-g="Neko Helmet"></span><span class="uarr"></span><span class="pct24">24%</span><b>Upgrade</b><small>Choose a dream gift</small></div>
+  <div class="two">
+    <div class="pc c-min" data-go="mines"><span class="tex"></span><div class="mgrid-d"><i></i><i></i><i class="g" data-g="Astral Shard"></i><i class="b"><em>Boom</em><span data-g="Hex Pot"></span></i><i></i><i></i><i></i><i class="g" data-g="Astral Shard"></i><i class="g" data-g="Astral Shard"></i></div><b>Mines</b><small>Dodge the mines</small></div>
+    <div class="pc c-spn" data-go="spins"><span class="tex"></span><div class="bub"><i data-g="Stellar Rocket" style="left:20%;top:10%"></i><i data-g="Stellar Rocket" style="right:6%;top:4%"></i><i data-g="Hypno Lollipop" style="right:10%;top:36%"></i><i data-g="Jolly Chimp" style="left:26%;top:62%"></i><i data-g="Stellar Rocket" style="right:12%;top:62%"></i></div><span class="pepe" data-g="Plush Pepe"></span><b>Spins <i class="newt">NEW</i></b><small>Match the gifts</small></div>
+  </div>
+  <div class="two">
+    <div class="pc c-pln" data-go="plinko"><span class="tex"></span><span class="plh" data-hero="pyramid"></span><b>Plinko</b><small>Win up to 170x</small></div>
+    <div class="pc c-dic" data-go="dice"><span class="tex"></span><div class="cube"><i class="f1" data-g="Precious Peach"></i><i class="f2" data-g="Kissed Frog"></i><i class="f3" data-g="Plush Pepe"></i></div><span class="dbg d1"></span><span class="dbg d2"></span><b>Dice</b><small>Higher or Lower</small></div>
+  </div>
+  <div class="pc c-crf" data-go="crafts"><span class="tex"></span><span class="ctile" style="right:42%;top:46%"><i data-g="Kissed Frog"></i></span><span class="ctile" style="right:24%;top:12%"><i data-g="Signet Ring"></i></span><span class="ctile" style="right:4%;top:44%"><i data-g="Astral Shard"></i></span><b>Crafts</b><small>Merge your gifts</small></div>
+  </section>
+
+<!-- ROCKET -->
+<section class="screen" id="rocket">
+  <div class="rkstage" id="rkStage"><div id="stars"></div><div class="rkmodel" id="rkModel"></div>
+    <div class="rkship" id="rkShip"></div><div class="boomfx"></div>
+    <div class="rkc"><div class="rkmul" id="rkMul">1.00x</div><div class="rksub" id="rkSub"></div></div>
+    <div class="rkprog"><i id="rkBar"></i></div>
+  </div>
+  <div class="hchips" id="rkHist"></div>
+  <button class="bigbtn ok" id="rkBtn" style="margin-top:0">Place bet</button>
+  <div class="plist" id="rkPl"></div>
+</section>
+
+<!-- PVP HUB -->
+<section class="screen" id="pvphub">
+  <div class="pvpcard" data-go="pvp">
+    <span class="tex"></span>
+    <div class="pch"><div><div class="pct"><span data-icon="swords"></span>PvP</div><small>Winner takes all</small></div><span class="starts" id="phStarts"></span></div>
+    <div class="slots" id="phSlots"></div>
+    <div class="pcf"><span>Total pot</span><b id="phPot"></b><button class="joinb">Join ›</button></div>
+  </div>
+  <div class="tvtcard" data-go="tvt">
+    <div class="tvl"><b class="t">🛡 TvT</b><small>Winning team splits the pot</small><div class="tm">❄ Ice <i id="thIn"></i> <i id="thIx"></i></div><div class="tp" id="thI"></div></div>
+    <div class="tvr"><span class="livep">Live</span><div class="tm"><i id="thFx"></i> <i id="thFn"></i> Fire</div><div class="tp" id="thF"></div><button class="joinw">Join ›</button></div>
+  </div>
+  <div class="lbcard">
+    <div class="lbh"><span class="lbi" data-icon="swords"></span>PvP leaderboard<span class="ends" id="lbEnds"></span></div>
+    <div class="prizes">
+      <div class="prize"><em>2nd</em><span data-g="Durov's Cap"></span>Durov's Cap</div>
+      <div class="prize p1"><em>1st</em><span data-g="Heart Locket"></span>Heart Locket</div>
+      <div class="prize p3"><em>3rd</em><span data-g="Precious Peach"></span>Precious Peach</div>
+    </div>
+    <div id="phLb"></div>
+  </div>
+</section>
+
+<!-- PVP BATTLE -->
+<section class="screen dockpad" id="pvp">
+  <div class="pvarc"><div class="arcring idle" id="pvRing"></div>
+    <div class="arcc"><div class="livepill" id="pvTimer">--:--</div><small>TOTAL POOL</small><b><span class="gm"></span><span id="pvPool">0.00</span></b><i id="pvGame"></i></div></div>
+  <div class="strip" id="pvStrip"><div class="strack" id="pvTrack"></div><div class="sline"></div></div>
+  <div class="phead"><span style="color:#fff">Players</span><span><span data-icon="users"></span><b id="pvCnt">0</b></span></div>
+  <div id="pvPl"></div>
+  <div class="dock">
+    <div class="brow"><div class="tog y" data-tog="pv"><button data-m="gift" data-icon="gift"></button><button data-m="coin" class="on"><span class="gm"></span></button></div><div class="inp"><input id="pvAmt" type="number" inputmode="decimal" placeholder="TON amount" step="0.01"><span class="gm"></span></div></div>
+    <button class="bigbtn" id="pvJoin">Join the Battle</button>
+  </div>
+</section>
+
+<!-- TVT -->
+<section class="screen dockpad" id="tvt">
+  <div class="tvhead">
+    <div class="side sice"><small><span data-icon="snow"></span>Ice</small><b><span class="gm"></span><span id="tvIt">0.00</span></b><div class="mx2"><i id="tvIx">x0</i><span class="stk" id="tvIa"></span></div></div>
+    <div class="ringc"><svg viewBox="0 0 104 104"><circle cx="52" cy="52" r="46" stroke="#313131" stroke-width="8" fill="#141414"/><circle id="tvRing" cx="52" cy="52" r="46" stroke="#8b5cf6" stroke-width="8" fill="none" stroke-linecap="round" stroke-dasharray="289" stroke-dashoffset="289"/></svg><b id="tvTimer">VS</b></div>
+    <div class="side sfire"><small>Fire<span data-icon="flame"></span></small><b><span id="tvFt">0.00</span><span class="gm"></span></b><div class="mx2"><span class="stk" id="tvFa"></span><i id="tvFx">x0</i></div></div>
+  </div>
+  <div class="arena" id="tvArena">
+    <div class="ice" id="tvIce"><span id="tvIp">50%</span>
+      <svg class="crys" viewBox="0 0 200 120" preserveAspectRatio="none"><defs><linearGradient id="cr1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#7dd3fc"/></linearGradient></defs><path d="M10 120 L22 30 L34 120Z M30 120 L48 10 L62 120Z M58 120 L70 50 L84 120Z M78 120 L92 70 L104 120Z M100 120 L110 85 L122 120Z" fill="url(#cr1)" opacity=".85"/></svg>
+      <div class="avs" id="tvIav"></div></div>
+    <div class="fire" id="tvFire"><span id="tvFp">50%</span>
+      <svg class="cracks" viewBox="0 0 300 260" preserveAspectRatio="none"><path d="M0 200 L60 170 L120 190 L180 150 L240 170 L300 140 M120 190 L140 230 M180 150 L170 110" stroke="#fb923c" stroke-width="2" fill="none"/></svg>
+      <svg class="flm" viewBox="0 0 300 150" preserveAspectRatio="none"><defs><linearGradient id="fl1" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#fde68a"/><stop offset=".5" stop-color="#f97316"/><stop offset="1" stop-color="#dc2626" stop-opacity="0"/></linearGradient></defs><path d="M20 150 Q30 90 45 120 Q55 60 70 150Z" fill="url(#fl1)"/><path d="M200 150 Q210 40 235 100 Q250 30 270 150Z" fill="url(#fl1)"/><path d="M240 150 Q255 70 270 110 Q285 50 300 150Z" fill="url(#fl1)"/><path d="M60 150 Q70 100 85 130 Q95 90 105 150Z" fill="url(#fl1)" opacity=".8"/></svg>
+      <div class="avs" id="tvFav"></div></div>
+    <div class="ball idle" id="tvBall"></div>
+    <div class="apill top" id="tvMsg"></div><div class="apill bot" id="tvWin"></div>
+  </div>
+  <div class="tvlist"><div class="tabs3" id="tvTabs"><button data-f="all" class="on">All <span id="tcA"></span></button><button data-f="ice"><span data-icon="snow"></span>Ice <span id="tcI"></span></button><button data-f="fire"><span data-icon="flame"></span>Fire <span id="tcF"></span></button></div><div id="tvRows"></div></div>
+  <div class="dock">
+    <div class="brow"><div class="tog y" data-tog="tv"><button data-m="gift" data-icon="gift"></button><button data-m="coin" class="on"><span class="gm"></span></button></div><div class="inp"><input id="tvAmt" type="number" inputmode="decimal" placeholder="TON amount" step="0.01"><span class="gm"></span></div></div>
+    <div class="jb"><button class="jice" data-team="ice"><span data-icon="snow"></span>Join Ice</button><button class="jfire" data-team="fire"><span data-icon="flame"></span>Join Fire</button></div>
+  </div>
+</section>
+
+<!-- UPGRADE -->
+<section class="screen" id="upgrade">
+  <div class="upcard">
+    <div class="uplab"><span><i>1</i>Your Gift</span><span class="off" id="upL2"><i>2</i>Target Gift</span></div>
+    <div class="uprow">
+      <div class="ubox" id="upFrom"></div>
+      <div class="ubolt" data-icon="bolt"></div>
+      <div class="ubox off" id="upTo"></div>
+    </div>
+    <div class="upmode"><div class="tog" data-tog="up"><button data-m="gift" data-icon="gift" class="on"></button><button data-m="coin"><span class="gm"></span></button></div><div class="inp" id="upAmtW" style="display:none"><input id="upAmt" type="number" inputmode="decimal" placeholder="TON amount" step="0.01"><span class="gm"></span></div></div>
+  </div>
+  <div class="uwheel"><div class="uwo" id="uwo"></div><div class="uwi" id="uwi"></div>
+    <svg class="uptr" viewBox="0 0 28 44"><path d="M14 44 L3 18 Q2 8 14 2 Q26 8 25 18Z" fill="#fbbf24" stroke="#fde68a" stroke-width="1.5"/><circle cx="14" cy="15" r="4" fill="#fef3c7"/></svg>
+    <div class="uwc"><b id="upCh">0%</b><small id="upLv">—</small></div></div>
+  <button class="bigbtn" id="upBtn">Select gifts</button>
+</section>
+
+<!-- MINES -->
+<section class="screen dockpad" id="mines">
+  <div class="mchips" id="mChips"></div>
+  <div class="mbox2"><div class="mg" id="mGrid"></div></div>
+  <div class="dock">
+    <button class="bigbtn" id="mBtn" style="margin:0 0 10px">Enter a bet amount</button>
+    <div class="brow"><div class="tog" data-tog="mn"><button data-m="gift" data-icon="gift"></button><button data-m="coin" class="on"><span class="gm"></span></button></div><div class="inp"><input id="mBet" type="number" inputmode="decimal" placeholder="Amount" step="0.01"><span class="gm"></span></div>
+      <div class="msel" id="mSel"><button id="mSelB"><span data-icon="bomb"></span><span id="mCntV">3</span><span data-icon="down"></span></button><div class="dd" id="mDD"></div></div></div>
+  </div>
+</section>
+
+<!-- SPINS -->
+<section class="screen" id="spins" style="padding-bottom:89px">
+  <div class="spbox">
+    <div class="sgrid" id="sGrid"></div>
+    <div class="spctl"><button id="spMinus">−</button><div class="inp"><input id="spBet" type="number" inputmode="decimal" value="0.20" step="0.05"><span class="gm"></span></div><button id="spPlus">+</button></div>
+    <div class="spopt"><div><small>Speed</small><div class="speeds" id="spSpeed"><button data-s="1" class="on"></button><button data-s="2"></button><button data-s="3"></button></div></div>
+      <div style="text-align:right"><small>Auto Bet</small><label class="sw"><input type="checkbox" id="spAuto"><i></i></label></div></div>
+    <button class="spinbtn" id="spBtn" data-icon="refresh"></button>
+    <div class="bigwin" id="spWin"><b>BIG WIN</b><span id="spWinV"></span></div>
+  </div>
+  <div class="spfeat"><button class="bf" id="spBuy"><span data-icon="gift"></span><div>Buy Features<em><span class="gm"></span><span id="spBuyV">20.00</span></em></div></button>
+    <button class="dc" id="spDC"><span data-icon="bolt"></span><div>Double Chance<em><span class="gm"></span><span id="spDCV">0.05</span></em></div></button></div>
+  <div class="note" id="spInfo" style="margin-top:10px;text-align:center"></div>
+</section>
+
+<!-- PLINKO -->
+<section class="screen dockpad" id="plinko">
+  <div class="plboard"><canvas id="plCv"></canvas></div>
+  <div class="dock">
+    <div class="seg" id="plDiff"><button data-d="easy">Easy</button><button data-d="med" class="on">Medium</button><button data-d="hard">Hard</button></div>
+    <div class="brow"><div class="tog" data-tog="pl"><button data-m="gift" data-icon="gift"></button><button data-m="coin" class="on"><span class="gm"></span></button></div><div class="inp"><input id="plBet" type="number" inputmode="decimal" placeholder="TON amount" step="0.01"><span class="gm"></span></div></div>
+    <button class="bigbtn" id="plBtn">Place Bet</button>
+  </div>
+</section>
+
+<!-- DICE -->
+<section class="screen dockpad" id="dice">
+  <div class="dcard"><small>0 – 100</small>
+    <div class="dtk"><span>0</span><span>25</span><span>50</span><span>75</span><span>100</span></div>
+    <div class="dbar"><div class="dtrack"><i class="rd" id="dRd"></i><i class="gr" id="dGr"></i></div><input type="range" id="dT" min="2" max="98" step=".01" value="50"><div class="dres" id="dRes"></div></div>
+  </div>
+  <div class="dcard" style="margin-top:10px">
+    <div class="dgrid"><div><div class="dlab">Multiplier</div><div class="dfield"><input id="dMu" type="number" inputmode="decimal" step=".01"><span data-icon="x"></span></div></div>
+      <div><div class="dlab" id="dModeL">Higher</div><div class="dfield"><input id="dTv" type="number" inputmode="decimal" step=".01"><button id="dSwap" data-icon="swap"></button></div></div></div>
+    <div class="dlab" style="margin-top:12px">Chance Of Winning</div><div class="dfield"><input id="dCh" type="number" inputmode="decimal" step=".01"><span data-icon="pct"></span></div>
+  </div>
+  <div class="dock">
+    <div class="brow"><div class="tog" data-tog="dc"><button data-m="gift" data-icon="gift"></button><button data-m="coin" class="on"><span class="gm"></span></button></div><div class="inp"><input id="dBet" type="number" inputmode="decimal" placeholder="TON amount" step="0.01"><span class="gm"></span></div></div>
+    <button class="bigbtn" id="dBtn">Place Bet</button>
+  </div>
+</section>
+
+<!-- CRAFTS -->
+<section class="screen" id="crafts">
+  <div class="cmode">
+    <div class="cmh"><i data-icon="shuffle"></i><div><b>Craft Mode</b><small>Combine your gifts to craft a new one</small></div></div>
+    <div class="copts" id="cOpts"></div>
+  </div>
+  <div class="cslots" id="cSlots"><div class="csh">Craft Slots <span id="cCnt">0/10</span></div><div class="csg" id="cGrid"></div></div>
+  <button class="cbtn" id="cBtn"><span data-icon="sparkle"></span><span id="cBtnT">Add at least 2 gifts to start</span></button>
+  <div class="how"><div class="howh"><i>!</i>How it works<button id="howT">Hide details ⌃</button></div>
+    <div class="howb" id="howB">Put at least 2 gifts into the craft slots and choose a mode. <b>Safe</b> multiplies the value by 2, <b>Normal</b> by 8, <b>Risky</b> by 100. The higher the multiplier, the lower the chance. On success you get a new, more valuable gift, otherwise the gifts in the slots are lost.</div></div>
+</section>
+
+<!-- CASES -->
+<section class="screen" id="cases">
+  <div class="cases" id="caseList"></div>
+  <div class="reel" id="reel"><div class="track" id="track"></div></div>
+  <button class="bigbtn p" id="caseBtn">Open</button>
+  <h4>What's inside</h4><div class="grid" id="caseDrops"></div>
+</section>
+
+<!-- MARKET -->
+<section class="screen" id="market">
+  <div class="mkhead"><div><b>Market</b><small><span id="mkCnt">0</span> listings · prices: <span id="mkTs"></span></small></div><button class="ib" id="mkRef" data-icon="refresh"></button></div>
+  <input class="gpsearch" id="mkQ" placeholder="Search: Plush Pepe, Durov's Cap...">
+  <div class="mkchips" id="mkChips"></div>
+  <div class="mksort"><div class="seg" id="mkSort" style="margin:0"><button data-s="lo" class="on">Cheapest</button><button data-s="hi">Expensive</button><button data-s="rare">Rarest</button></div></div>
+  <div class="mkgrid" id="mkGrid"></div>
+</section>
+
+<!-- BACKPACK -->
+<section class="screen" id="backpack">
+  <div class="box" style="display:flex;align-items:center"><div><b>Backpack</b><p style="margin:2px 0 0">Total: <b id="bpTotal" style="color:#fff"></b></p></div><button class="depbtn" id="sellAll" style="font-size:10px;padding:7px 9px">Sell all</button></div>
+  <div class="grid" id="bpGrid"></div>
+</section>
+
+<!-- INVITE -->
+<section class="screen" id="invite">
+  <div class="box"><b>Invite friends</b><p>Get 5 tickets for every friend and 10% of their deposits.</p><div class="link" id="refLink"></div>
+  <div class="two" style="margin-top:3px"><button class="bigbtn p" id="copyRef">Copy</button><button class="bigbtn ok" id="shareRef">Share</button></div></div>
+  <div class="box"><b>Statistics</b><p>Invited: <b id="refN" style="color:#fff">0</b> · Bonus: <b id="refB" style="color:#fff">0</b> TON</p></div>
+</section>
+
+<!-- LEADERBOARD -->
+<section class="screen" id="leader">
+  <h4 style="margin-top:3px">Leaderboard</h4>
+  <div class="seg lbtabs" id="lbTabs"><button data-t="pvp" class="on">PvP</button><button data-t="rich">Boylar</button><button data-t="nft">NFT</button></div>
+  <div id="lbList"></div>
+</section>
+
+<!-- EARN -->
+<section class="screen" id="earn"><h4 style="margin-top:3px">Tasks</h4><div id="taskList"></div></section>
+</div>
+
+<nav><div class="in">
+  <button data-go="backpack"><span data-icon="box"></span>Backpack</button>
+  <button data-go="invite"><span data-icon="users"></span>Invite</button>
+  <button data-go="home" class="on"><span data-icon="home"></span>Home</button>
+  <button data-go="leader"><span data-icon="trophy"></span>Leaderboard</button>
+  <button data-go="earn"><span data-icon="coins"></span>Earn<span class="badge" id="earnBadge" style="display:none"></span></button>
+</div></nav>
+
+<!-- modals -->
+<div class="modal" id="betM"><div class="mbox">
+  <div class="mhead">Place bet<button class="mx" data-close>✕</button></div>
+  <div class="mbody">
+    <div class="tabs" id="btTabs"><button data-t="gift">Gifts</button><button data-t="coin" class="on">Balance</button></div>
+    <div class="mcard">
+      <div id="btCoin"><div class="mrow"><span>Available Balance</span><b><span class="balv"></span><span class="gm"></span></b></div>
+        <div class="mrow" style="margin:4px 0 7px">Bet Amount</div><div class="inp" style="border-color:#2f7cf6"><input id="btAmt" type="number" inputmode="decimal" placeholder="Amount" step="0.01"><span class="gm"></span></div>
+        <div class="amts" style="margin-top:7px"><button data-q="0.5">½</button><button data-q="2">x2</button><button data-q="max">Max</button></div></div>
+      <div id="btGift" style="display:none"><div class="grid" id="btGifts"></div></div>
+      <div class="mrow" style="margin:13px 0 0">Auto cashout<label class="sw"><input type="checkbox" id="btAutoOn"><i></i></label></div>
+      <div class="inp" id="btAutoW" style="display:none;margin-top:7px"><input id="btAuto" type="number" value="2" step="0.1"><span>x</span></div>
+      <button class="mbtn ok" id="btGo">Place Bet 🚀</button>
+    </div>
+  </div>
+</div></div>
+<div class="modal" id="gpM"><div class="mbox">
+  <div class="mhead"><span id="gpT">Select a gift</span><button class="mx" data-close>✕</button></div>
+  <div class="mbody"><input class="gpsearch" id="gpQ" placeholder="Search..."><div class="grid" id="gpGrid"></div><div class="pickbar" id="gpBar"><b id="gpSum"></b><button id="gpOk">Done</button></div></div>
+</div></div>
+<div class="modal depm" id="depM"><div class="mbox">
+  <div class="mhead">Deposit<button class="mx" data-close>✕</button></div>
+  <div class="mbody">
+    <div class="tabs" id="depTabs"><button data-t="ton" class="on">💎 TON</button><button data-t="stars">⭐ Stars</button><button data-t="gift">🎁 Gift</button></div>
+    <div id="depBody"></div>
+    <button class="ghost" id="resetBtn">Reset everything</button>
+  </div>
+</div></div>
+<div class="modal" id="welM"><div class="mbox" style="text-align:center">
+  <div class="mbody" style="padding:21px 15px">
+    <div style="width:89px;height:89px;margin:0 auto" data-g="Loot Bag"></div>
+    <div style="font-size:19px;font-weight:900;margin:10px 0 4px">Welcome to RIKI!</div>
+    <div style="font-size:13px;color:#cfcfd6">Your welcome gift</div>
+    <div style="font-size:30px;font-weight:900;margin:7px 0;display:flex;align-items:center;justify-content:center;gap:6px"><span class="gm"></span><span id="welV">1000</span></div>
+    <div class="note" style="margin:0">This is a demo balance for playing.</div>
+    <button class="bigbtn ok" data-close>Start</button>
+  </div></div></div>
+<div class="modal" id="nftM"><div class="mbox nftbox">
+  <div class="nfthero" id="nftHero"><button class="mx" data-close style="position:absolute;right:9px;top:9px;z-index:3;background:#0006">✕</button><div class="nftart" id="nftArt"></div><div class="nftname" id="nftName"></div><div class="nftsn" id="nftSn"></div></div>
+  <div class="mbody"><div class="nfttab" id="nftTab"></div><div class="nftbtns" id="nftBtns"></div></div>
+</div></div>
+<div class="modal" id="infoM"><div class="mbox">
+  <div class="mhead"><span id="infoT"></span><button class="mx" data-close>✕</button></div>
+  <div class="mbody" id="infoB"></div>
+</div></div>
+<div class="res-ov" id="resOv"></div>
+<div id="toast"></div>
+
+
+<script src="js/app.js"></script>
+<script src="js/screens.js"></script>
+</body></html>
