@@ -2489,3 +2489,11 @@ nav button:not([data-go="home"]).on{background:#8774e124}
 .b-rocket .shp.gshp{animation:flt 3s ease-in-out infinite}
 .b-pvp .sav .av.gav{background:radial-gradient(circle at 40% 35%,#fff7,#0000 70%),#2a1f0a!important;display:grid;place-items:center;overflow:hidden}
 .b-pvp .sav .av.gav .gi-wrap,.b-pvp .sav .av.gav img{width:86%!important;height:86%!important}
+/* yutuq oynasi: mukofot kartasi orqasida sekin aylanuvchi nur */
+#pvWM .pwr{position:relative;overflow:hidden}
+#pvWM .pwr .ic{position:relative;z-index:1}
+#pvWM .pwr::before{content:"";position:absolute;left:50%;top:46%;width:180%;aspect-ratio:1;transform:translate(-50%,-50%);z-index:0;opacity:.35;
+  background:repeating-conic-gradient(from 0deg,var(--rc,#8774e1) 0 8deg,transparent 8deg 22deg);-webkit-mask:radial-gradient(circle,#000 0,transparent 62%);mask:radial-gradient(circle,#000 0,transparent 62%);animation:wrays 9s linear infinite}
+#pvWM .pwr>*{position:relative;z-index:1}
+@keyframes wrays{to{transform:translate(-50%,-50%) rotate(360deg)}}
+@media (prefers-reduced-motion:reduce){#pvWM .pwr::before{animation:none}}
