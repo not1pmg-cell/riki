@@ -163,7 +163,7 @@ window.addEventListener('resize', rkResize);
 // Rocket: faqat Stellar Rocket NFT — har raundda boshqa model (repo: models/stellar_rocket/*.webp)
 const RK_MODELS = 'alien_pizza astro_peach baby_carrot banana bitcoin black_wing cardboard checkered chrome clever_bird doomsday fireworks first_step fishing_cat flower_power green_jelly gunship hornet jet_bike jewels knowledge laika lava_lamp little_journey lollipop malfunction mega_death mission_uranus neon_fuel normandy nostromo pencil pepelatz planet_express police_box popsicle rocket_plush ruby_sparkle silver_ride sky_ghost soap_bubbles space_bot space_veggie squirrel submarine telegram to_the_moon unicorn vintage_toy worm_gun'.split(' ');
 let rkPrevM = '';
-function rkSetSkin() { const g = GBS.plush_pepe || byName('Plush Pepe'); RKV.rkGift = g; RKV.rkModel = null; $id('rkImg').innerHTML = GI(g).replace(/loading="lazy"/g, ''); setTimeout(() => { const im = $('#rkImg img'); if (im && window.RIKI_HQ) window.RIKI_HQ(im) }, 0) };   // Rocket'da har doim bitta katta yashil Pepe
+function rkSetSkin() { const g = byName('Stellar Rocket'); let ms; do { ms = pick(RK_MODELS) } while (ms === rkPrevM && RK_MODELS.length > 1); rkPrevM = ms; RKV.rkGift = g; RKV.rkModel = ms; $id('rkImg').innerHTML = GIM(g, ms).replace(/loading="lazy"/g, ''); setTimeout(() => { const im = $('#rkImg img'); if (im && window.RIKI_HQ) window.RIKI_HQ(im) }, 0) };   // har raundda boshqa Stellar Rocket modeli
 function rkPos(t) { // t: soniya
   const W = RKV.W, H = RKV.H, q = 1 - Math.exp(-t / 3.2);
   return [W * (.08 + .5 * q), H * (.86 - .52 * q)];
@@ -1584,7 +1584,7 @@ const srvNow = () => Date.now() + LV.off;
 const isMe = uid => String(uid) === String(TGU.id || 0);
 const toItems = gifts => (gifts || []).map(x => { const g = GBS[x.sh] || byName(x.n); return { g: g.i, v: x.p, m: x.m || null, ms: x.ms || null } });
 const giftPayload = items => items.map(it => ({ id: it.id, sh: GIFTS[it.g].sh, n: GIFTS[it.g].n, p: it.v, m: it.m, ms: it.ms }));
-async function lvPull(g) { const d = await api('/api/live?g=' + g); LV.off = d.now - Date.now(); LV.st[g] = d; return d }
+async function lvPull(g) { const t0 = performance.now(); const d = await api('/api/live?g=' + g); const rtt = performance.now() - t0; LV.rtt = LV.rtt ? LV.rtt * .7 + rtt * .3 : rtt; LV.off = d.now - Date.now(); LV.st[g] = d; return d }   // RTT — Rocket ko'rsatkichi serverdan oldinga o'tmasligi uchun
 function liveStake(g, ton, items, extra) {
   const body = Object.assign({ g, ton, gifts: giftPayload(items), name: pubName(), photo: pubPhoto() }, extra || {});
   return api('/api/live/bet', { method: 'POST', body }).then(d => {
@@ -1657,13 +1657,19 @@ function lvRkTick(now) {
   const d = LV.rk; if (!d) return;
   const sNow = d.now + (now - LV.rkAt);
   if (d.id !== RK.round) {
-    RK.round = d.id; RK.my = null; $('#rkStage').classList.remove('fly', 'boom'); $id('rkBoom').classList.remove('on'); rkSetSkin();
+    RK.round = d.id; RK.my = null; RK.m = 1; $('#rkStage').classList.remove('fly', 'boom'); $id('rkBoom').classList.remove('on'); rkSetSkin();
     if (LV.queue) { const q = LV.queue; LV.queue = null; RK.next = null; liveStake('rocket', q.ton, q.items, { auto: q.auto }) }
   }
   if (d.phase === 'wait') { RK.phase = 'wait'; RK.waitEnd = now + (d.startAt - sNow) }
-  else if (d.phase === 'fly') { if (RK.phase !== 'fly') { RK.phase = 'fly'; $('#rkStage').classList.add('fly') } RK.t0 = now - (sNow - d.t0); RK.m = Math.floor(Math.exp(0.085 * Math.max(0, (now - RK.t0) / 1000)) * 100) / 100 }
+  else if (d.phase === 'fly') {
+    if (RK.phase !== 'fly') { RK.phase = 'fly'; $('#rkStage').classList.add('fly') }
+    // ko'rsatkich serverdan biroz orqada yuradi (so'rov oralig'i + aloqa kechikishi): portlash qiymatidan oshib, keyin orqaga qaytmaydi
+    const lag = Math.min(1200, Math.max(300, 220 + (LV.rtt || 300)));
+    RK.t0 = now - (sNow - d.t0) + lag; const m = Math.floor(Math.exp(0.085 * Math.max(0, (now - RK.t0) / 1000)) * 100) / 100;
+    RK.m = Math.max(1, Math.max(RK.m || 1, m));
+  }
   else if (d.phase === 'crash' && RK.phase !== 'crash') {
-    RK.phase = 'crash'; RK.crash = d.crash; RK.m = d.crash; RK.crashAt = now - (sNow - d.crashAt);
+    RK.phase = 'crash'; RK.crash = d.crash; RK.m = d.crash; RK.crashAt = now - (sNow - d.crashAt);   // yakuniy qiymat — serverdagi aniq portlash nuqtasi
     $('#rkStage').classList.remove('fly'); $('#rkStage').classList.add('boom'); rkFrags();
     if (RK.my && !RK.my.out && LV.lostRk !== d.id) { LV.lostRk = d.id; if (cur === 'rocket') { hapN('error'); toast('💥 Crashed at ' + d.crash.toFixed(2) + 'x') } }
   }
@@ -1681,7 +1687,7 @@ async function lvLoop() {
     const gs = cur === 'roulette' ? ['roulette'] : cur === 'pvp' ? ['pvp'] : cur === 'tvt' ? ['tvt'] : cur === 'rocket' ? ['rocket'] : cur === 'pvphub' ? ['roulette', 'pvp', 'tvt'] : [];
     if ((RK.my || LV.queue) && !gs.includes('rocket')) gs.push('rocket');
     for (const g of gs) { try { lvApply(g, await lvPull(g)) } catch (e) {} }
-    wait = gs.includes('rocket') && RK.phase === 'fly' ? 250 : gs.length ? 700 : 1500;
+    wait = gs.includes('rocket') && RK.phase === 'fly' ? 180 : gs.length ? 700 : 1500;
   }
   setTimeout(lvLoop, wait);
 }
@@ -2231,7 +2237,7 @@ function winSheet(from, ton, items, game) {
   $id('pvWG').textContent = `${from || 'Game'}${game ? ' · Game #' + game : ''}`;
   const cards = (ton > 0 ? [`<div class="pwr gram" style="--d:0"><em>${fmt(ton)}${GEM}</em><div class="ic">${GEM.replace('class="gem"', 'class="gem" style="width:46px;height:46px"')}</div><span class="lb">${CUR} Prize</span><b>${CUR}</b></div>`] : [])
     .concat(items.map((it, i) => `<div class="pwr" style="--rc:${TIER_C[tierOf(it.v)]};--d:${i + 1}"><em>${fmt(it.v)}${GEM}</em><div class="ic">${GII(it)}</div><span class="lb">${it.m ? esc(it.m) : 'Random'}</span><b>${esc(GIFTS[it.g].n)}</b></div>`));
-  $id('pvWB').innerHTML = `<div class="pwin me wnew">${avP(pubName(), pubPhoto())}<div class="n"><b>${esc(pubName())}</b><small>You won! 🏆</small></div><div class="r"><b>${GEM}${fmt(tot)}</b><small>added to balance</small></div></div>
+  $id('pvWB').innerHTML = `<div class="pwin me wnew">${avP(pubName(), pubPhoto())}<div class="n"><b>${esc(pubName())}</b><small>You won! 🏆</small></div><div class="r"><b>${GEM}${fmt(tot)}</b><small>${items.length ? (ton > 0 ? 'Backpack + balance' : '→ Backpack') : 'added to balance'}</small></div></div>
     <div class="pwl">Rewards</div><div class="pwg">${cards.join('')}</div>`;
   openM('pvWM'); hapN('success');
   const box = $id('pvWM').querySelector('.mbox'); box.classList.remove('wfx'); void box.offsetWidth; box.classList.add('wfx');
@@ -2253,7 +2259,7 @@ pvSpin = function (forced) {
   const pl = PV.pl.map(p => Object.assign({}, p)), game = PV.game;
   _pvSpin11(forced);
   const w = PV.winner;
-  if (pl.some(p => p.me)) setTimeout(() => { if (cur === 'pvp') { const o = $id('resOv'); if (o && w && w.me) o.classList.remove('on'); pvWinner(w, pl, game) } }, 5700);
+  if (pl.some(p => p.me)) setTimeout(() => { if (cur === 'pvp') { const o = $id('resOv'); if (o && w && w.me) o.classList.remove('on'); pvWinner(w, pl, game) } }, 7700);
 };
 ['gp2M', 'trM', 'infoM', 'pfM'].forEach(id => { const m = $id(id); if (m) m.classList.add('sheet2') });
 
@@ -2345,11 +2351,8 @@ function roundSheet(game, h) {
 // =====================================================================
 stage.insertAdjacentHTML('beforeend', `<div id="rkTag"><b id="rtName"></b><span><i id="rtBet"></i><em id="rtVal"></em></span></div>`);
 const RW = { key: '', t: 0 }, RW_PRE = new Set();
-function rwSrc() { // kimning tikishi: avval o'zimniki, bo'lmasa eng katta faol tikish
-  if (RK.my && !RK.my.out) return { b: RK.my, me: true };
-  const act = RK.bets.filter(x => !x.out).sort((x, y) => y.amt - x.amt)[0];
-  return act ? { b: act, me: false } : null;
-}
+const RK_PEPE = 10000;   // shu summadan (TON) tiksa — faqat o'sha o'yinchiga Pepe uchadi (serverdagi RK_PEPE_MIN bilan bir xil)
+function rwSrc() { return RK.my && !RK.my.out ? { b: RK.my, me: true } : null }   // faqat o'zining tikishi — boshqalarga raketa ko'rinadi
 const _rkD12 = rkDraw;
 rkDraw = function (now) {
   _rkD12(now);
@@ -2360,12 +2363,23 @@ rkDraw = function (now) {
     if (RW.key) { RW.key = ''; img.classList.remove('nft'); if (RKV.rkGift) img.innerHTML = GIM(RKV.rkGift, RKV.rkModel).replace(/loading="lazy"/g, '') }
     return;
   }
-  const val = src.b.amt * RK.m, pepe = GBS.plush_pepe || byName('Plush Pepe');   // har doim bitta katta yashil Pepe
-  if (RW.key !== 'pepe') {
-    RW.key = 'pepe';
-    img.innerHTML = GI(pepe).replace(/loading="lazy"/g, ''); img.classList.add('nft');
-    img.style.setProperty('--rwc', '#4ade80');
-    $id('rtName').textContent = 'Plush Pepe';
+  const val = src.b.amt * RK.m;
+  if (src.b.amt >= RK_PEPE) {   // katta tikish — bitta katta yashil Pepe
+    const pepe = GBS.plush_pepe || byName('Plush Pepe');
+    if (RW.key !== 'pepe') { RW.key = 'pepe'; img.innerHTML = GI(pepe).replace(/loading="lazy"/g, ''); img.classList.add('nft'); img.style.setProperty('--rwc', '#4ade80'); $id('rtName').textContent = 'Plush Pepe' }
+  } else {                      // yutuq qiymatiga mos NFT — qiymat oshgani sari tez almashadi
+    const nf = giftFor(val);
+    if (!nf) { tag.classList.remove('on'); if (RW.key) { RW.key = ''; img.classList.remove('nft'); if (RKV.rkGift) img.innerHTML = GIM(RKV.rkGift, RKV.rkModel).replace(/loading="lazy"/g, '') } return }
+    const key = nf.g.i + ':' + (nf.m || '');
+    if (key !== RW.key && now - RW.t > 140) {
+      RW.key = key; RW.t = now;
+      img.innerHTML = GIM(nf.g, nf.ms).replace(/loading="lazy"/g, ''); img.classList.add('nft');
+      img.style.setProperty('--rwc', TIER_C[tierOf(nf.p)]);
+      img.classList.remove('pop'); void img.offsetWidth; img.classList.add('pop');
+      $id('rtName').textContent = nf.g.n + (nf.m ? ' · ' + nf.m : '');
+      const k = NFTS.indexOf(nf);
+      for (let j = k + 1; j < Math.min(NFTS.length, k + 6); j++) { const u = (GIM(NFTS[j].g, NFTS[j].ms).match(/src="([^"]+)"/) || [])[1]; if (u && !RW_PRE.has(u)) { RW_PRE.add(u); const x = new Image(); x.src = u } }
+    }
   }
   // raketa emas — NFT tekis uchadi (aylanmaydi)
   const sz = parseFloat(img.style.width) || 100, H = RKV.H, W = RKV.W, cyc = H * .44, bob = Math.sin(now / 230) * 5, sw = Math.sin(now / 610) * 6;
@@ -2477,6 +2491,9 @@ function gFinish(r, game, quiet) {
   return its;
 }
 window.RIKI_GF = (r, game, quiet) => gFinish(r, game, quiet);
+// barcha o'yinlar uchun yagona yutuq oynasi (konfetti + mukofot kartalari)
+function winFx(game, cash, items) { if ((cash || 0) <= 0 && !(items || []).length) return; setTimeout(() => winSheet(game, cash || 0, items || [], 0), 150) }
+window.RIKI_WIN = winFx;
 // tikish parametrlari (pul yechilmaydi — buni server qiladi)
 function bbStake(key, min) {
   min = min || .1; const b = BB[key], v = bbVal(key);
@@ -2518,7 +2535,7 @@ m2Cash = async function () {
 };
 function m2Done(r) {
   M2.mines = new Set(r.mines); const w = r.pay, m = r.mult;
-  gFinish(r, 'Mines'); logGame('Mines', M2.bet, w, M2.open.size + ' gems'); hapN('success');
+  const mIts = gFinish(r, 'Mines', true); logGame('Mines', M2.bet, w, M2.open.size + ' gems'); hapN('success'); winFx('Mines', r.cash, mIts);
   const W = $id('m2Win'); W.innerHTML = `<b>${m.toFixed(2)}x</b><span>${GEM}+${fmt(w)}</span>`; W.className = 'mn2-win on';
   m2End(w, m);
 }
@@ -2549,8 +2566,8 @@ $id('d2Go').onclick = async () => {
   P.className = 'dc3-pin on roll'; const t0 = performance.now(), R = r.r;
   await new Promise(res => { const step = now => { const k = Math.min(1, (now - t0) / 800), e = 1 - Math.pow(1 - k, 3), x = k < 1 ? (Math.random() * 100 * (1 - e) + R * e) : R; P.style.left = x + '%'; V.textContent = x.toFixed(2); if (k < 1) requestAnimationFrame(step); else res() }; requestAnimationFrame(step) });
   P.className = 'dc3-pin on ' + (r.win ? 'w' : 'l');
-  gFinish(r, 'Dice', !r.win);
-  if (r.win) { hapN('success'); burst(P, ['#22c55e', '#86efac'], 14) } else { hapN('error'); toast(`Rolled ${R.toFixed(2)} — no luck`) }
+  const dIts = gFinish(r, 'Dice', true);
+  if (r.win) { hapN('success'); burst(P, ['#22c55e', '#86efac'], 14); if (dIts.length || r.pay >= st.v * 2) winFx('Dice', r.cash, dIts); else toastG(`+${fmt(r.pay)} ${CUR}`) } else { hapN('error'); toast(`Rolled ${R.toFixed(2)} — no luck`) }
   logGame('Dice', st.v, r.pay, R.toFixed(2));
   D2.hist.unshift({ r: R, win: r.win }); D2.hist = D2.hist.slice(0, 12);
   $id('d2Hist').innerHTML = D2.hist.map(h => `<span class="${h.win ? 'w' : 'l'}">${h.r.toFixed(2)}</span>`).join('');
@@ -2586,8 +2603,8 @@ async function spSpinS() {
   gStake(r); SP.grid = r.grid; spDraw(true); hap();
   await sleep([0, 1100, 750, 450][SP.spd]);
   if (r.wins.length) $$('#sGrid .tok').forEach(t => t.classList.add(r.wins.includes(+t.dataset.k) ? 'win' : 'dimt'));
-  const win = r.pay; gFinish(r, 'Spins', win < r.bet * 10);
-  if (win > 0) { hapN('success'); if (win >= r.bet * 10) { $('#spWinV').innerHTML = g$(win); $('#spWin').classList.add('on'); setTimeout(() => $('#spWin').classList.remove('on'), 1800) } else if (!r.items.length) toast(`+${g$(win)}`) }
+  const win = r.pay, sIts = gFinish(r, 'Spins', true);
+  if (win > 0) { hapN('success'); if (win >= r.bet * 10 || sIts.length) winFx('Spins', r.cash, sIts); else toast(`+${g$(win)}`) }
   logGame('Spins', cost, win, free ? 'free' : '');
   SP.free = r.free; if (r.wasFree && !SP.free) { toast('🎁 Free spins finished'); SP.freeMul = 1 }
   spUI(); SP.busy = false; $('#spBtn').classList.remove('busy');
@@ -2621,8 +2638,8 @@ $id('u2Go').onclick = async () => {
   const nd = $id('u2Nd'); nd.style.transition = 'transform 4.6s cubic-bezier(.12,.75,.1,1)'; nd.style.transform = `rotate(${U2.rot}deg)`;
   hap('medium'); await sleep(4700);
   UP.spinning = false; U2.lock = 0; U2.lockIt = null; W.className = 'up2-wheel up3-wheel ' + (r.win ? 'win' : 'lose');
-  gFinish(r, 'Upgrade', true);
-  if (r.win) { burst(W, ['#34d399', '#fde047', '#a78bfa'], 26); logGame('Upgrade', fv, tg_.p, tg_.n); setTimeout(() => showRes(true, tg_, 'Upgrade successful! ⚡', `${esc(tg_.n)} · ${g$(tg_.p)}`), 500) }
+  const uIts = gFinish(r, 'Upgrade', true);
+  if (r.win) { burst(W, ['#34d399', '#fde047', '#a78bfa'], 26); logGame('Upgrade', fv, tg_.p, tg_.n); winFx('Upgrade', 0, uIts) }
   else { logGame('Upgrade', fv, 0, tg_.n); hapN('error'); setTimeout(() => showRes(false, tg_, 'Upgrade failed', `${r.ch.toFixed(1)}% chance`), 500) }
   UP.from = null; if (UP.mode === 'ton') $id('u2Ton').value = ''; setTimeout(() => { W.className = 'up2-wheel up3-wheel'; u2Render() }, 1600); u2Render();
 };
@@ -2640,8 +2657,8 @@ $id('c2Go').onclick = async () => {
   hap('heavy'); await sleep(1900);
   gStake(r); CR.slots = [];
   F.classList.remove('go'); F.classList.add(r.win ? 'win' : 'lose'); burst(G, r.win ? ['#fde047', '#a78bfa', '#34d399'] : ['#ef4444', '#555'], 26);
-  gFinish(r, 'Crafts', true); logGame('Crafts', tot, r.win ? t.p : 0, t.n);
-  await sleep(450); showRes(r.win, t, r.win ? 'Craft successful! ✨' : 'Craft failed', r.win ? `${esc(t.n)} · ${g$(t.p)}` : `${ids.length} gifts lost`);
+  const cIts = gFinish(r, 'Crafts', true); logGame('Crafts', tot, r.win ? t.p : 0, t.n);
+  await sleep(450); if (r.win) winFx('Crafts', 0, cIts); else showRes(false, t, 'Craft failed', `${ids.length} gifts lost`);
   F.classList.remove('win', 'lose'); CR.busy = false; c2Render();
 };
 
@@ -2659,7 +2676,7 @@ boxOpen = async function (outs, cost, free) {
   const skip = { skip: false }, gb = $id('bxGo'); if (gb) { gb.innerHTML = `${IC.spark}Skip Animation`; gb.onclick = () => skip.skip = true }
   await sleep(40); hap('medium'); await reelRun(tr, 44, 5200, skip);
   const its = gFinish(r, 'Box', true);
-  if (win.bal) balModal(win.v); else balModal(win.v, { g: win.g, ms: its[0] && its[0].ms }, 'You won a gift!');
+  if (win.bal) balModal(win.v); else winFx((free ? 'Free' : bx.n) + ' Box', 0, its);
   logGame((free ? 'Free' : bx.n) + ' Box', cost, win.v, win.bal ? CUR : win.g.n); S.cnt.box = (S.cnt.box || 0) + 1;
   BX.busy = false; boxRender(); save();
 };
@@ -2673,7 +2690,7 @@ dailyOpen = async function (outs) {
   const skip = { skip: false }, b = $id('dbGo'); b.innerHTML = `${IC.spark}Skip Animation`; b.onclick = () => skip.skip = true;
   await sleep(40); await reelRun(tr, 44, 5200, skip);
   const its = gFinish(r, 'Daily', true);
-  if (win.bal) balModal(win.v); else balModal(win.v, { g: win.g, ms: its[0] && its[0].ms }, 'You won a gift!');
+  if (win.bal) balModal(win.v); else winFx('Daily Box', 0, its);
   logGame('Daily Box', 0, win.v, win.bal ? CUR : win.g.n); DB.busy = false; dailyRender();
 };
 const _entDaily = ENTER.daily; ENTER.daily = () => { _entDaily && _entDaily(); gSyncState().then(() => { if (cur === 'daily' && !DB.busy) _entDaily() }) };
@@ -2726,4 +2743,3 @@ $$('#home .b-pvp .sav .av').forEach((a, i) => { const g = byName(['Plush Pepe', 
 window.RIKI_W = { on: () => wOn(), skip: wSkip, with: wWith, pull: wPull };
 Object.assign(window, { RIKI_STAKE: (g, ton, items, ex) => liveStake(g, ton, items, ex), winSheet, offSync, M2, m2Pick, u2Render, c2Render, NET, pushStats, pullFeed, balModal });
 })();
-
