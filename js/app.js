@@ -3,14 +3,14 @@
 //  RIKI — Telegram Mini App (demo). Barcha o'yinlar shu faylda.
 // =====================================================================
 const CFG = {
-  BOT_USERNAME: 'your_bot',                 // @ belgisisiz
+  BOT_USERNAME: 'riki_gamebot',             // @ belgisisiz — referal havola shu bot orqali
   CHANNEL_URL: 'https://t.me/your_channel',
   START_BALANCE: 0,                      // birinchi kirish bonusi (demo TON)
   DAILY_BONUS: 10,                          // kunlik bonus (demo TON)
   STORAGE_KEY: 'riki_v5',
   CUR: 'TON',                              // valyuta nomi (demo)
   BRAND: 'RIKI',                           // ilova nomi
-  GIFT_BOT: 'your_gift_bot',               // sovg'a qabul qiluvchi bot (@ belgisisiz)
+  GIFT_BOT: 'Sewentyzz_riki',              // NFT sovg'a depoziti — o'yinchilar sovg'ani shu akkauntga yuboradi (@ belgisisiz)
   API_URL: '',                             // bot.py server manzili, masalan 'https://xxxx.trycloudflare.com' (bo'sh = offline)
   ADMIN_IDS: [],                           // admin Telegram ID'lari, masalan [123456789] (offline rejim uchun)
   TON_RATE: 100000,                        // 1 TON = 100 000 balans
@@ -382,13 +382,20 @@ function rkCash(b, m) {
   const w = Math.round(b.amt * m * 100) / 100;
   const nf = null; b.gift = GBS.plush_pepe || null; b.nf = null;
   if (!b.me) return;
-  // Rocket yutug'i: TON emas — yutuq qiymatidagi yashil Plush Pepe backpack'ga (onlayn: server beradi)
-  const pepe = GBS.plush_pepe || byName('Plush Pepe'); b.gift = pepe; b.nf = { g: pepe, p: w };
-  const RW = window.RIKI_W;
-  if (RW && RW.on()) { setTimeout(() => RW.pull(true), 400) } else addItem(pepe, w);
-  logGame('Rocket', b.amt, w, `${m.toFixed(2)}x → Plush Pepe (${fmt(w)})`); hapN('success');
-  toast(`🐸 Plush Pepe (${fmt(w)}) → Backpack`);
-  if (cur === 'rocket') showRes(true, pepe, 'Plush Pepe → Backpack 🐸', `${fmt(b.amt)} TON × ${m.toFixed(2)} = <b>${g$(w)}</b>`);
+  // Rocket yutug'i: tikish ≥ 10 000 → yutuq qiymatidagi yashil Plush Pepe; aks holda — mos NFT + qoldiq (onlayn: server beradi)
+  const RW = window.RIKI_W, online = RW && RW.on();
+  if (b.amt >= 10000) {
+    const pepe = GBS.plush_pepe || byName('Plush Pepe'); b.gift = pepe;
+    if (online) setTimeout(() => RW.pull(true), 400); else addItem(pepe, w);
+    logGame('Rocket', b.amt, w, `${m.toFixed(2)}x → Plush Pepe (${fmt(w)})`); hapN('success'); toast(`🐸 Plush Pepe (${fmt(w)}) → Backpack`);
+    if (window.RIKI_WIN) RIKI_WIN('Rocket ×' + m.toFixed(2), 0, [{ g: pepe.i, v: w, m: null, ms: null }]);
+  } else {
+    const f = giftFor(w); b.gift = f ? f.g : null; const rest = f ? Math.round((w - f.p) * 100) / 100 : w;
+    if (online) setTimeout(() => RW.pull(true), 400); else { if (f) addItem(f.g, f.p, null, f.m, f.ms); if (rest > 0) setBal(rest) }
+    logGame('Rocket', b.amt, w, `${m.toFixed(2)}x` + (f ? ` → ${f.g.n} (${fmt(f.p)})` : '')); hapN('success');
+    toast(f ? `🎁 ${esc(f.g.n)}${f.m ? ' · ' + esc(f.m) : ''} (${fmt(f.p)}) → Backpack${rest > 0 ? ' · +' + fmt(rest) : ''}` : `✅ +${g$(w)} (${m.toFixed(2)}x)`);
+    if (window.RIKI_WIN) RIKI_WIN('Rocket ×' + m.toFixed(2), rest > 0 ? rest : (f ? 0 : w), f ? [{ g: f.g.i, v: f.p, m: f.m, ms: f.ms }] : []);
+  }
 }
 function showResNFT(it, sub) {
   const g = GIFTS[it.g], o = $('#resOv');
@@ -491,19 +498,19 @@ function pvSpin(forced) {
   if (forced) w = forced;
   PV.winner = w;
   // tasma
-  const cards = []; for (let i = 0; i < 60; i++) { let rr = Math.random() * tot, c = PV.pl[0]; for (const p of PV.pl) { if (rr < p.amt) { c = p; break } rr -= p.amt } cards.push(c) }
-  cards[50] = w;
+  const cards = []; for (let i = 0; i < 96; i++) { let rr = Math.random() * tot, c = PV.pl[0]; for (const p of PV.pl) { if (rr < p.amt) { c = p; break } rr -= p.amt } cards.push(c) }
+  cards[86] = w;   // uzun tasma: boshida tez, oxirida asta-sekin (7 s)
   const tr = $('#pvTrack');
-  tr.innerHTML = cards.map((p, i) => `<div class="scard ${i === 50 ? 'wcard' : ''}" style="--c:${p.c}">${avHTML(p.name)}<b>${esc(p.name)}</b><em>${(p.amt / tot * 100).toFixed(1)}%</em></div>`).join('');
+  tr.innerHTML = cards.map((p, i) => `<div class="scard ${i === 86 ? 'wcard' : ''}" style="--c:${p.c}">${avHTML(p.name)}<b>${esc(p.name)}</b><em>${(p.amt / tot * 100).toFixed(1)}%</em></div>`).join('');
   tr.style.transition = 'none'; tr.style.transform = 'translateX(0)';
   $('#pvStrip').classList.add('spinning');
   requestAnimationFrame(() => requestAnimationFrame(() => {
-    const mid = $('#pvStrip').clientWidth / 2, c = tr.children[50];
+    const mid = $('#pvStrip').clientWidth / 2, c = tr.children[86];
     const x = -(c.offsetLeft + c.offsetWidth / 2 - mid) + rnd(-c.offsetWidth * .35, c.offsetWidth * .35);
-    tr.style.transition = 'transform 5s cubic-bezier(.08,.6,.15,1)'; tr.style.transform = `translateX(${x}px)`;
+    tr.style.transition = 'transform 7s cubic-bezier(.12,.62,.06,1)'; tr.style.transform = `translateX(${x}px)`;
   }));
-  PV.spinEnd = Date.now() + 5400;
-  setTimeout(() => { const c = tr.querySelector('.wcard'); c && c.classList.add('w') }, 5200);
+  PV.spinEnd = Date.now() + 7400;
+  setTimeout(() => { const c = tr.querySelector('.wcard'); c && c.classList.add('w') }, 7100);
 }
 let pvLast = 0;
 function pvRender(force) {
@@ -603,7 +610,11 @@ async function tvPlay(forced) {
         if (x < R) { x = R; vx = Math.abs(vx); hit() } if (x > W - R) { x = W - R; vx = -Math.abs(vx); hit() }
         if (y < R) { y = R; vy = Math.abs(vy); hit() } if (y > H - R) { y = H - R; vy = -Math.abs(vy); hit() }
       } else {
-        if (!g0) { g0 = { x, y, vx, vy }; gx = x + vx * 18; gy = y + vy * 18; gx = Math.max(R, Math.min(W - R, gx)); gy = Math.max(R, Math.min(H - R, gy)) }
+        if (!g0) {
+          g0 = { x, y, vx, vy }; gx = x + vx * 18; gy = y + vy * 18; gx = Math.max(R, Math.min(W - R, gx)); gy = Math.max(R, Math.min(H - R, gy));
+          // burilish nuqtasi g'olib tomonda qoladi — to'p chegaradan o'tib, keyin orqaga qaytmaydi
+          const b = border(); gx = win === 'ice' ? Math.min(gx, b - R * 1.6) : Math.max(gx, b + R * 1.6); gx = Math.max(R, Math.min(W - R, gx));
+        }
         const f = (k - WANDER) / (1 - WANDER), e = 1 - Math.pow(1 - f, 3); // ease-out cubic
         // kvadratik Bezier: joriy nuqta → harakat yo'nalishidagi nuqta → nishon (yo'nalish keskin o'zgarmaydi)
         x = (1 - e) * (1 - e) * g0.x + 2 * (1 - e) * e * gx + e * e * tx;
@@ -847,7 +858,7 @@ function plStep(now) {
   });
   PLS.balls.filter(b => b.done && !b.paid).forEach(b => {
     b.paid = true; const m = b.srv ? b.srv.m : PL_M[b.d][b.slot]; const w = b.srv ? b.srv.pay : Math.round(b.bet * m * ((CFG.RTP || {}).plinko || 100) / 100 * 100) / 100;
-    PLS.hit[b.slot] = performance.now(); if (b.srv) window.RIKI_GF(b.srv, 'Plinko', true); else window.payWin ? payWin(w, 'Plinko', true) : setBal(w); logGame('Plinko', b.bet, w, m + 'x'); hap(m >= 2 ? 'heavy' : 'light');
+    PLS.hit[b.slot] = performance.now(); if (b.srv) { const pIts = window.RIKI_GF(b.srv, 'Plinko', true); if (m >= 5 && window.RIKI_WIN) RIKI_WIN('Plinko ×' + m, b.srv.cash, pIts) } else window.payWin ? payWin(w, 'Plinko', true) : setBal(w); logGame('Plinko', b.bet, w, m + 'x'); hap(m >= 2 ? 'heavy' : 'light');
     if (cur === 'plinko') toast(`${m}x · ${w >= b.bet ? '+' : ''}${g$(w)}`, 1200);
   });
   PLS.balls = PLS.balls.filter(b => !b.done);
