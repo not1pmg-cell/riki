@@ -2453,3 +2453,39 @@ nav button[data-go="home"].on{background:#8774e124;border-color:#8774e166}
 input[type=number],input[type=text],input:not([type]),.inp,.dc3-in,.bbi,.gd-step input{background:#2a2a2a!important;border:1px solid #363636!important;box-shadow:none}
 .mn2-board .t2{background:#2e2e2e!important;border:1px solid #3a3a3a!important;box-shadow:0 2px 0 #1a1a1a}
 .modal .mbox{background:#242424!important;border:1px solid #333}
+/* v13.2 — skrinshot bo'yicha moslash: Home faol — to'liq binafsha, balans kasri kichik, menyu yozuvlari kattaroq */
+.bal .bv{font-size:23px;font-weight:800;gap:6px}
+.bal .bv .gem{width:23px;height:23px}
+.balv small.dec{font-size:.74em;font-weight:800;letter-spacing:0}
+.bal small{font-size:12px;color:#a1a1a1;font-weight:500}
+.me-av.av.big,.avw .av.big{width:44px;height:44px}
+nav button{font-size:13px;gap:4px}
+nav svg{width:25px;height:25px}
+nav button.on{background:transparent;color:#a99bff}
+nav button[data-go="home"].on{background:#8774e1;border-color:#8774e1;color:#fff;box-shadow:0 6px 16px -6px #8774e1aa}
+nav button[data-go="home"].on svg{stroke:#fff}
+nav button:not([data-go="home"]).on{background:#8774e124}
+.bal .bv .balv small.dec{display:inline;color:inherit;font-size:.74em;font-weight:800}
+.bal .bv .balv{white-space:nowrap}
+/* v14 — Telegram sovg'alarining 3D rasmlari bilan kompozitsiyalar (multik SVG o'rniga) */
+.gart{position:relative}
+.gart .glw{position:absolute;inset:8% 6% 14%;border-radius:50%;background:radial-gradient(circle,color-mix(in srgb,var(--bc,#8774e1) 55%,transparent) 0%,transparent 68%);filter:blur(6px)}
+.gstk{position:relative;width:100%;height:100%}
+.gstk>span{position:absolute;display:block;filter:drop-shadow(0 8px 10px #0008)}
+.gstk .gi-wrap,.gstk img{width:100%!important;height:100%!important;object-fit:contain}
+.gstk .gs0{width:46%;aspect-ratio:1;left:4%;top:24%;transform:rotate(-12deg);z-index:1}
+.gstk .gs1{width:62%;aspect-ratio:1;left:19%;top:6%;z-index:2}
+.gstk .gs2{width:46%;aspect-ratio:1;right:4%;top:24%;transform:rotate(12deg);z-index:1}
+.bx .art.gart{background:radial-gradient(120% 90% at 50% 20%,color-mix(in srgb,var(--bc) 28%,#262626),#1f1f1f 70%)!important}
+.bx .art.gart>svg{display:none}
+.promo .part.gart{position:absolute;left:8%;right:8%;top:24%;bottom:26%;--bc:#f5b31a}
+.promo.g .part.gart,.promo:nth-child(2) .part.gart{--bc:#22c55e}
+.gstk.big .gs1{width:70%;left:15%;top:0}
+.gstk.big .gs0,.gstk.big .gs2{width:50%;top:26%}
+.b-rocket .shp.gshp{width:132px!important;height:132px!important;right:18px!important;top:-6px!important;transform:rotate(-14deg);filter:drop-shadow(0 10px 16px #0007)}
+.b-rocket .shp.gshp .rsvg{display:none}
+.b-rocket .shp.gshp .gi-wrap,.b-rocket .shp.gshp img{width:100%!important;height:100%!important}
+.promo .part.gart{transform:none;width:auto;left:10%;right:10%;top:20%;bottom:24%}
+.b-rocket .shp.gshp{animation:flt 3s ease-in-out infinite}
+.b-pvp .sav .av.gav{background:radial-gradient(circle at 40% 35%,#fff7,#0000 70%),#2a1f0a!important;display:grid;place-items:center;overflow:hidden}
+.b-pvp .sav .av.gav .gi-wrap,.b-pvp .sav .av.gav img{width:86%!important;height:86%!important}
