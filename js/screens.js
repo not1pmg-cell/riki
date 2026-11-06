@@ -721,7 +721,7 @@ logGame = function (game, bet, win, note) {
 const LIMEND = Date.now() + 12 * 36e5 + 32 * 6e4;
 const T5 = {
   lim: [{ id: 'pl20', n: 'Play Plinko 20 times', g: 'Plinko', need: 20, r: 50, go: 'plinko' }, { id: 'pl50', n: 'Play Plinko 50 times', g: 'Plinko', need: 50, r: 125, go: 'plinko' }, { id: 'pl100', n: 'Play Plinko 100 times', g: 'Plinko', need: 100, r: 250, go: 'plinko' }, { id: 'rk500', n: 'Play Rocket 500 times', g: 'Rocket', need: 500, r: 1000, go: 'rocket' }],
-  day: [{ id: 'ref3', n: 'Send your refferal link to 3 friends', need: 3, r: 5, act: 'share' }, { id: 'story', n: 'Share a Story', r: 5, act: 'story' }, { id: 'open', n: `Open the ${BRAND} app`, r: 1, act: 'claim' }],
+  day: [{ id: 'ref3', n: 'Send your referral link to 3 friends', need: 3, r: 5, act: 'share' }, { id: 'story', n: 'Share a Story', r: 5, act: 'story' }, { id: 'open', n: `Open the ${BRAND} app`, r: 1, act: 'claim' }],
   extra: [{ id: 'dep', n: 'Make Deposit', r: 10, act: 'dep' }],
   one: [{ id: 'l25', n: 'Complete 25 limited tasks', need: 25, r: 100, cnt: 'limDone' }, { id: 'vip1', n: 'Reach VIP Level Iron', r: 1000, act: 'vip' }, { id: 'd100', n: 'Complete 100 daily tasks', need: 100, r: 250, cnt: 'dayDone' }]
 };
@@ -737,10 +737,10 @@ function tState(t, kind) {
 const E5 = { tab: 'earn', gt: 'active', gm: 'all', gs: 'end' };
 function earnRender() {
   const tabs = `<div class="etabs"><button data-e="earn" class="${E5.tab === 'earn' ? 'on' : ''}">${IC.trophy}Earn</button><button data-e="ga" class="${E5.tab === 'ga' ? 'on' : ''}">${IC.gift}Giveaways ${(() => { const n = gaList().filter(g => !(g.endAt <= Date.now() || g.status === 'ended')).length; return n ? `<span class="bd">${n}</span>` : '' })()}</button></div>`;
-  if (E5.tab === 'ga') { if (!NET.on) gaLocalFinalize(); $id('earn').innerHTML = tabs + gaRender(); bindEarn(); return }
+  if (E5.tab === 'ga') { if (!NET.on) gaLocalFinalize(); const dg = E5.det && gaList().find(x => x.id === E5.det); if (dg) { $id('earn').innerHTML = gaDetail(dg); bindGaDet(dg); return } E5.det = null; $id('earn').innerHTML = tabs + gaRender(); bindEarn(); return }
   const tkRow = (t, kind, ic) => {
     const s = tState(t, kind);
-    const btn = s.done ? `<button class="dn">✓ Done</button>` : s.ready ? `<button data-claim="${t.id}" data-k="${kind}">${t.act === 'share' ? IC.share + 'Share' : t.act === 'story' ? IC.share + 'Share story' : 'Claim'}</button>` : t.go ? `<button data-gogame="${t.go}">${IC.plinko}Bet</button>` : t.act === 'dep' ? `<button data-dep>Deposit</button>` : t.act === 'vip' ? `<button data-go="profile">${ICO.gem2 || GEM}VIP</button>` : t.act === 'share' ? `<button data-claim="${t.id}" data-k="${kind}">${IC.share}Share</button>` : `<button data-st="${t.id}">Start</button>`;
+    const btn = s.done ? `<button class="dn">✓ Done</button>` : s.ready ? `<button class="${t.act === 'share' || t.act === 'story' ? '' : 'cl'}" data-claim="${t.id}" data-k="${kind}">${t.act === 'share' ? IC.share + 'Share' : t.act === 'story' ? IC.share + 'Share story' : 'Claim'}</button>` : t.go ? `<button data-gogame="${t.go}">${IC.plinko}Bet</button>` : t.act === 'dep' ? `<button data-dep>Deposit</button>` : t.act === 'vip' ? `<button data-go="profile">${ICO.gem2 || GEM}VIP</button>` : t.act === 'share' ? `<button data-claim="${t.id}" data-k="${kind}">${IC.share}Share</button>` : `<button data-st="${t.id}">Start</button>`;
     return `<div class="tk">${kind === 'lim' ? `<span class="tm">${IC.clock}${hms(LIMEND - Date.now()).replace(/ \d+s$/, '')}</span>` : ''}<div class="hd"><i>${ic}</i><b>${t.n}</b></div><div class="rw"><span>${tk(t.r)}</span>${btn}</div>${s.need ? `<div class="pg"><b style="width:${s.prog / s.need * 100}%"></b></div><div class="pl"><span>Progress: ${s.prog}/${s.need}</span><span>${s.need - s.prog} remaining</span></div>` : ''}</div>`;
   };
   $id('earn').innerHTML = tabs + `<div class="tix"><i><span class="tkic"></span></i><div><small>Your Tickets</small><b>${S.tix}<em>available</em></b></div><button id="tixQ">${IC.info}</button></div>
@@ -764,7 +764,8 @@ function bindEarn() {
   $$('#earn [data-st]').forEach(b => b.onclick = () => toast('Complete the task — progress is tracked automatically'));
   $$('#earn .gtabs button').forEach(b => b.onclick = () => { E5.gt = b.dataset.g; earnRender() });
   $$('#earn .gflt [data-m]').forEach(b => b.onclick = () => { E5.gm = b.dataset.m; earnRender() });
-  $$('#earn [data-join]').forEach(b => b.onclick = () => gaJoin(b.dataset.join));
+  $$('#earn [data-join]').forEach(b => b.onclick = () => { E5.det = b.dataset.join; E5.qty = 1; earnRender(); window.scrollTo(0, 0) });
+  $$('#earn .gac .gs').forEach(b => b.onclick = () => { const id = b.closest('.gac').querySelector('[data-join],[data-win]')?.dataset; if (id && id.join) { E5.det = id.join; E5.qty = 1; earnRender(); window.scrollTo(0, 0) } });
   $$('#earn [data-win]').forEach(b => b.onclick = () => { const g = gaList().find(x => x.id === b.dataset.win); const w = g.winners || []; info('Winners', w.length ? w.map((x, i) => `<div class="lr"><span class="n">${i + 1}</span>${x.name && x.name !== '—' ? avP(x.name, x.photo) : '<span class="av">—</span>'}<b>${esc(x.name || '—')}</b><span class="pz">${GI(gaGift(x))}</span><span class="lpt">${fmt(x.p)}</span></div>`).join('') : '<div class="empty">Selecting winners...</div>') });
   $$('#earn .gflt [data-s]').forEach(b => b.onclick = () => { E5.gs = b.dataset.s; earnRender() });
   $$('#earn [data-gend]').forEach(b => b.onclick = () => gaAdminAct('end', b.dataset.gend));
@@ -790,7 +791,7 @@ async function api(path, opt) {
   opt = opt || {};
   if (!API) throw new Error('offline');
   const r = await fetch(API + path, { method: opt.method || 'GET', headers: { 'Content-Type': 'application/json', 'X-Init-Data': (tg && tg.initData) || '', 'X-Dev-User': tg && tg.initData ? '' : String(TGU.id || 0) + ':' + ME }, body: opt.body ? JSON.stringify(opt.body) : undefined });
-  if (!r.ok) { let m = 'HTTP ' + r.status; try { m = (await r.json()).error || m } catch (e) {} throw new Error(m) }
+  if (!r.ok) { let m = 'HTTP ' + r.status; try { m = (await r.json()).error || m } catch (e) {} if (m === 'subscribe') setTimeout(() => subCheck(true), 0); throw new Error(m === 'subscribe' ? 'Subscribe to our channel first' : m) }
   return r.json();
 }
 const isAdmin = () => NET.on ? NET.admin : (CFG.ADMIN_IDS || []).map(String).includes(String(TGU.id || 0));
@@ -825,6 +826,23 @@ function blockSync() {
   $id('blkLv').classList.toggle('on', !!t); $id('blkT').textContent = t; $id('blkS').textContent = st; $id('blkB').style.display = home ? '' : 'none';
 }
 $id('blkB').onclick = () => go('home');
+// ---- majburiy obuna: kanallarga obuna bo'lmaguncha ilova yopiq
+document.body.insertAdjacentHTML('beforeend', `<div class="offlv sublv" id="subLv"><div class="ob"><div class="sub-ic">${IC.users}</div><b>Subscribe to continue</b><small>Join our channel(s) to use ${esc(BRAND)}. It's free and takes a second.</small><div id="subL" class="sub-l"></div><button class="btn-p" id="subChk">✓ I've subscribed</button><small id="subMsg" class="sub-msg"></small></div></div>`);
+function subSync(l) {
+  NET.subs = l || [];
+  const on = NET.subs.length > 0 && !NET.admin;
+  $id('subLv').classList.toggle('on', on);
+  if (on) $id('subL').innerHTML = NET.subs.map((c, i) => `<button class="sub-c" data-su="${i}"><i>${IC.users}</i><span>${esc(c.title)}</span><em>Join</em></button>`).join('');
+  $$('#subL [data-su]').forEach(b => b.onclick = () => { const c = NET.subs[+b.dataset.su]; if (c && c.url) { openLink(c.url); b.classList.add('done'); b.querySelector('em').textContent = 'Opened' } });
+}
+async function subCheck(silent) {
+  const b = $id('subChk'), msg = $id('subMsg'); b.disabled = true; msg.textContent = '';
+  try { const d = await api('/api/ping?sub=1'); subSync(d.subs); if (d.subs && d.subs.length) { if (!silent) msg.textContent = 'You are not subscribed yet — join and try again.' } else if (!silent) toastG('Thank you! Enjoy the game 🎉') }
+  catch (e) { if (!silent) msg.textContent = 'Error: ' + e.message }
+  b.disabled = false;
+}
+$id('subChk').onclick = () => subCheck(false);
+
 setInterval(() => { if (API && (NET.on || NET.banned || (NET.cfg && NET.cfg.maint))) pushStats(true) }, 4000);
 function pushStats(now) {
   if (!NET.on) return; clearTimeout(statT);
@@ -883,7 +901,7 @@ function lbData(kind) {
   const mi = l.findIndex(x => String(x.id) === String(TGU.id || 0));
   return { l, rank: mi >= 0 ? mi + 1 : 0, mine: key === 'pvp' ? myPvp() : myPoints() };
 }
-const avP = (name, photo) => photo ? `<span class="av" style="background:#333 url('${esc(photo)}') center/cover"></span>` : avHTML(name);
+const avP = (name, photo) => photo ? `<span class="av" style="background:#393939 url('${esc(photo)}') center/cover"></span>` : avHTML(name);
 function lbRows(d, max) {
   return d.l.slice(0, max).map((r, i) => `<div class="lr ${i < 3 ? 't' + (i + 1) : ''}"><span class="n">${i + 1}</span>${avP(r.name, r.photo)}<b>${esc(r.name)}${String(r.id) === String(TGU.id || 0) ? ' <span class="you">YOU</span>' : ''}</b><span class="pz">${GI(prizeFor(i))}</span><span class="lpt">${fmtK(r.s)}</span></div>`).join('') || `<div class="empty">No players yet — play and be the first!</div>`;
 }
@@ -933,7 +951,7 @@ const gaGift = x => GBS[x.sh] || byName(x.n);
 function gaCard(g) {
   const ended = g.endAt <= Date.now() || g.status === 'ended'; const my = NET.on ? (g.my || 0) : (S.ga[g.id] || 0); const pool = NET.on ? (g.pool || 0) : my;
   const adm = isAdmin() ? `<div class="gadm">${ended ? '' : `<button data-gend="${g.id}">End now</button>`}<button data-gdel="${g.id}">Delete</button></div>` : '';
-  return `<div class="gac"><div class="hd" data-gall="${g.id}">${IC.gift.replace('class="ic"', 'class="ic" style="width:15px;height:15px"')}${esc(g.title || 'All Gifts')} <em>${g.gifts.length}</em>${g.vip ? `<span class="vp">${GEM}Bronze+</span>` : ''}</div><div class="gs">${g.gifts.slice(0, 3).map(x => { const gi = gaGift(x); return `<div><div class="im" style="background:radial-gradient(circle,${TIER_C[tierOf(x.p)]}55,#2d2d2d 70%)">${GI(gi)}</div><b>${esc(x.n)}</b><small>${g$(x.p)}</small></div>` }).join('')}</div><div class="st"><div><small>${IC.box}Ticket Pool</small><b>${pool.toLocaleString('ru-RU')}</b></div><div><small>${IC.clock}${ended ? 'Giveaway Ended' : 'Time Remaining'}</small><b class="${ended ? 'end' : ''}">${ended ? uzDate(g.endAt) : dur(g.endAt - Date.now()).replace(/ \d+s$/, '')}</b></div></div>${ended ? `<button class="btn-w win" data-win="${g.id}">${IC.trophy}Winners</button>` : my ? `<button class="btn-w jn" data-join="${g.id}">✓ Joined · ${my} ticket (+1)</button>` : `<button class="btn-w ${g.vip ? 'vip' : ''}" data-join="${g.id}">${g.vip ? 'Join VIP Giveaway' : 'Join Giveaway'}</button>`}${adm}</div>`;
+  return `<div class="gac"><div class="hd" data-gall="${g.id}">${IC.gift.replace('class="ic"', 'class="ic" style="width:15px;height:15px"')}${esc(g.title || 'All Gifts')} <em>${g.gifts.length}</em>${g.vip ? `<span class="vp">${GEM}Bronze+</span>` : ''}</div><div class="gs">${g.gifts.slice(0, 3).map(x => { const gi = gaGift(x); return `<div><div class="im" style="background:radial-gradient(circle,${TIER_C[tierOf(x.p)]}55,#343434 70%)">${GI(gi)}</div><b>${esc(x.n)}</b><small>${g$(x.p)}</small></div>` }).join('')}</div><div class="st"><div><small>${IC.box}Ticket Pool</small><b>${pool.toLocaleString('ru-RU')}</b></div><div><small>${IC.clock}${ended ? 'Giveaway Ended' : 'Time Remaining'}</small><b class="${ended ? 'end' : ''}">${ended ? uzDate(g.endAt) : dur(g.endAt - Date.now()).replace(/ \d+s$/, '')}</b></div></div>${ended ? `<button class="btn-w win" data-win="${g.id}">${IC.trophy}Winners</button>` : my ? `<button class="btn-w jn" data-join="${g.id}">✓ Joined · ${my} ticket(s) — add more</button>` : `<button class="btn-w ${g.vip ? 'vip' : ''}" data-join="${g.id}">${g.vip ? 'Join VIP Giveaway' : 'Join Giveaway'}</button>`}${adm}</div>`;
 }
 function gaRender() {
   const all = gaList(); const act = all.filter(g => !(g.endAt <= Date.now() || g.status === 'ended')), fin = all.filter(g => g.endAt <= Date.now() || g.status === 'ended');
@@ -943,14 +961,51 @@ function gaRender() {
   l = [...l].sort(E5.gs === 'pool' ? (a, b) => b.gifts.reduce((s, x) => s + x.p, 0) - a.gifts.reduce((s, x) => s + x.p, 0) : E5.gt === 'active' ? (a, b) => a.endAt - b.endAt : (a, b) => b.endAt - a.endAt);
   return `${isAdmin() ? `<button class="btn-y" id="gaNew" style="margin-bottom:11px">＋ Create giveaway (admin)</button>` : ''}<div class="gtabs"><button data-g="active" class="${E5.gt === 'active' ? 'on' : ''}">Active <em>${act.length}</em></button><button data-g="fin" class="${E5.gt === 'fin' ? 'on' : ''}">Finished <em>${fin.length}</em></button></div><div class="gflt"><button data-m="all" class="${E5.gm === 'all' ? 'on' : ''}">All</button><button data-m="mine" class="${E5.gm === 'mine' ? 'on' : ''}">Mine</button><span class="sp"></span><button data-s="end" class="${E5.gs !== 'pool' ? 'on' : ''}">${IC.cal}End date</button><button data-s="pool" class="${E5.gs === 'pool' ? 'on' : ''}">${IC.gift}Prize pool</button></div>${l.map(gaCard).join('') || `<div class="empty">${E5.gt === 'active' ? 'No active giveaways' : 'No finished giveaways'}</div>`}`;
 }
-async function gaJoin(id) {
+async function gaJoin(id, n = 1) {
   const g = gaList().find(x => x.id === id); if (!g) return;
+  n = Math.max(1, Math.floor(n));
   if (g.vip && S.wag < 5000) { toast('VIP Bronze required (5 000 ' + CUR + ' turnover)'); return }
-  if (S.tix < 1) { toast('Not enough tickets — complete tasks'); E5.tab = 'earn'; earnRender(); return }
-  if (NET.on) { try { const d = await api(`/api/giveaways/${id}/join`, { method: 'POST', body: { n: 1 } }); g.my = d.my; g.pool = d.pool } catch (e) { toast('Error: ' + e.message); return } }
-  else S.ga[id] = (S.ga[id] || 0) + 1;
-  S.tix--; save(); toastG('Giveaway: +1 ticket'); earnRender();
+  if (S.tix < n) { toast('Not enough tickets — complete tasks'); return }
+  if (NET.on) { try { const d = await api(`/api/giveaways/${id}/join`, { method: 'POST', body: { n } }); g.my = d.my; g.pool = d.pool; pullGa(true).then(() => { if (cur === 'earn' && E5.det === id) earnRender() }) } catch (e) { toast('Error: ' + e.message); return } }
+  else S.ga[id] = (S.ga[id] || 0) + n;
+  S.tix -= n; save(); toastG(`Joined with ${n} ticket(s)`); E5.qty = 1; earnRender();
 }
+// ---- giveaway tafsilot sahifasi
+function gaDetail(g) {
+  const ended = g.endAt <= Date.now() || g.status === 'ended';
+  const my = NET.on ? (g.my || 0) : (S.ga[g.id] || 0), pool = NET.on ? (g.pool || 0) : my;
+  const parts = NET.on ? (g.parts || 0) : (my ? 1 : 0);
+  const top = NET.on ? (g.top || []) : (my ? [{ name: ME, photo: '', n: my, me: true }] : []);
+  const q = Math.max(1, E5.qty || 1), can = !ended && S.tix >= q;
+  const tic = '<span class="tkic"></span>';
+  const cup = c => `<svg class="ic gd-cup" style="color:${c}" viewBox="0 0 24 24"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 0 1-10 0V4zM7 6H4a3 3 0 0 0 3 4M17 6h3a3 3 0 0 1-3 4"/></svg>`;
+  const rk = i => i === 0 ? cup('#fbbf24') : i === 1 ? cup('#cbd5e1') : i === 2 ? cup('#d97706') : `<span>${i + 1}</span>`;
+  const k = n => n >= 1000 ? (n / 1000).toFixed(n >= 10000 ? 0 : 1).replace('.0', '') + 'K' : n;
+  return `<div class="gd-top"><button class="gd-back" id="gdBack"><svg class="ic" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></button><h2>${esc(g.title || 'Giveaway')}</h2>${g.vip ? `<span class="vp">${GEM}Bronze+</span>` : ''}</div>
+  <div class="gd-stats"><div><i style="color:#34d399">${IC.users || IC.user || '👥'}</i><b>${parts.toLocaleString('ru-RU')}</b><small>PARTICIPANTS</small></div><div><i style="color:#a78bfa">${IC.gift}</i><b>${g.gifts.length}</b><small>GIFTS</small></div><div><i style="color:#fbbf24">${IC.clock}</i><b class="${ended ? '' : 'gd-time'}" id="gdTime">${ended ? 'Ended' : dur(g.endAt - Date.now()).replace(/ \d+s$/, '')}</b><small>${ended ? uzDate(g.endAt) : 'TIME REMAINING'}</small></div></div>
+  <div class="gd-pool"><i>${tic}</i><div><b>${pool.toLocaleString('ru-RU')}</b><small>TOTAL POOL</small></div>${my ? `<div class="gd-my"><small>YOUR ENTRIES</small><b>${my}</b></div>` : ''}</div>
+  ${ended ? (g.winners && g.winners.length ? `<button class="gd-join on" id="gdWin">${IC.trophy}Show winners</button>` : `<div class="gd-card gd-end">Giveaway ended — selecting winners…</div>`) : `<div class="gd-card"><div class="gd-bal"><span>Your tickets</span><b>${tic}${S.tix}</b></div>
+    <div class="gd-step"><button id="gdMin" ${q <= 1 ? 'disabled' : ''}>−</button><input id="gdQ" inputmode="numeric" value="${q}"><button id="gdPl">+</button></div>
+    <div class="gd-qk">${[1, 10, 50, 100].map(v => `<button data-q="${v}">${v}</button>`).join('')}<button data-q="max">MAX</button></div>
+    <small class="gd-min">Min: 1</small>
+    <button class="gd-join ${can ? 'on' : ''}" id="gdJoin" ${can ? '' : 'disabled'}>${tic}Join with ${q} Ticket(s)</button>
+    ${S.tix < q ? `<div class="gd-warn">Not enough tickets <button id="gdEarn">Get tickets →</button></div>` : ''}</div>`}
+  <div class="gd-card"><div class="gd-h">${IC.gift}All Gifts<em>${g.gifts.length}</em></div><div class="gd-gifts">${g.gifts.map(x => { const gi = gaGift(x); const c = TIER_C[tierOf(x.p)]; return `<div class="gd-g"><div class="im" style="--gc:${c}">${GI(gi)}</div><b>${esc(x.n)}</b><small>${g$(x.p)}</small></div>` }).join('')}</div></div>
+  <div class="gd-card"><div class="gd-h">${IC.users || IC.user || ''}Top Entries<em>${top.length}</em></div>${top.length ? top.map((r, i) => `<div class="gd-r ${r.me ? 'me' : ''}"><i>${rk(i)}</i>${avP(r.name, r.photo)}<b>${esc(r.name)}${r.me ? ' <u>you</u>' : ''}</b><span>${tic}${k(r.n)}</span></div>`).join('') : `<div class="empty">No entries yet — be the first!</div>`}</div>`;
+}
+function bindGaDet(g) {
+  const set = v => { E5.qty = Math.max(1, Math.min(100000, Math.floor(+v || 1))); earnRender() };
+  $id('gdBack').onclick = () => { E5.det = null; earnRender() };
+  const w = $id('gdWin'); if (w) w.onclick = () => { const l = g.winners || []; info('Winners', l.map((x, i) => `<div class="lr"><span class="n">${i + 1}</span>${avP(x.name, x.photo)}<b>${esc(x.name || '—')}</b><span class="pz">${GI(gaGift(x))}</span><span class="lpt">${fmt(x.p)}</span></div>`).join('')) };
+  if (!$id('gdQ')) return;
+  $id('gdMin').onclick = () => set((E5.qty || 1) - 1);
+  $id('gdPl').onclick = () => set((E5.qty || 1) + 1);
+  $id('gdQ').onchange = e => set(e.target.value);
+  $$('#earn .gd-qk button').forEach(b => b.onclick = () => set(b.dataset.q === 'max' ? Math.max(1, S.tix) : b.dataset.q));
+  $id('gdJoin').onclick = () => gaJoin(g.id, E5.qty || 1);
+  const ge = $id('gdEarn'); if (ge) ge.onclick = () => { E5.det = null; E5.tab = 'earn'; earnRender() };
+}
+setInterval(() => { const t = $id('gdTime'); if (t && cur === 'earn' && E5.det) { const g = gaList().find(x => x.id === E5.det); if (g) t.textContent = dur(Math.max(0, g.endAt - Date.now())).replace(/ \d+s$/, '') } }, 1000);
 async function gaAdminAct(kind, id) {
   if (kind === 'del' && !confirm('Delete this giveaway?')) return;
   if (NET.on) { try { await api(`/api/giveaways/${id}${kind === 'end' ? '/end' : ''}`, { method: kind === 'end' ? 'POST' : 'DELETE' }); await pullGa(true) } catch (e) { toast('Error: ' + e.message); return } }
@@ -1082,7 +1137,7 @@ async function netInit() {
   netTry = Date.now();
   feedDraw();
   if (!API) return;
-  try { const d = await api('/api/ping'); NET.on = true; NET.pinged = true; NET.banned = false; offSync(); srvState(d); NET.admin = !!d.admin; pushStats(true); pullFeed(); pullRewards(); pullGa(true) } catch (e) { srvErr(e); if (NET.banned || (NET.cfg && NET.cfg.maint)) { NET.pinged = true; return } NET.on = false; NET.pinged = true; feedDraw(); offSync(); console.warn('API offline:', e.message) }
+  try { const d = await api('/api/ping'); NET.on = true; NET.pinged = true; NET.banned = false; offSync(); srvState(d); NET.admin = !!d.admin; subSync(d.subs); pushStats(true); pullFeed(); pullRewards(); pullGa(true) } catch (e) { srvErr(e); if (NET.banned || (NET.cfg && NET.cfg.maint)) { NET.pinged = true; return } NET.on = false; NET.pinged = true; feedDraw(); offSync(); console.warn('API offline:', e.message) }
 }
 setInterval(() => { if (!NET.on) return; pushStats(true); if (cur === 'roulette') pullLb(true); pullFeed(); pullRewards(); if (cur === 'earn' && E5.tab === 'ga') pullGa().then(() => earnRender()) }, 20000);
 
@@ -1296,7 +1351,7 @@ function rlSpin(forced) {
   $id('rlAv').style.setProperty('--cr', -RL.rot + 'deg');
   RL.spinEnd = Date.now() + 5800; hap('medium');
 }
-const rlAvH = p => p.photo ? `<span class="av" style="background:#333 url('${esc(p.photo)}') center/cover"></span>` : avHTML(p.name);
+const rlAvH = p => p.photo ? `<span class="av" style="background:#393939 url('${esc(p.photo)}') center/cover"></span>` : avHTML(p.name);
 function rlStat(x, lb, gold) { return x ? `<small><span>${lb}</span><span>CHANCE ${x.ch}%</span></small><b><span class="nm2">${x.photo ? `<i style="background:url('${esc(x.photo)}') center/cover"></i>` : `<i>${esc((x.n[0] || '?').toUpperCase())}</i>`}@${esc(x.n)}</span><em class="${gold ? 'g' : ''}">+${fmt(x.win)} ${CUR}</em></b>` : `<small><span>${lb}</span><span></span></small><b><span class="nm2" style="color:#8a7fb0">—</span></b>` }
 let rlLast = 0;
 function rlRender(force) {
@@ -1307,7 +1362,7 @@ function rlRender(force) {
   else if (RL.phase === 'spin') c.innerHTML = '<b class="l">Rolling</b>';
   else c.innerHTML = `<b class="l">Winner</b><small>@${esc(RL.winner.name)}</small>`;
   if (!force && now - rlLast < 400) return; rlLast = now;
-  $id('rlMe').innerHTML = TGU.photo_url ? `<span class="av" style="background:#333 url('${esc(TGU.photo_url)}') center/cover"></span>` : avHTML(ME);
+  $id('rlMe').innerHTML = TGU.photo_url ? `<span class="av" style="background:#393939 url('${esc(TGU.photo_url)}') center/cover"></span>` : avHTML(ME);
   $id('rlOnl').textContent = Math.max(1, NET.online || 0);
   $id('rlLast').innerHTML = rlStat(S.rlLast, 'LAST GAME'); $id('rlTop').innerHTML = rlStat(S.rlTop && S.rlTop.d === new Date().toDateString() ? S.rlTop : null, 'TOP GAME', 1);
   const segs = rlSegs();
@@ -2315,4 +2370,3 @@ rkDraw = function (now) {
 };
 Object.assign(window, { RIKI_STAKE: (g, ton, items, ex) => liveStake(g, ton, items, ex), winSheet, offSync, M2, m2Pick, u2Render, c2Render, NET, pushStats, pullFeed, balModal });
 })();
-
