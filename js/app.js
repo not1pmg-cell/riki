@@ -155,7 +155,7 @@ function save() {
   }, 250);
 }
 function setBal(d) { S.bal = Math.max(0, Math.round((S.bal + d) * 100) / 100); renderBal(); save() }
-function renderBal() { $$('.balv').forEach(e => e.textContent = fmt(S.bal)) }
+function renderBal() { const t = fmt(S.bal), i = t.lastIndexOf('.'); $$('.balv').forEach(e => { if (e.closest('.bal') && i > 0) e.innerHTML = t.slice(0, i) + '<small class="dec">' + t.slice(i) + '</small>'; else e.textContent = t }) }   // sarlavhada kasr qismi kichikroq
 function addItem(g, v, n, m, ms) { const it = { id: uid(), g: g.i, sh: g.sh, v: Math.round((v || g.p) * 100) / 100, n: n || (1 + ri(900)), m: m || null, ms: ms || null }; S.inv.unshift(it); save(); return it }
 const invGet = id => S.inv.find(x => x.id === id);
 function invDel(ids) { S.inv = S.inv.filter(x => !ids.includes(x.id)); save() }
@@ -380,16 +380,15 @@ function giftFor(v) { let best = null; for (const x of NFTS) { if (x.p <= v) bes
 function rkCash(b, m) {
   b.out = m;
   const w = Math.round(b.amt * m * 100) / 100;
-  const nf = giftFor(w); b.gift = nf ? nf.g : null; b.nf = nf;
+  const nf = null; b.gift = GBS.plush_pepe || null; b.nf = null;
   if (!b.me) return;
-  const RW = window.RIKI_W, wsk = f => RW ? RW.skip(f) : f();   // yutuqni server o'zi yozadi
-  if (!nf) { wsk(() => setBal(w)); logGame('Rocket', b.amt, w, m.toFixed(2) + 'x'); hapN('success'); toast(`✅ +${g$(w)} (${m.toFixed(2)}x)`); return }
-  wsk(() => setBal(w));   // so'ng NFT'ga almashtirish — serverda teng qiymatli "sotib olish"
-  const it = (RW ? RW.with : (c, f) => f())({ game: 'rocket' }, () => { const x = addItem(nf.g, nf.p, null, nf.m, nf.ms); setBal(-nf.p); return x });
-  logGame('Rocket', b.amt, w, `${m.toFixed(2)}x → ${itName(it)} (${fmt(nf.p)})`); hapN('success');
-  toast(`🎁 ${esc(nf.g.n)} (${fmt(nf.p)}) → Backpack${rest > 0 ? ' · +' + fmt(rest) + ' TON' : ''}`);
-  if (cur === 'rocket') showResNFT(it, `${fmt(b.amt)} TON × ${m.toFixed(2)} = <b>${fmt(w)} TON</b><br>NFT: ${g$(nf.p)}${rest > 0 ? ' · to balance +' + g$(rest) : ''}`);
-  if (nf.m) liveModelPrice(nf.g, nf.m).then(v => { if (v && invGet(it.id)) { it.v = Math.round(v * 100) / 100; save() } });
+  // Rocket yutug'i: TON emas — yutuq qiymatidagi yashil Plush Pepe backpack'ga (onlayn: server beradi)
+  const pepe = GBS.plush_pepe || byName('Plush Pepe'); b.gift = pepe; b.nf = { g: pepe, p: w };
+  const RW = window.RIKI_W;
+  if (RW && RW.on()) { setTimeout(() => RW.pull(true), 400) } else addItem(pepe, w);
+  logGame('Rocket', b.amt, w, `${m.toFixed(2)}x → Plush Pepe (${fmt(w)})`); hapN('success');
+  toast(`🐸 Plush Pepe (${fmt(w)}) → Backpack`);
+  if (cur === 'rocket') showRes(true, pepe, 'Plush Pepe → Backpack 🐸', `${fmt(b.amt)} TON × ${m.toFixed(2)} = <b>${g$(w)}</b>`);
 }
 function showResNFT(it, sub) {
   const g = GIFTS[it.g], o = $('#resOv');
