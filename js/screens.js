@@ -134,7 +134,7 @@ const HOWS = {
 $id('hPill').insertAdjacentHTML('afterbegin', `<div class="hrk" id="hRk"><div class="wf"><i></i>${IC.wifi}</div><button class="gr" id="gfxB">${IC.gear}</button><div class="gdd" id="gfxD"><small>GRAPHICS</small><button data-g="high">High</button><button data-g="med">Medium</button><button data-g="low">Low</button></div></div>`);
 function gfxSync() { $$('#gfxD [data-g]').forEach(b => b.classList.toggle('on', b.dataset.g === S.gfx)) }
 $id('gfxB').onclick = e => { e.stopPropagation(); gfxSync(); $id('gfxD').classList.toggle('on') };
-$id('gfxD').onclick = e => { e.stopPropagation(); const b = e.target.closest('[data-g]'); if (!b) return; S.gfx = b.dataset.g; save(); gfxSync(); $id('gfxD').classList.remove('on'); rkResize() };
+$id('gfxD').onclick = e => { e.stopPropagation(); const b = e.target.closest('[data-g]'); if (!b) return; S.gfx = b.dataset.g; S.gfxSet = 1; save(); hqGfx(); gfxSync(); $id('gfxD').classList.remove('on'); rkResize() };
 document.addEventListener('click', e => { if (!e.target.closest('#gfxB,#gfxD')) $id('gfxD').classList.remove('on') });
 $$('#hMain .avw, #hAv').forEach(a => { a.style.cursor = 'pointer'; a.onclick = () => go('profile') });
 
@@ -2266,7 +2266,19 @@ pvSpin = function (forced) {
 // =====================================================================
 //  HQ NFT: modellarning webp rasmi 128px — kattada xira. Vektor .tgs (Lottie) bilan almashtiramiz.
 // =====================================================================
-const HQ = { cache: {}, live: 0, MAX_LIVE: 8 };
+const HQ = { cache: {}, live: 0, MAX_LIVE: 4, list: [] };
+// Kuchsiz telefon: foydalanuvchi grafikani o'zi tanlamagan bo'lsa — avtomatik "Low"
+if (!S.gfxSet && ((navigator.hardwareConcurrency || 8) <= 4 || (navigator.deviceMemory || 8) <= 3)) S.gfx = 'low';
+// Animatsiyalar faqat "High" rejimda va faqat ekranda ko'rinib turganda o'ynaydi; boshqa paytda to'xtatiladi (CPU tejash)
+function hqVis(el) { return el.isConnected && el.offsetParent !== null && !document.hidden }
+function hqTick() {
+  HQ.list = HQ.list.filter(o => { if (!o.box.isConnected) { try { o.an.destroy() } catch (e) {} return false } return true });
+  let live = 0;
+  HQ.list.forEach(o => { const want = S.gfx === 'high' && live < HQ.MAX_LIVE && hqVis(o.box); if (want) { live++; if (o.an.isPaused) o.an.play() } else if (!o.an.isPaused) o.an.pause() });
+}
+function hqGfx() { hqTick() }
+window.RIKI_HQS = HQ; window.RIKI_GFX = g => { S.gfx = g; hqTick() };
+setInterval(hqTick, 1000); document.addEventListener('visibilitychange', hqTick);
 async function tgsData(path) {
   if (HQ.cache[path]) return HQ.cache[path];
   HQ.cache[path] = (async () => {
@@ -2291,19 +2303,18 @@ async function hqImg(img) {
     const data = await tgsData(`models/${m[1]}/${m[2]}.tgs`);
     if (!wrap.isConnected || !img.isConnected) return;
     const box = document.createElement('span'); box.className = 'lt'; wrap.appendChild(box);
-    const animate = HQ.live < HQ.MAX_LIVE; if (animate) HQ.live++;
-    const an = lottie.loadAnimation({ container: box, renderer: 'svg', loop: true, autoplay: animate, animationData: JSON.parse(JSON.stringify(data)), rendererSettings: { preserveAspectRatio: 'xMidYMid meet' } });
-    an.addEventListener('DOMLoaded', () => { img.style.opacity = '0'; wrap.classList.remove('ld'); if (!animate) an.goToAndStop(0, true) });
-    const mo = new MutationObserver(() => { if (!box.isConnected) { an.destroy(); if (animate) HQ.live--; mo.disconnect() } });
-    mo.observe(document.body, { childList: true, subtree: true });
+    const an = lottie.loadAnimation({ container: box, renderer: 'svg', loop: true, autoplay: false, animationData: JSON.parse(JSON.stringify(data)), rendererSettings: { preserveAspectRatio: 'xMidYMid meet', progressiveLoad: true } });
+    an.addEventListener('DOMLoaded', () => { img.style.opacity = '0'; wrap.classList.remove('ld'); an.goToAndStop(0, true); HQ.list.push({ an, box }); hqTick() });
   } catch (e) { /* webp qoladi */ }
 }
 let hqT = 0;
 function hqScan() {
   clearTimeout(hqT);
   hqT = setTimeout(() => {
-    $$('img.gim').forEach(img => { if (img.dataset.hq || !/\/models\//.test(img.getAttribute('src') || '')) return; const w = img.getBoundingClientRect().width; if (w >= 56) hqImg(img) });
-  }, 120);
+    if (S.gfx === 'low' || document.hidden) return;
+    const roots = [document.querySelector('.screen.on'), ...document.querySelectorAll('.modal.on')].filter(Boolean);
+    roots.forEach(rt => rt.querySelectorAll('img.gim:not([data-hq])').forEach(img => { if (!/\/models\//.test(img.getAttribute('src') || '') || img.offsetParent === null) return; const w = img.getBoundingClientRect().width; if (w >= (S.gfx === 'high' ? 56 : 120)) hqImg(img) }));
+  }, 400);
 }
 new MutationObserver(hqScan).observe(document.body, { childList: true, subtree: true });
 window.RIKI_HQ = hqImg; { const im = $('#rkImg img'); if (im) hqImg(im) }
