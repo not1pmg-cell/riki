@@ -1,0 +1,15 @@
+[Unit]
+Description=RIKI Telegram bot + game server
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+User=riki
+WorkingDirectory=/opt/riki
+ExecStart=/opt/riki/venv/bin/python bot.py
+Restart=always
+RestartSec=3
+Environment=PYTHONUNBUFFERED=1
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,13 @@
+[Unit]
+Description=RIKI cloudflared quick tunnel (bot.py finds the URL automatically)
+After=network-online.target riki-bot.service
+Wants=network-online.target
+
+[Service]
+User=riki
+ExecStart=/usr/local/bin/cloudflared tunnel --no-autoupdate --url http://localhost:8080 --metrics 127.0.0.1:45678
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
