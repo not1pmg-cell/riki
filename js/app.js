@@ -16,6 +16,10 @@ const CFG = {
   TON_RATE: 100000,                        // 1 TON = 100 000 balans
   STARS_RATE: 800                          // 1 Star = 800 balans (125 ⭐ = 100 000)
 };
+// Maker (bot konstruktor) orqali yaratilgan botlar: ?bot=<username>&gb=<gift akkaunt> — referal va ma'lumotlar har bot uchun alohida
+(() => { try { const q = new URLSearchParams(location.search), b = (q.get('bot') || '').replace(/[^\w]/g, ''), gb = (q.get('gb') || '').replace(/[^\w]/g, '');
+  if (b && b.toLowerCase() !== String(CFG.BOT_USERNAME).toLowerCase()) { CFG.BOT_USERNAME = b; CFG.STORAGE_KEY += '_' + b.toLowerCase(); CFG.API_KEY_SFX = '_' + b.toLowerCase() }
+  if (gb) CFG.GIFT_BOT = gb } catch (e) {} })();
 
 // ---------- Telegram ----------
 const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
