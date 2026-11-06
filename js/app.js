@@ -19,7 +19,7 @@ const CFG = {
 
 // ---------- Telegram ----------
 const tg = window.Telegram && window.Telegram.WebApp ? window.Telegram.WebApp : null;
-if (tg) { try { tg.ready(); tg.expand(); tg.setHeaderColor('#1a1a1a'); tg.setBackgroundColor('#1a1a1a'); tg.disableVerticalSwipes && tg.disableVerticalSwipes() } catch (e) {} }
+if (tg) { try { tg.ready(); tg.expand(); tg.setHeaderColor('#2a2a2d'); tg.setBackgroundColor('#1e1e20'); tg.disableVerticalSwipes && tg.disableVerticalSwipes() } catch (e) {} }
 const TGU = (tg && tg.initDataUnsafe && tg.initDataUnsafe.user) || { id: 0, first_name: 'Guest' };
 const ME = TGU.username || TGU.first_name || 'Siz';
 const START_PARAM = (tg && tg.initDataUnsafe && tg.initDataUnsafe.start_param) || '';
@@ -189,7 +189,7 @@ const AVG = ['linear-gradient(160deg,#6cd0ff,#2f86f6)', 'linear-gradient(160deg,
 const BOTN = ['degenov', 'ivoryelena', 'RO2k3', 'Golden Ape', 'xavier', 'mfdgsgsa', 'axmedov', 'nikipopus', 'thenune', 'sedist', 'rtpking', 'Sunny Viking', 'marivana', 'Germanyadagi', 'movsar_012', 'lucky_tom', 'pepe_hodler', 'tonwhale', 'asal_07', 'jasur.uz', 'kotik', 'crash_god', 'sardor', 'm1rzo', 'ilyos', 'diyor', 'neo', 'zarina', 'boss_tg', 'ton_kid'];
 const avHTML = (name, cls = '') => {
   if (typeof BOTAV !== 'undefined' && BOTAV[name]) return `<span class="av bot ${cls}">${BOTAV[name]}<i class="bb">BOT</i></span>`;
-  if (name === ME && TGU.photo_url) return `<span class="av ${cls}" style="background:#333 url('${TGU.photo_url}') center/cover"></span>`;
+  if (name === ME && TGU.photo_url) return `<span class="av ${cls}" style="background:#393939 url('${TGU.photo_url}') center/cover"></span>`;
   const h = [...name].reduce((a, c) => a + c.charCodeAt(0), 0); return `<span class="av ${cls}" style="background:${AVG[h % AVG.length]}">${esc(name[0] || '?')}</span>` };
 const bot = () => ({ name: pick(BOTN), bot: true });
 // Bot tikishi: ko'pincha kichik, ba'zan katta — eng ko'pi 1000
