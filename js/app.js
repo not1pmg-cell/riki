@@ -42,7 +42,24 @@ const sleep = ms => new Promise(r => setTimeout(r, ms));
 const hap = t => { try { tg.HapticFeedback.impactOccurred(t || 'light') } catch (e) {} };
 const hapN = t => { try { tg.HapticFeedback.notificationOccurred(t) } catch (e) {} };
 const uid = () => Date.now().toString(36) + Math.random().toString(36).slice(2, 7);
-const GEM = '<svg class="gem" viewBox="0 0 24 24"><defs><linearGradient id="gemG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7fe3ff"/><stop offset=".5" stop-color="#2d9bff"/><stop offset="1" stop-color="#1458db"/></linearGradient></defs><path d="M6.4 3.2h11.2l4.6 6L12 21.2 1.8 9.2z" fill="url(#gemG)"/><path d="M6.4 3.2h11.2l4.6 6H1.8z" fill="#fff" fill-opacity=".22"/><path d="M1.8 9.2L12 21.2 7.8 9.2zM22.2 9.2L12 21.2l4.2-12z" fill="#0b3fa8" fill-opacity=".25"/><path d="M12 7.3l1.15 2.95 2.95 1.15-2.95 1.15L12 15.5l-1.15-2.95-2.95-1.15 2.95-1.15z" fill="#fff"/></svg>';
+// SVG gradientlari bitta umumiy, doim "ko'rinadigan" <defs> ga ko'chiriladi. Aks holda bir xil id (#gemG) birinchi bo'lib
+// yashirin ekranda (display:none) turgan nusxaga bog'lanadi va olmos/ikonka QORA bo'lib chiqadi.
+const SVGDEFS = { ids: new Set(), html: '' };
+function liftDefs(svg) {
+  return String(svg).replace(/<defs>([\s\S]*?)<\/defs>/g, (m, inner) => {
+    const id = (inner.match(/id="([^"]+)"/) || [])[1];
+    if (id && !SVGDEFS.ids.has(id)) { SVGDEFS.ids.add(id); SVGDEFS.html += inner; if (document.body) mountDefs() }
+    return '';
+  });
+}
+function mountDefs() {
+  let d = document.getElementById('svgDefs');
+  if (!d) { d = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); d.id = 'svgDefs'; d.setAttribute('aria-hidden', 'true'); d.setAttribute('width', '0'); d.setAttribute('height', '0');
+    d.style.cssText = 'position:absolute;width:0;height:0;overflow:hidden;pointer-events:none'; document.body.prepend(d) }
+  d.innerHTML = '<defs>' + SVGDEFS.html + '</defs>';
+}
+document.addEventListener('DOMContentLoaded', mountDefs);
+const GEM = liftDefs('<svg class="gem" viewBox="0 0 24 24"><defs><linearGradient id="gemG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7fe3ff"/><stop offset=".5" stop-color="#2d9bff"/><stop offset="1" stop-color="#1458db"/></linearGradient></defs><path d="M6.4 3.2h11.2l4.6 6L12 21.2 1.8 9.2z" fill="url(#gemG)"/><path d="M6.4 3.2h11.2l4.6 6H1.8z" fill="#fff" fill-opacity=".22"/><path d="M1.8 9.2L12 21.2 7.8 9.2zM22.2 9.2L12 21.2l4.2-12z" fill="#0b3fa8" fill-opacity=".25"/><path d="M12 7.3l1.15 2.95 2.95 1.15-2.95 1.15L12 15.5l-1.15-2.95-2.95-1.15 2.95-1.15z" fill="#fff"/></svg>');
 const g$ = n => GEM + fmt(n);
 
 // ---------- ikonkalar ----------
@@ -65,6 +82,7 @@ const ICO = {
   shield: I('<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/>'), target: I('<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/>'),
   sparkle: I('<path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM19 16l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7zM5 2l.6 1.6L7 4l-1.4.6L5 6l-.6-1.4L3 4l1.4-.4z"/>')
 };
+for (const k in ICO) if (typeof ICO[k] === 'string') ICO[k] = liftDefs(ICO[k]);
 
 // =====================================================================
 //  HAQIQIY TELEGRAM NFT GIFT KOLLEKSIYALARI VA NARXLARI
@@ -218,6 +236,7 @@ const HERO = {
   ring: `<svg class="hero" viewBox="0 0 84 84"><circle cx="42" cy="42" r="32" fill="none" stroke="#ffffff40" stroke-width="10"/><circle cx="42" cy="42" r="32" fill="none" stroke="#fff" stroke-width="10" stroke-dasharray="48 200" transform="rotate(-90 42 42)" stroke-linecap="round"/><text x="42" y="48" text-anchor="middle" font-size="16" font-weight="900" fill="#fff">24%</text></svg>`,
   ring2: `<svg viewBox="0 0 156 156" style="width:100%;height:100%"><circle cx="78" cy="78" r="64" fill="none" stroke="#ffffff38" stroke-width="18"/><circle cx="78" cy="78" r="64" fill="none" stroke="#fff" stroke-width="18" stroke-dasharray="96 400" transform="rotate(-90 78 78)" stroke-linecap="round"/><circle cx="78" cy="78" r="46" fill="#3fc93a"/></svg>`
 };
+for (const k in HERO) if (typeof HERO[k] === 'string') HERO[k] = liftDefs(HERO[k]);
 
 // =====================================================================
 //  NAVIGATSIYA
@@ -489,8 +508,8 @@ function pvTick() {
     const mine = PV.pl.find(p => p.me);
     if (mine) {
       if (w.me) { setBal(tot); logGame('PvP', mine.amt, tot, 'Win'); S.pvpScore += tot; save(); if (cur === 'pvp') showRes(true, null, 'You won! 🏆', `+${g$(tot)}`) }
-      else { logGame('PvP', mine.amt, 0, 'Winner: ' + w.name); if (cur === 'pvp') toast(`Winner: <b>${esc(w.name)}</b>`) }
-    }
+      else { logGame('PvP', mine.amt, 0, 'Winner: ' + w.name); if (cur === 'pvp' && window.pvWinSheet) window.pvWinSheet() }
+    } else if (cur === 'pvp' && window.pvWinSheet) window.pvWinSheet();
     setTimeout(pvReset, 4500);
   }
   if (cur === 'pvp') pvRender(); if (cur === 'pvphub') pvHub();
@@ -505,7 +524,7 @@ function pvSpin(forced) {
   const cards = []; for (let i = 0; i < 96; i++) { let rr = Math.random() * tot, c = PV.pl[0]; for (const p of PV.pl) { if (rr < p.amt) { c = p; break } rr -= p.amt } cards.push(c) }
   cards[86] = w;   // uzun tasma: boshida tez, oxirida asta-sekin (7 s)
   const tr = $('#pvTrack');
-  tr.innerHTML = cards.map((p, i) => `<div class="scard ${i === 86 ? 'wcard' : ''}" style="--c:${p.c}">${avHTML(p.name)}<b>${esc(p.name)}</b><em>${(p.amt / tot * 100).toFixed(1)}%</em></div>`).join('');
+  tr.innerHTML = cards.map((p, i) => `<div class="scard ${i === 86 ? 'wcard' : ''}" style="--c:${p.c}">${pvAv(p)}<b>${esc(p.name)}</b><em>${(p.amt / tot * 100).toFixed(1)}%</em></div>`).join('');
   tr.style.transition = 'none'; tr.style.transform = 'translateX(0)';
   $('#pvStrip').classList.add('spinning');
   requestAnimationFrame(() => requestAnimationFrame(() => {
@@ -517,37 +536,43 @@ function pvSpin(forced) {
   setTimeout(() => { const c = tr.querySelector('.wcard'); c && c.classList.add('w') }, 7100);
 }
 let pvLast = 0;
+const pvAv = p => p.photo ? `<span class="av" style="background:#393939 url('${esc(p.photo)}') center/cover"></span>` : avHTML(p.name);
+// o'yinchilar yoyning TEPA-O'RTASIDAN boshlab joylashadi (8,7,9,6,…) — chetdagilar ekrandan chiqib ketadi
+const PV_SLOT = [8, 7, 9, 6, 10, 5, 11, 4, 3, 2, 1, 0];
 function pvRender(force) {
   const now = Date.now(); const tot = pvTotal();
   $('#pvPool').textContent = fmt(tot); $('#pvGame').textContent = 'Game #' + PV.game;
   const tm = $('#pvTimer');
-  if (PV.phase === 'wait') { if (PV.end) { const s = Math.max(0, Math.ceil((PV.end - now) / 1000)); tm.textContent = '00:' + String(s).padStart(2, '0'); tm.classList.remove('l') } else { tm.textContent = 'WAITING'; tm.classList.add('l') } }
-  else { tm.textContent = PV.phase === 'spin' ? 'LIVE' : 'WINNER'; tm.classList.add('l') }
-  const jb = $('#pvJoin'); const ok = PV.phase === 'wait' && betVal('pv') > 0;
+  if (PV.phase === 'wait') { if (PV.end) { const s = Math.max(0, Math.ceil((PV.end - now) / 1000)); tm.textContent = '00:' + String(s).padStart(2, '0'); tm.classList.remove('l', 'wt') } else { tm.textContent = 'WAITING'; tm.classList.add('l', 'wt') } }
+  else { tm.textContent = PV.phase === 'spin' ? 'LIVE' : 'WINNER'; tm.classList.add('l'); tm.classList.remove('wt') }
+  const jb = $('#pvJoin'); const ok = PV.phase === 'wait';
   jb.className = 'bigbtn' + (ok ? ' y' : ''); jb.textContent = PV.phase === 'wait' ? 'Join the Battle' : PV.phase === 'spin' ? 'Spinning…' : 'Next round soon';
   if (!force && now - pvLast < 400) return; pvLast = now;
   // yoy (arc)
-  const ring = $('#pvRing'); const N = 12, R = 156; let h = '';
+  const ring = $('#pvRing'); const N = 12, R = 176; let h = '';
   for (let i = 0; i < N; i++) {
-    const a = -90 + (i - (N - 1) / 2) * 24; const p = PV.pl[i];
+    const a = -90 + (i - (N - 1) / 2) * 24; const p = PV.pl[PV_SLOT.indexOf(i)];
     const tr = `transform:rotate(${a + 90}deg) translateY(-${R}px)`;
-    h += p ? `<div class="atile" style="${tr};--c:${p.c}">${GEM}<b>${fmt(p.amt)}</b></div>` : `<div class="atile" style="${tr}"><span class="tile-ph">RIKI<br>GIFT</span></div>`;
+    const gf = p && p.gifts && p.gifts.length ? [...p.gifts].sort((x, y) => (y.p || y.v || 0) - (x.p || x.v || 0))[0] : null;
+    h += p ? `<div class="atile f" style="${tr};--c:${p.c}">${gf ? GI(gf) : GEM}<b>${fmt(p.amt)}</b></div>` : `<div class="atile e" style="${tr}"><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7M7.5 8a2.5 2.5 0 0 1 0-5C10 3 12 8 12 8s2-5 4.5-5a2.5 2.5 0 0 1 0 5"/></svg></div>`;
   }
   ring.innerHTML = h; ring.classList.toggle('idle', PV.phase === 'wait');
   if (PV.phase === 'wait') {
     const tr = $('#pvTrack'); tr.style.transition = 'none'; tr.style.transform = 'translateX(0)';
-    tr.innerHTML = PV.pl.length ? PV.pl.map(p => `<div class="scard" style="--c:${p.c}">${avHTML(p.name)}<b>${esc(p.name)}</b><em>${(p.amt / tot * 100).toFixed(1)}%</em></div>`).join('') : `<div class="scard" style="--c:#3f3f3f">${avHTML('?')}<b>Waiting…</b><em>0%</em></div>`;
+    tr.innerHTML = PV.pl.length ? PV.pl.map(p => `<div class="scard" style="--c:${p.c}">${pvAv(p)}<b>${esc(p.name)}</b><em>${(p.amt / tot * 100).toFixed(1)}%</em></div>`).join('') : '';
   }
   $('#pvCnt').textContent = PV.pl.length;
-  $('#pvPl').innerHTML = [...PV.pl].sort((a, b) => b.amt - a.amt).map(p => `<div class="vrow ${PV.winner === p && PV.phase === 'done' ? 'w' : ''}" style="--c:${p.c}">${avHTML(p.name)}<div><b>${esc(p.name)}${p.bot ? ' <span class="bt">BOT</span>' : ''}${p.me ? ' (you)' : ''}</b><small>${g$(p.amt)}</small></div><span class="pc2">${(p.amt / (tot || 1) * 100).toFixed(1)}%</span></div>`).join('') || '<div class="empty">Be the first to join!</div>';
+  $('#pvPl').innerHTML = [...PV.pl].sort((a, b) => b.amt - a.amt).map(p => `<div class="vrow ${PV.winner === p && PV.phase === 'done' ? 'w' : ''}" style="--c:${p.c}">${pvAv(p)}<div><b>${esc(p.name)}${p.bot ? ' <span class="bt">BOT</span>' : ''}${p.me ? ' (you)' : ''}</b><small>${g$(p.amt)}</small></div><span class="pc2">${(p.amt / (tot || 1) * 100).toFixed(1)}%</span></div>`).join('') || '<div class="empty">Be the first to join!</div>';
 }
 function pvHub() {
   const tot = pvTotal();
   $('#phPot').innerHTML = g$(tot);
   $('#phStarts').textContent = PV.phase === 'done' ? '🏆 PvP won' : PV.end && PV.phase === 'wait' ? 'Starts in ' + Math.max(0, Math.ceil((PV.end - Date.now()) / 1000)) + 's' : PV.phase === 'wait' ? (PV.pl.length === 1 ? '1 more to start' : 'Waiting for players') : 'LIVE';
   const lp = $('.tvtcard .livep'); if (lp) lp.textContent = TV.phase === 'done' && TV.win ? `🏆 ${TV.win === 'ice' ? 'Ice' : 'Fire'} wins` : TV.end && TV.phase === 'wait' ? 'Starts in ' + Math.max(0, Math.ceil((TV.end - Date.now()) / 1000)) + 's' : TV.phase === 'wait' ? 'Waiting for players' : 'Live';
-  let h = ''; for (let i = 0; i < 5; i++) { const p = PV.pl[i]; h += p ? `<div class="slot f">${avHTML(p.name)}<em>${fmt(p.amt)}</em></div>` : '<div class="slot e">+</div>' }
-  $('#phSlots').innerHTML = h;
+  let h = '';
+  if (PV.pl.length) h = [...PV.pl].sort((a, b) => b.amt - a.amt).map(p => `<div class="pchip" style="--c:${p.c}">${pvAv(p)}${p.bot ? '<span class="bt">BOT</span>' : ''}<b>${esc(p.name)}</b><em>${(p.amt / (tot || 1) * 100).toFixed(1)}%</em></div>`).join('');
+  else for (let i = 0; i < 5; i++) h += '<div class="slot e">+</div>';
+  $('#phSlots').innerHTML = h; $('#phSlots').classList.toggle('chips', PV.pl.length > 0);
   const it = tvSum('ice'), ft = tvSum('fire'), t = it + ft || 1;
   $('#thI').innerHTML = g$(it); $('#thF').innerHTML = g$(ft);
   $('#thIn').textContent = TV.ice.length + ' pl'; $('#thFn').textContent = TV.fire.length + ' pl';
