@@ -407,7 +407,8 @@ function rkCash(b, m) {
   if (!b.me) return;
   // Rocket yutug'i: tikish ≥ 10 000 → yutuq qiymatidagi yashil Plush Pepe; aks holda — mos NFT + qoldiq (onlayn: server beradi)
   const RW = window.RIKI_W, online = RW && RW.on();
-  if (b.amt >= 10000) {
+  const pThr = window.RK_PEPE_MIN != null ? window.RK_PEPE_MIN : 10000;   // serverdan (admin: 0 = o'chiq)
+  if (pThr > 0 && b.amt >= pThr) {
     const pepe = GBS.plush_pepe || byName('Plush Pepe'); b.gift = pepe;
     if (online) setTimeout(() => RW.pull(true), 400); else addItem(pepe, w);
     logGame('Rocket', b.amt, w, `${m.toFixed(2)}x → Plush Pepe (${fmt(w)})`); hapN('success'); toast(`🐸 Plush Pepe (${fmt(w)}) → Backpack`);
@@ -453,7 +454,7 @@ function rkRender(force) {
 }
 function rkSmoke() { const st = $('#rkStage'); const s = document.createElement('i'); s.className = 'smk'; s.style.left = (st.clientWidth / 2 - 85) + 'px'; s.style.top = (st.clientHeight * .48 + rnd(-6, 6)) + 'px'; s.style.setProperty('--dy', rnd(-30, 30) + 'px'); st.appendChild(s); setTimeout(() => s.remove(), 800) }
 function rkFrags() { if (cur !== 'rocket') return; const st = $('#rkStage'); for (let i = 0; i < 18; i++) { const f = document.createElement('i'); f.className = 'frag'; f.style.left = '50%'; f.style.top = '48%'; f.style.background = pick(['#fff', '#ef4444', '#f97316', '#fde68a', '#94a3b8']); f.style.setProperty('--dx', rnd(-160, 160) + 'px'); f.style.setProperty('--dy', rnd(-140, 140) + 'px'); st.appendChild(f); setTimeout(() => f.remove(), 900) } }
-function rkStars() { const s = $('#stars'); let h = ''; for (let i = 0; i < 28; i++) h += `<i class="pt2" style="left:${ri(110)}%;top:${ri(100)}%;width:${rnd(2, 7)}px;height:${rnd(2, 7)}px;background:${pick(['#fff', '#fde68a', '#fca5a5', '#c4b5fd'])};animation-duration:${rnd(4, 12)}s;animation-delay:-${rnd(0, 10)}s"></i>`; s.innerHTML = h }
+function rkStars() { const s = $('#stars'); let h = ''; for (let i = 0; i < 28; i++) h += `<i class="pt2" style="left:${ri(110)}%;top:${ri(100)}%;width:${rnd(2, 6)}px;height:${rnd(2, 6)}px;background:${pick(['#e4e4e7', '#c9c9cf', '#a1a1aa', '#d6cfc8', '#b9b6c8'])};opacity:${rnd(.45, .85).toFixed(2)};animation-duration:${rnd(4, 12)}s;animation-delay:-${rnd(0, 10)}s"></i>`; s.innerHTML = h }
 $('#rkBtn').onclick = () => {
   if (RK.phase === 'fly' && RK.my && !RK.my.out) { rkCash(RK.my, RK.m); rkRender(true); return }
   if (RK.phase === 'wait' && RK.my) { // bekor qilish
