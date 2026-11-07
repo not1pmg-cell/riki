@@ -208,7 +208,7 @@ function rkDraw(now) {
     if (now - RK.crashAt > 500) big.classList.add('on');
   }
 }
-function rkSpark(x, y) { const s = document.createElement('i'); s.className = 'frag'; s.style.left = x + 'px'; s.style.top = y + 'px'; s.style.background = pick(['#fde68a', '#f97316', '#fff']); s.style.setProperty('--dx', rnd(-60, -20) + 'px'); s.style.setProperty('--dy', rnd(0, 40) + 'px'); stage.appendChild(s); setTimeout(() => s.remove(), 900) }
+function rkSpark(x, y) { const s = document.createElement('i'); s.className = 'frag'; s.style.left = x + 'px'; s.style.top = y + 'px'; s.style.background = pick(['#e4e4e7', '#a1a1aa', '#fff']); s.style.setProperty('--dx', rnd(-60, -20) + 'px'); s.style.setProperty('--dy', rnd(0, 40) + 'px'); stage.appendChild(s); setTimeout(() => s.remove(), 900) }
 const _rkNew = rkNew;
 rkNew = function () { _rkNew(); rkSetSkin(); $id('rkBoom').classList.remove('on') };
 // ro'yxat va chiplar
@@ -1159,19 +1159,20 @@ function trOpen(kind, item) {
   TR.k = kind || 'gram'; TR.item = item || null; TR.to = null; $id('trTo').value = ''; $id('trAmt').value = ''; $id('trWho').innerHTML = '';
   trSync(); renderBal(); openM('trM');
 }
+const numIn = id => { const v = parseFloat(String($id(id).value || '').replace(/[\s,]/g, '')); return isFinite(v) ? v : 0 };
 function trSync() {
   $$('#trTabs button').forEach(b => b.classList.toggle('on', b.dataset.k === TR.k));
   $id('trGram').style.display = TR.k === 'gram' ? '' : 'none'; $id('trGift').style.display = TR.k === 'gift' ? '' : 'none';
   const it = TR.item && invGet(TR.item.id);
   $id('trGsel').innerHTML = it ? `<div class="trsel">${GII(it)}<div><b>${esc(itName(it))}</b><small>${g$(it.v)}</small></div><button id="trPick">Change</button></div>` : `<button class="btn-d" id="trPick">${IC.gift}Pick from Backpack</button>`;
   const pk = $id('trPick'); if (pk) pk.onclick = () => pickGifts({ multi: false, title: 'Gift to send', done: id => { TR.item = invGet(id); trSync(); openM('trM') } });
-  const v = parseFloat($id('trAmt').value) || 0;
-  const ok = TR.to && (TR.k === 'gram' ? v >= .1 && v <= S.bal : !!it);
+  const v = numIn('trAmt');
+  const ok = TR.to && (TR.k === 'gram' ? v >= .1 && v <= S.bal + 1e-9 : !!it);
   $id('trGo').className = ok ? 'btn-p' : 'btn-d'; $id('trGo').textContent = TR.k === 'gram' ? `Send${v ? ' · ' + fmt(v) + ' ' + CUR : ''}` : 'Send gift';
 }
 $$('#trTabs button').forEach(b => b.onclick = () => { TR.k = b.dataset.k; trSync() });
 $id('trAmt').oninput = trSync;
-$$('#trGram .tuq button').forEach(b => b.onclick = () => { $id('trAmt').value = b.dataset.a === 'max' ? fmt(S.bal) : b.dataset.a; trSync() });
+$$('#trGram .tuq button').forEach(b => b.onclick = () => { $id('trAmt').value = b.dataset.a === 'max' ? String(Math.floor(S.bal * 100) / 100) : b.dataset.a; trSync() });
 let trLook = 0;
 $id('trTo').oninput = () => {
   TR.to = null; trSync(); clearTimeout(trLook); const q = $id('trTo').value.trim(); if (q.length < 2) { $id('trWho').innerHTML = ''; return }
@@ -1179,9 +1180,9 @@ $id('trTo').oninput = () => {
   trLook = setTimeout(async () => { try { const u = await api('/api/user?q=' + encodeURIComponent(q)); if (String(u.id) === String(TGU.id)) throw new Error("You can't send to yourself"); TR.to = u; $id('trWho').innerHTML = `<div class="trok">${avP(u.name, u.photo)}<b>${esc(u.name)}</b>${u.username ? `<small>@${esc(u.username)}</small>` : ''}<em>✓</em></div>` } catch (e) { $id('trWho').innerHTML = `<div class="trno">${esc(e.message)}</div>` } trSync() }, 450);
 };
 $id('trGo').onclick = async () => {
-  const v = Math.round((parseFloat($id('trAmt').value) || 0) * 100) / 100, it = TR.item && invGet(TR.item.id);
+  const v = Math.floor(numIn('trAmt') * 100) / 100, it = TR.item && invGet(TR.item.id);
   if (!TR.to) { toast('Enter a recipient'); return }
-  if (TR.k === 'gram' && !(v >= .1 && v <= S.bal)) { toast(v > S.bal ? 'Insufficient balance' : 'Minimum 0.10'); return }
+  if (TR.k === 'gram' && !(v >= .1 && v <= S.bal + 1e-9)) { toast(v > S.bal ? 'Insufficient balance' : 'Minimum 0.10'); return }
   if (TR.k === 'gift' && !it) { toast("Select a gift"); return }
   if (!confirm(TR.k === 'gram' ? `${fmt(v)} ${CUR} → ${TR.to.name}?` : `${itName(it)} → ${TR.to.name}?`)) return;
   const btn = $id('trGo'); btn.disabled = true;
@@ -1617,12 +1618,13 @@ tuRender = function () {
   const tgT = $id('tugT'); if (tgT) tgT.onclick = () => { const b = $id('tugB'), o = b.style.display === 'none'; b.style.display = o ? '' : 'none'; tgT.textContent = o ? 'Hide steps ⌃' : 'Show steps ⌄' };
   $$('#topup [data-go2]').forEach(a => a.onclick = () => go(a.dataset.go2));
   if (t === 'transfer') {
-    let to = null; const sync = () => { const v = parseFloat($id('tfA').value) || 0; $id('tfGo').classList.toggle('dim', !(to && v >= .1 && v <= S.bal)) }; sync();
+    let to = null; const sync = () => { const v = numIn('tfA'); $id('tfGo').classList.toggle('dim', !(to && v >= .1 && v <= S.bal + 1e-9)) }; sync();
     let lk = 0; $id('tfTo').oninput = () => { clearTimeout(lk); lk = setTimeout(() => rcpLook('tfTo', u => { to = u; sync() }), 450) };
     $id('tfA').oninput = sync;
     $id('tfGo').onclick = async () => {
-      const v = r2(parseFloat($id('tfA').value) || 0); if (!to) { toast('Recipient not found'); return } if (!(v >= .1 && v <= S.bal)) { toast(v > S.bal ? 'Insufficient balance' : 'Minimum 0.10'); return }
-      try { await api('/api/transfer', { method: 'POST', body: { to: String(to.id), kind: 'gram', amount: v } }); setBal(-v); S.hist.unshift({ game: 'Transfer', bet: v, win: 0, note: '→ ' + to.name, t: Date.now() }); save(); sentToast(`${CUR} sent`, `Sent ${fmt(v)} ${CUR} to ${esc(to.name)}`); $id('tfA').value = ''; sync() } catch (e) { toast('Error: ' + esc(e.message)) }
+      const v = Math.floor(numIn('tfA') * 100) / 100; if (!to) { toast('Recipient not found'); return } if (!(v >= .1 && v <= S.bal + 1e-9)) { toast(v > S.bal ? 'Insufficient balance' : 'Minimum 0.10'); return }
+      const bt = $id('tfGo'); if (bt.disabled) return; bt.disabled = true;
+      try { await api('/api/transfer', { method: 'POST', body: { to: String(to.id), kind: 'gram', amount: v } }); wSkip(() => setBal(-v)); try { wPull() } catch (e) {} S.hist.unshift({ game: 'Transfer', bet: v, win: 0, note: '→ ' + to.name, t: Date.now() }); save(); sentToast(`${CUR} sent`, `Sent ${fmt(v)} ${CUR} to ${esc(to.name)}`); $id('tfA').value = ''; sync() } catch (e) { toast('Error: ' + esc(e.message)) } bt.disabled = false;
     };
   }
   if (t === 'gift') {
@@ -1632,8 +1634,8 @@ tuRender = function () {
     $id('sgGo').onclick = async () => {
       if (!TU.sel.length) return; if (!to) { toast('Recipient not found'); return }
       const items = TU.sel.map(invGet).filter(Boolean); let ok = 0;
-      for (const it of items) { try { await api('/api/transfer', { method: 'POST', body: { to: String(to.id), kind: 'gift', gift: { sh: GIFTS[it.g].sh, n: GIFTS[it.g].n, p: it.v, m: it.m, ms: it.ms } } }); invDel([it.id]); ok++ } catch (e) { toast('Error: ' + esc(e.message)); break } }
-      if (ok) { TU.sel = []; S.hist.unshift({ game: 'Transfer', bet: 0, win: 0, note: `${ok} gift(s) → ${to.name}`, t: Date.now() }); save(); tuRender(); sentToast('Gifts sent', `Sent ${ok} gift(s) to ${esc(to.name)}`) }
+      for (const it of items) { try { await api('/api/transfer', { method: 'POST', body: { to: String(to.id), kind: 'gift', gift: { id: it.id, sh: GIFTS[it.g].sh, n: GIFTS[it.g].n, p: it.v, m: it.m, ms: it.ms } } }); wSkip(() => invDel([it.id])); ok++ } catch (e) { toast('Error: ' + esc(e.message)); break } }
+      if (ok) { try { wPull() } catch (e) {} TU.sel = []; S.hist.unshift({ game: 'Transfer', bet: 0, win: 0, note: `${ok} gift(s) → ${to.name}`, t: Date.now() }); save(); tuRender(); sentToast('Gifts sent', `Sent ${ok} gift(s) to ${esc(to.name)}`) }
     };
   }
 };
@@ -1720,7 +1722,7 @@ function lvTvt(d) {
 }
 
 // ---- Rocket
-function lvRocket(d) { LV.rk = d; LV.rkAt = performance.now() }
+function lvRocket(d) { LV.rk = d; LV.rkAt = performance.now(); if (d && d.pepeMin != null) window.RK_PEPE_MIN = +d.pepeMin }
 function lvRkTick(now) {
   const d = LV.rk; if (!d) return;
   const sNow = d.now + (now - LV.rkAt);
@@ -2254,7 +2256,7 @@ $id('gp2Ok').onclick = () => { closeM('gp2M'); GP.o.done(GP.sel) };
 // =====================================================================
 
 const trailCol = m => m < 2 ? '#22c55e' : m < 5 ? '#3b82f6' : m < 10 ? '#a855f7' : '#facc15';
-const bigCol = m => m < 1.2 ? '#ef4444' : m < 2 ? '#3b82f6' : '#22c55e';
+const bigCol = m => m < 1.2 ? '#ef4444' : m < 2 ? '#22c55e' : m < 5 ? '#3b82f6' : m < 10 ? '#a855f7' : '#facc15';   // tarix chiplari bilan bir xil
 const cntCol = n => n >= 4 ? '#3b82f6' : n === 3 ? '#facc15' : n === 2 ? '#f97316' : '#ef4444';
 rkDraw = function (now) {
   if (!RKV.W) rkResize();
@@ -2275,10 +2277,10 @@ rkDraw = function (now) {
   const m = crashed ? RK.crash : RK.m, col = crashed ? '#ef4444' : trailCol(m);
   // iz: chap chetdan chiqib keladi
   const sz0 = Math.min(150, W * .38), rx = W / 2 - sz0 * .42; // iz raketa tomon uzluksiz cho'ziladi (asimptotik)
-  const hx = 18 + (rx - 18) * (1 - Math.exp(-t / 7)), hy = H * .7 + Math.sin(now / 420) * 2;
+  const hx = 18 + (rx - 18) * (1 - Math.exp(-t / 7)), y0 = H * .78, hy = y0 - H * .16 * (1 - Math.exp(-t / 5)) + Math.sin(now / 420) * 2;   // iz yuqoriga egiladi
   const gr = cx.createLinearGradient(0, hy, hx, hy); gr.addColorStop(0, col + '00'); gr.addColorStop(1, col);
   cx.lineCap = 'round'; if (S.gfx !== 'low') { cx.shadowColor = col; cx.shadowBlur = 14 }
-  cx.strokeStyle = gr; cx.lineWidth = 6; cx.beginPath(); cx.moveTo(-6, hy + 2); cx.quadraticCurveTo(hx * .5, hy + 3, hx, hy); cx.stroke();
+  cx.strokeStyle = gr; cx.lineWidth = 6; cx.beginPath(); cx.moveTo(-6, y0 + 4); cx.quadraticCurveTo(hx * .62, y0 + 2, hx, hy); cx.stroke();
   cx.fillStyle = crashed ? '#ef4444' : '#fff'; cx.shadowColor = col; cx.shadowBlur = 16; cx.beginPath(); cx.arc(hx, hy, 6.5, 0, 7); cx.fill(); cx.shadowBlur = 0;
   if (!crashed) {
     const sz = Math.min(150, W * .38), bob = Math.sin(now / 230) * 5, sw = Math.sin(now / 610) * 6, rot = -6 + Math.sin(now / 500) * 3;
@@ -2290,7 +2292,7 @@ rkDraw = function (now) {
     img.classList.remove('on');
     const bm = $id('rkBoom'); bm.style.left = W / 2 + 'px'; bm.style.top = cyc + 'px';
     if (!bm.classList.contains('on') && now - RK.crashAt < 120) { void bm.offsetWidth; bm.classList.add('on') }
-    big.textContent = RK.crash.toFixed(2) + 'x'; big.style.color = bigCol(RK.crash); big.style.top = (cyc - 36) + 'px';
+    big.textContent = RK.crash.toFixed(2) + 'x'; big.style.color = bigCol(RK.crash); big.style.setProperty('--bc', bigCol(RK.crash)); big.style.top = (cyc - 36) + 'px';
     if (now - RK.crashAt > 380) big.classList.add('on');
   }
 };
@@ -2439,7 +2441,7 @@ function roundSheet(game, h) {
 // =====================================================================
 stage.insertAdjacentHTML('beforeend', `<div id="rkTag"><b id="rtName"></b><span><i id="rtBet"></i><em id="rtVal"></em></span></div>`);
 const RW = { key: '', t: 0 }, RW_PRE = new Set();
-const RK_PEPE = 10000;   // shu summadan (TON) tiksa — faqat o'sha o'yinchiga Pepe uchadi (serverdagi RK_PEPE_MIN bilan bir xil)
+const RK_PEPE = () => (window.RK_PEPE_MIN != null ? window.RK_PEPE_MIN : 10000) || Infinity;   // shu summadan (TON) tiksa — faqat o'sha o'yinchiga Pepe uchadi (serverdagi RK_PEPE_MIN bilan bir xil)
 function rwSrc() { return RK.my && !RK.my.out ? { b: RK.my, me: true } : null }   // faqat o'zining tikishi — boshqalarga raketa ko'rinadi
 const _rkD12 = rkDraw;
 rkDraw = function (now) {
@@ -2452,7 +2454,7 @@ rkDraw = function (now) {
     return;
   }
   const val = src.b.amt * RK.m;
-  if (src.b.amt >= RK_PEPE) {   // katta tikish — bitta katta yashil Pepe
+  if (src.b.amt >= RK_PEPE()) {   // katta tikish — bitta katta yashil Pepe
     const pepe = GBS.plush_pepe || byName('Plush Pepe');
     if (RW.key !== 'pepe') { RW.key = 'pepe'; img.innerHTML = GI(pepe).replace(/loading="lazy"/g, ''); img.classList.add('nft'); img.style.setProperty('--rwc', '#4ade80'); $id('rtName').textContent = 'Plush Pepe' }
   } else {                      // yutuq qiymatiga mos NFT — qiymat oshgani sari tez almashadi
@@ -2834,18 +2836,6 @@ Object.assign(window, { RIKI_STAKE: (g, ton, items, ex) => liveStake(g, ton, ite
 // =====================================================================
 //  PvP — g'olib oynasi (hamma ko'radi): Winner · Game # · chance · Rewards
 // =====================================================================
-document.body.insertAdjacentHTML('beforeend', `<div class="modal sheet2" id="pvWM"><div class="mbox"><div class="mhead pvwh"><div><b>Winner</b><small id="pvWG"></small></div><button class="mx" data-close>✕</button></div><div class="mbody" id="pvWB"></div></div></div>`);
-function pvWinSheet() {
-  const w = PV.winner; if (!w) return;
-  const tot = pvTotal(), ch = w.amt / (tot || 1) * 100;
-  const ton = PV.pl.reduce((a, p) => a + (p.ton != null ? p.ton : (p.gifts && p.gifts.length ? 0 : p.amt)), 0);
-  const gifts = PV.pl.flatMap(p => p.gifts || []);
-  $id('pvWG').textContent = 'Game #' + PV.game;
-  const rw = (ton > 0 ? [`<div class="pvrw"><span class="v">${fmt(ton)}${GEM}</span><div class="im">${GEM}</div><em>TON Prize</em><b>TON</b></div>`] : [])
-    .concat(gifts.map(g => `<div class="pvrw"><span class="v">${fmt(g.p || g.v || 0)}${GEM}</span><div class="im">${GI(g)}</div><em>Gift</em><b>${esc(g.n || '')}</b></div>`));
-  $id('pvWB').innerHTML = `<div class="pvwc">${avP(w.name, w.photo)}<div class="n"><b>${esc(w.name)}${w.bot ? ' <span class="bt">BOT</span>' : ''}</b><em>Winner</em></div><div class="r"><span>${GEM}${fmt(tot)}</span><small>${ch.toFixed(1)}% chance</small></div></div>
-    <div class="pvwt">Rewards</div><div class="pvrg">${rw.join('')}</div>`;
-  openM('pvWM');
-}
+function pvWinSheet() { if (PV.winner) pvWinner(PV.winner, PV.pl.map(p => Object.assign({}, p)), PV.game) }   // bitta umumiy g'olib oynasi (pvWinner)
 window.pvWinSheet = pvWinSheet;
 })();
