@@ -973,8 +973,10 @@ function lbData(kind) {
   return { l, rank: NET.lbMe && NET.lbMe.rank ? NET.lbMe.rank : mi >= 0 ? mi + 1 : 0, mine: S.bal };
 }
 const avP = (name, photo) => photo ? `<span class="av" style="background:#393939 url('${esc(photo)}') center/cover"></span>` : avHTML(name);
+// boshqa o'yinchilarning ismi yashiriladi (Epic'dagidek: nn***z4); o'zingizniki to'liq
+const lbMask = (n, me) => { n = String(n || ''); if (me || n.length <= 5) return n; return n.slice(0, 2) + '***' + n.slice(-2) };
 function lbRows(d, max) {
-  return d.l.slice(0, max).map((r, i) => `<div class="lr ${i < 3 ? 't' + (i + 1) : ''}"><span class="n">${i + 1}</span>${avP(r.name, r.photo)}<b>${esc(r.name)}${String(r.id) === String(TGU.id || 0) ? ' <span class="you">YOU</span>' : ''}</b><span class="pz">${GI(prizeFor(i))}</span><span class="lpt">${fmtK(r.s)}</span></div>`).join('') || `<div class="empty">No players yet — play and be the first!</div>`;
+  return d.l.slice(0, max).map((r, i) => { const me = String(r.id) === String(TGU.id || 0); return `<div class="lr ${i < 3 ? 't' + (i + 1) : ''}${me ? ' me' : ''}"><span class="n">${i + 1}</span>${avP(r.name, r.photo)}<b>${esc(lbMask(r.name, me))}${me ? ' <span class="you">YOU</span>' : ''}</b><span class="pz">${GI(prizeFor(i))}</span><span class="lpt">${fmtK(r.s)}</span></div>` }).join('') || `<div class="empty">No players yet — play and be the first!</div>`;
 }
 const LBEND = (() => { const W0 = (4 * 86400 + 14 * 3600) * 1000, W = 604800000; return W0 + (Math.floor((Date.now() - W0) / W) + 1) * W })(); // server bilan bir xil: dushanba 14:00 UTC
 ENTER.leader = async () => {
@@ -1950,7 +1952,7 @@ function m2Flip(i, kind, dim) {
 }
 function m2Reset() { $$('#m2Board .t2').forEach(t => { t.className = 't2'; t.querySelector('.bk').innerHTML = '' }); $id('m2Win').className = 'mn2-win' }
 function m2End(pay, mult) {
-  M2.on = false; M2.done = true;
+  M2.on = false; M2.done = true; M2.endAt = Date.now();
   for (let i = 0; i < 25; i++) if (!M2.open.has(i)) setTimeout(() => m2Flip(i, M2.mines.has(i) ? 'bomb' : 'gem', true), 40 + (i % 5) * 30);
   if (M2.pf) { S.mh.unshift(Object.assign({}, M2.pf, { opened: M2.open.size, max: 25 - M2.n, pay, mult, pos: [...M2.mines] })); if (S.mh.length > 40) S.mh.length = 40; save(); M2.pf = null }
   m2Render();
@@ -1960,11 +1962,12 @@ function m2Start() {
   if (M2.done) m2Reset(); M2.done = false;
   S.nonce++; M2.pf = { seed: PF.seed, hash: PF.hash, client: S.clientSeed, nonce: S.nonce, n: M2.n, bet: a, t: Date.now() };
   M2.mines = new Set(minesFrom(PF.seed, S.clientSeed, S.nonce, M2.n)); PF.seed = rndHex(32); PF.hash = sha256(PF.seed);
-  M2.on = true; M2.bet = a; M2.open = new Set(); hap('medium'); m2Render();
+  M2.on = true; M2.lost = false; M2.bet = a; M2.open = new Set(); hap('medium'); m2Render();
 }
 function m2Pick(i) {
   if (!M2.on || M2.open.has(i)) return; M2.open.add(i); const t = $(`#m2Board .t2[data-i="${i}"]`);
   if (M2.mines.has(i)) {
+    M2.on = false; M2.lost = true;   // BOMBA: raund darhol tugaydi — animatsiya paytida Cash Out bosib bo'lmaydi
     m2Flip(i, 'bomb'); burst(t, ['#ef4444', '#f97316', '#fde047'], 18); hapN('error');
     const bd = $id('m2Board'); bd.classList.remove('shake'); void bd.offsetWidth; bd.classList.add('shake');
     logGame('Mines', M2.bet, 0, '💣'); setTimeout(() => m2End(0, 0), 350); return;
@@ -1974,14 +1977,22 @@ function m2Pick(i) {
   m2Render();
 }
 function m2Cash() {
+  if (!M2.on || M2.lost || !M2.open.size || [...M2.open].some(i => M2.mines.has(i))) return;
   const k = M2.open.size, m = m2Mul(k), w = r2(M2.bet * m); payWin(w, 'Mines'); logGame('Mines', M2.bet, w, k + ' gems'); hapN('success');
   const W = $id('m2Win'); W.innerHTML = `<b>${m.toFixed(2)}x</b><span>${GEM}+${fmt(w)}</span>`; W.className = 'mn2-win on';
   m2End(w, m);
 }
 $id('m2Board').onclick = e => { const t = e.target.closest('.t2'); if (t) m2Pick(+t.dataset.i) };
-$id('m2Go').onclick = () => { if (M2.on) { if (M2.open.size) m2Cash(); return } m2Start() };
+$id('m2Go').onclick = () => {
+  if (M2.busy) return;
+  if (M2.on) { if (M2.open.size && !M2.lost) m2Cash(); return }
+  if (M2.lost && !M2.done) return;                 // bomba animatsiyasi tugashini kutamiz
+  if (Date.now() - (M2.endAt || 0) < 450) return;  // tasodifiy ikki marta bosish
+  m2Start();
+};
 $id('m2Rand').onclick = () => { if (!M2.on) return; const free = [...Array(25).keys()].filter(i => !M2.open.has(i)); if (free.length) m2Pick(pick(free)) };
 document.body.insertAdjacentHTML('beforeend', `<div class="modal sheet2" id="mnSh"><div class="mbox"><div class="mhead"><span>Number of mines</span><button class="mx" data-close>✕</button></div><div class="mbody"><div class="mnl" id="mnL">${Array.from({ length: 24 }, (_, i) => `<button data-n="${i + 1}"><span>${i + 1}</span><i></i></button>`).join('')}</div></div></div></div>`);
+window.RIKI_M2 = { st: () => M2, setN: n => m2SetN(n) };   // testlar uchun
 function m2SetN(n) { M2.n = n; $id('m2DdN').textContent = n; $$('#mnL button').forEach(x => x.classList.toggle('on', +x.dataset.n === n)); if (M2.done) { m2Reset(); M2.done = false } m2Render() }
 $id('m2Dd').onclick = () => { if (M2.on) return toast('Finish the current round first'); m2SetN(M2.n); openM('mnSh'); setTimeout(() => { const b = $('#mnL button.on'); b && b.scrollIntoView({ block: 'center' }) }, 60) };
 $id('mnL').onclick = e => { const b = e.target.closest('[data-n]'); if (!b) return; hap(); m2SetN(+b.dataset.n); setTimeout(() => closeM('mnSh'), 150) };
@@ -2590,7 +2601,7 @@ m2Start = async function () {
   gStake(r); bbClear('mn');
   if (M2.done) m2Reset(); M2.done = false;
   M2.pf = { hash: r.hash, client: '', nonce: r.nonce, n: M2.n, bet: r.bet, t: Date.now(), srv: 1 };
-  M2.mines = new Set(); M2.on = true; M2.bet = r.bet; M2.open = new Set(); hap('medium'); m2Render();
+  M2.mines = new Set(); M2.on = true; M2.lost = false; M2.bet = r.bet; M2.open = new Set(); hap('medium'); m2Render();
 };
 m2Pick = async function (i) {
   if (!wOn()) return _m2Pick(i); if (!M2.on || M2.open.has(i) || M2.busy) return;
@@ -2598,6 +2609,7 @@ m2Pick = async function (i) {
   const r = await gPlay('mines/pick', { i }); M2.busy = false; t && t.classList.remove('pend'); if (!r) return;
   M2.open.add(i);
   if (!r.gem) {
+    M2.on = false; M2.lost = true;
     M2.mines = new Set(r.mines); m2Flip(i, 'bomb'); burst(t, ['#ef4444', '#f97316', '#fde047'], 18); hapN('error');
     const bd = $id('m2Board'); bd.classList.remove('shake'); void bd.offsetWidth; bd.classList.add('shake');
     gFinish(r, 'Mines', true); logGame('Mines', M2.bet, 0, '💣'); setTimeout(() => m2End(0, 0), 350); return;
@@ -2607,7 +2619,7 @@ m2Pick = async function (i) {
   m2Render();
 };
 m2Cash = async function () {
-  if (!wOn()) return _m2Cash(); if (M2.busy || !M2.on) return;
+  if (!wOn()) return _m2Cash(); if (M2.busy || !M2.on || M2.lost) return;
   M2.busy = true; const r = await gPlay('mines/cashout'); M2.busy = false; if (!r) return; m2Done(r);
 };
 function m2Done(r) {
