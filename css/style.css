@@ -2497,3 +2497,115 @@ nav button:not([data-go="home"]).on{background:#8774e124}
 #pvWM .pwr>*{position:relative;z-index:1}
 @keyframes wrays{to{transform:translate(-50%,-50%) rotate(360deg)}}
 @media (prefers-reduced-motion:reduce){#pvWM .pwr::before{animation:none}}
+
+/* ===== v15 · Earn vazifalari (server) — Epic uslubidagi kartalar ===== */
+.tkc>small .et-rs{margin-left:auto;display:flex;align-items:center;gap:4px;color:#8b8b94;font-style:normal;font-weight:700;letter-spacing:0}
+.tkc>small .et-rs .ic{width:12px;height:12px}
+.et{background:#262626;border-radius:18px;padding:16px;margin-bottom:10px}
+.et-h{display:flex;align-items:center;gap:13px;margin-bottom:14px}
+.et-h b{font-size:16px;font-weight:700;line-height:1.25}
+.et-h small{display:block;color:#8b8b94;font-size:12.5px;margin-top:3px;line-height:1.35}
+.et-ic{flex:none;width:44px;height:44px;border-radius:12px;background:#34304a;color:#8f7cf6;display:grid;place-items:center;font-style:normal}
+.et-ic .ic{width:22px;height:22px}
+.et-ic.g{background:#1b3a2c;color:#4ade80}
+.et-r{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.et-tk{display:inline-flex;align-items:center;gap:8px;background:#2c2945;border:1px solid #3e3866;border-radius:12px;padding:9px 14px;font-weight:800;font-size:16px;color:#fff}
+.et-tk.sm{margin-left:auto;font-size:14px;padding:7px 11px;align-self:flex-start}
+.et-tk .tkic{width:15px;height:11px}
+.et-b{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-width:104px;height:40px;padding:0 18px;border-radius:12px;font-weight:700;font-size:14.5px;
+  background:#8774e1;color:#fff;transition:transform .12s,filter .12s}
+.et-b:active{transform:scale(.97)}
+.et-b .ic{width:17px;height:17px}
+.et-b.go{background:#8774e1}
+.et-b.cl{background:linear-gradient(180deg,#ffd76a,#f5b301);color:#3a2600;box-shadow:0 4px 14px #f5b30133}
+.et-b.dn{background:#333;color:#9a9aa3;font-weight:600}
+.et-b.off{background:#2e2e2e;color:#6f6f78}
+.et-pg{height:5px;border-radius:3px;background:#3a3a3a;margin-top:14px;overflow:hidden}
+.et-pg b{display:block;height:100%;border-radius:3px;background:#8774e1;transition:width .4s}
+.et-pl{display:flex;justify-content:space-between;color:#9a9aa3;font-size:12.5px;margin-top:7px}
+.et-dep .et-h{align-items:flex-start}
+.et-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.et-2 .et-b{width:100%}
+
+/* ===== v15 · PvP yoy plitkalari: bo'sh joy — xira sovg'a belgisi, to'lgan — sovg'a rasmi yoki TON ===== */
+.atile.e{background:linear-gradient(160deg,#333,#2b2b2b);box-shadow:inset 0 0 0 1px #ffffff0d,0 6px 12px #0005}
+.atile.e .ic{width:26px;height:26px;color:#4a4a4a}
+.atile.f{background:linear-gradient(160deg,#3a3a3a,#2f2f2f);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--c) 45%,transparent),0 8px 16px #0006}
+.atile.f .gi-wrap{width:42px;height:42px;display:block}
+.atile.f .gi-wrap .gim{width:100%;height:100%;object-fit:contain}
+.atile.f b{font-size:10.5px;font-weight:800;color:#fff}
+
+/* ===== v16 · PvP — Epic uslubiga yaqin: katta plitkalar, rangli yoy chiziqlari, markaz, tasma, g'olib oynasi ===== */
+#pvp .pvarc{height:248px;background:radial-gradient(120% 90% at 50% 100%,#262626,#1d1d1d 70%);border-bottom:0}
+#pvp .arcring{top:292px}
+#pvp .atile{left:-44px;top:-44px;width:88px;height:88px;border-radius:24px;transform-origin:44px 44px;background:linear-gradient(165deg,#333336,#2a2a2d);
+  box-shadow:inset 0 1px 0 #ffffff0d,0 10px 20px #0007}
+#pvp .atile:before{left:12px;right:12px;top:-9px;height:4px;border-radius:4px;background:var(--c,transparent);box-shadow:0 0 8px color-mix(in srgb,var(--c,#000) 55%,transparent)}
+#pvp .atile.e:before{display:none}
+#pvp .atile .gem,#pvp .atile .gsvg{width:44px;height:44px;margin-top:-6px}
+#pvp .atile.f .gi-wrap{width:50px;height:50px;margin-top:-6px}
+#pvp .atile b{position:absolute;right:9px;bottom:7px;font-size:12.5px;font-weight:800;color:#e8e8ec;transform:rotate(-38deg);transform-origin:right bottom}
+#pvp .atile.e .ic{width:30px;height:30px;color:#444448}
+#pvp .arcc{top:150px}
+#pvp .livepill{font-size:26px;padding:4px 18px;border-radius:20px;background:#2a2a2d;border:1.5px solid #4a4a50}
+#pvp .livepill.l{font-size:19px;letter-spacing:4px;background:#14261d;border-color:#2e6d4d;color:#fff}
+#pvp .arcc small{font-size:12.5px;letter-spacing:1.6px;margin-top:9px;color:#9b9ba3}
+#pvp .arcc b{font-size:31px;margin-top:2px}
+#pvp .arcc b .gm,#pvp .arcc b .gem{width:24px;height:24px}
+#pvp .arcc i{font-size:11px;color:#77777f;margin-top:2px}
+#pvp .strip{height:148px;background:radial-gradient(60% 75% at 50% 50%,#3a3550 0%,#2a2930 55%,#232326 100%)}
+#pvp .scard{width:74px;height:124px;border-radius:16px;background:linear-gradient(180deg,#3b3b40,#313135);border:0;box-shadow:0 6px 14px #0005}
+#pvp .scard:before{left:6px;right:6px;top:0;height:5px;border-radius:0 0 6px 6px}
+#pvp .scard .av{width:48px;height:48px;box-shadow:0 0 0 2.5px #ffffff2a;margin-bottom:6px}
+#pvp .scard b{font-size:12.5px;font-weight:700;max-width:66px}
+#pvp .scard em{font-size:15px;font-weight:800}
+#pvp .vrow .av{background-size:cover}
+.pvst{margin:2px 0 10px;padding:0 4px 10px;border-bottom:1px solid #2c2c30}
+.pvst>div+div{border-left:1px solid #2f2f33;padding-left:11px}
+.pvst b{font-size:14px}.pvst em{font-size:14px}.pvst small{font-size:11px;margin-top:4px}
+.pvst .bt{font-size:8.5px;vertical-align:2px}
+/* g'olib oynasi */
+.pvwh{display:flex;align-items:flex-start;justify-content:space-between}
+.pvwh b{font-size:19px;font-weight:800;display:block}.pvwh small{color:#8b8b94;font-size:13px;margin-top:3px;display:block}
+.pvwc{display:flex;align-items:center;gap:13px;background:#2a2a2d;border:1px solid #38383d;border-radius:18px;padding:14px}
+.pvwc .av{width:58px;height:58px;font-size:22px;box-shadow:0 0 0 2.5px #ffffff30;flex:none}
+.pvwc .n{flex:1;min-width:0}.pvwc .n b{font-size:17px;font-weight:800;display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pvwc .n em{font-style:normal;color:#fbbf24;font-weight:700;font-size:14px}
+.pvwc .r{text-align:right}.pvwc .r span{display:inline-flex;align-items:center;gap:5px;background:#38383e;border:1px solid #48484f;border-radius:10px;padding:5px 11px;font-weight:800;font-size:15px}
+.pvwc .r small{display:block;color:#a0a0a8;font-size:12px;margin-top:5px}
+.pvwt{font-size:16px;font-weight:800;margin:18px 0 10px}
+.pvrg{display:grid;grid-template-columns:repeat(3,1fr);gap:9px}
+.pvrw{position:relative;border:1.5px solid #7c6be0;border-radius:16px;background:linear-gradient(180deg,#2e2b3d,#1c1c22);padding:30px 6px 10px;text-align:center;overflow:hidden}
+.pvrw .v{position:absolute;top:6px;right:6px;display:inline-flex;align-items:center;gap:3px;background:#12121a;border-radius:9px;padding:3px 7px;font-weight:800;font-size:11.5px}
+.pvrw .v .gem,.pvrw .v .gm{width:12px;height:12px}
+.pvrw .im{width:62px;height:62px;margin:0 auto 8px;display:grid;place-items:center}
+.pvrw .im svg,.pvrw .im .gi-wrap{width:100%;height:100%}
+.pvrw em{display:inline-block;font-style:normal;font-size:10.5px;font-weight:700;color:#cfe7f3;background:#173341;border:1px solid #2a5568;border-radius:7px;padding:2px 7px}
+.pvrw b{display:block;font-size:12.5px;font-weight:800;margin-top:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* hub: o'yinchi chiplari */
+#phSlots.chips{display:flex;gap:7px;overflow-x:auto;scrollbar-width:none;padding:2px 1px 4px;mask-image:linear-gradient(90deg,#000 88%,transparent)}
+#phSlots.chips::-webkit-scrollbar{display:none}
+.pchip{position:relative;flex:none;width:62px;height:66px;border-radius:12px;background:#2a2016;box-shadow:inset 0 0 0 1px #0004;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px}
+.pchip .av{width:26px;height:26px;font-size:11px;box-shadow:0 0 0 2px var(--c);margin-bottom:2px}
+.pchip b{font-size:10px;font-weight:700;color:#fff;max-width:56px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pchip em{font-style:normal;font-size:10px;font-weight:800;color:#ffe9b8}
+.pchip .bt{position:absolute;top:22px;right:8px;font-size:7px;padding:0 3px}
+#pvp .pvarc{height:262px}
+#pvp .arcring{top:316px}
+#pvp .arcc{top:178px}
+#pvp .strack{justify-content:center;min-width:100%}
+#pvp .strip.spinning .strack{justify-content:flex-start}
+.dock .inp input{background:transparent!important;border:0!important;box-shadow:none!important;outline:0}
+#pvp .pvarc{height:276px}
+#pvp .arcring{top:286px}
+#pvp .arcc{top:152px}
+#pvp .atile b{left:0;right:0;bottom:8px;text-align:center;transform:none}
+#pvp .atile .gem,#pvp .atile .gsvg,#pvp .atile.f .gi-wrap{margin-top:-14px}
+#pvp .pvarc{height:240px}
+#pvp .arcring{top:252px}
+#pvp .arcc{top:118px}
+.pvst>div{flex-wrap:nowrap!important;align-items:baseline;gap:6px;display:grid!important;grid-template-columns:minmax(0,1fr) auto}
+.pvst>div b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.pvst>div small{grid-column:1/-1}
+.pvrw .im .gem,.pvrw .im svg{width:58px!important;height:58px!important}
+#pvp .livepill.l.wt{background:#2c2c2f;border-color:#3a3a3f;color:#8e8e96}
