@@ -364,7 +364,7 @@ const PVS = { last: S.pvLast || null, top: (S.pvTop && S.pvTop.d === new Date().
 $('#pvp .pvarc').insertAdjacentHTML('beforebegin', `<div class="pvst" id="pvSt"></div>`);
 $id('pvPl').insertAdjacentHTML('afterend', `<div class="pvhash" id="pvHash"></div>`);
 function pvStats() {
-  const box = (x, lb) => x ? `<div><b>@${esc(x.n)}</b><em>+${fmt(x.w)}${GEM}</em><small><span>${lb}</span><span>${x.c.toFixed(1)}%</span></small></div>` : `<div><b style="color:#777">—</b><small><span>${lb}</span><span></span></small></div>`;
+  const box = (x, lb) => x ? `<div><b>${x.bot ? '' : '@'}${esc(x.n)}${x.bot ? ' <span class="bt">BOT</span>' : ''}</b><em>+${fmt(x.w)}${GEM}</em><small><span>${lb}</span><span>${x.c.toFixed(1)}%</span></small></div>` : `<div><b style="color:#777">—</b><small><span>${lb}</span><span></span></small></div>`;
   $id('pvSt').innerHTML = box(PVS.last, 'Last Game') + box(PVS.top, 'Top of the Day');
   $id('pvHash').innerHTML = `Hash: ${PVS.hash.slice(0, 5)}...${PVS.hash.slice(-5)} <button data-cp>${IC.copy}</button>`;
 }
@@ -738,8 +738,69 @@ function tState(t, kind) {
   return { done, prog: Math.min(prog, need), need, ready };
 }
 const E5 = { tab: 'earn', gt: 'active', gm: 'all', gs: 'end' };
+// ---- Earn vazifalari SERVERDA (progress, claim, ticketlar) — Epic uslubidagi kartalar
+const ET = { d: null, at: 0, busy: false };
+const TKI = {
+  cal: IC.cal, rocket: IC.rocket, plinko: IC.plinko, spins: IC.refresh, box: IC.gift, wallet: IC.wallet, star: IC.star,
+  invite: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="4"/><path d="M2 21v-1a6 6 0 0 1 6-6h2a6 6 0 0 1 6 6v1"/><path d="M19 8v6M16 11h6"/></svg>',
+  mines: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="14" r="7"/><path d="M15.5 8.5 18 6M18 3v1.5M21 6h-1.5M20.2 3.8l-1 1"/></svg>',
+  dice: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="9" width="12" height="12" rx="2.5"/><path d="M15 13.5 19.6 9a2 2 0 0 0 0-2.8L15.8 2.4a2 2 0 0 0-2.8 0L9 6.4"/><circle cx="7" cy="17" r=".8" fill="currentColor"/><circle cx="11" cy="13" r=".8" fill="currentColor"/><circle cx="15.5" cy="5.5" r=".8" fill="currentColor"/></svg>',
+  pvp: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 17.5 3 6V3h3l11.5 11.5M13 19l6-6M16 16l4 4M19 21l2-2M9.5 17.5 21 6V3h-3L6.5 14.5M11 19l-6-6M8 16l-4 4M5 21l-2-2"/></svg>',
+  upgrade: '<svg class="ic" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10" fill="currentColor"/><path d="M12 16.5v-8M8.5 11.5 12 8l3.5 3.5" stroke="#1f1f1f" stroke-width="2.4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+  chat: '<svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.9 20A9 9 0 1 0 4 16.1L2 22z"/></svg>'
+};
+const tkLang = () => ({ ru: 'ru', uz: 'uz' })[(S.lang || '').slice(0, 2)] || 'en';
+async function etPull(force) {
+  if (!NET.on) return null;
+  if (!force && ET.d && Date.now() - ET.at < 15000) return ET.d;
+  try { ET.d = await api('/api/tasks?lang=' + tkLang()); ET.at = Date.now(); if (ET.d && ET.d.tix != null) { S.tix = ET.d.tix; save() } } catch (e) {}
+  return ET.d;
+}
+function etNum(x) { return (Math.round(x * 100) / 100).toLocaleString('en-US', { maximumFractionDigits: 2 }) }
+function etCard(t) {
+  const done = t.st === 'done', g = done;
+  const goLbl = t.go ? ({ rocket: 'Bet', plinko: 'Bet', mines: 'Bet', dice: 'Bet', spins: 'Bet', upgrade: 'Upgrade' })[t.go] || 'Go' : t.act === 'invite' ? 'Invite' : t.url ? 'Join' : 'Go';
+  const goIc = t.act === 'invite' ? TKI.invite : t.act === 'dep' ? IC.wallet : (TKI[t.ic] || '');
+  const btn = done ? `<button class="et-b dn">${IC.check || '✓'} Claimed</button>`
+    : t.st === 'claim' ? `<button class="et-b cl" data-tc="${t.id}">${IC.spark}Claim</button>`
+    : `<button class="et-b go" data-tg="${t.id}">${goIc}${goLbl}</button>`;
+  const pg = t.need > 1 ? `<div class="et-pg"><b style="width:${Math.min(100, t.prog / t.need * 100)}%"></b></div><div class="et-pl"><span>Progress: ${etNum(t.prog)}/${etNum(t.need)}</span><span>${etNum(Math.max(0, t.need - t.prog))} remaining</span></div>` : '';
+  return `<div class="et"><div class="et-h"><i class="et-ic ${g ? 'g' : ''}">${TKI[t.ic] || IC.star}</i><b>${esc(t.n)}</b></div><div class="et-r"><span class="et-tk"><span class="tkic"></span>${t.r.toLocaleString('en-US').replace(/,/g, '')}</span>${btn}</div>${pg}</div>`;
+}
+function earnSrvRender(tabs) {
+  const d = ET.d;
+  if (!d) { $id('earn').innerHTML = tabs + `<div class="tix"><i><span class="tkic"></span></i><div><small>Your Tickets</small><b>${S.tix}<em>available</em></b></div><button id="tixQ">${IC.info}</button></div><div class="empty" style="padding:40px 0">Loading tasks…</div>`; bindEarn(); return }
+  const dep = d.dep || {}, owed = dep.owed || 0;
+  $id('earn').innerHTML = tabs + `<div class="tix"><i><span class="tkic"></span></i><div><small>Your Tickets</small><b>${(d.tix ?? S.tix).toLocaleString('en-US').replace(/,/g, '')}<em>available</em></b></div><button id="tixQ">${IC.info}</button></div>
+  <div class="tkc"><small>${IC.cal}DAILY TASKS<em class="et-rs">${IC.clock}${hms(d.reset * 1000 - Date.now()).replace(/ \d+s$/, '')}</em></small>${d.daily.map(etCard).join('')}</div>
+  ${dep.rate ? `<div class="tkc"><div class="et et-dep"><div class="et-h"><i class="et-ic">${IC.spark}</i><div><b>Make Deposit</b><small>${dep.rate.toLocaleString('en-US').replace(/,/g, ' ')} tickets for every 1 TON deposited</small></div><span class="et-tk sm"><span class="tkic"></span>${owed}</span></div><div class="et-2"><button class="et-b go" data-dep>${IC.wallet}Deposit</button><button class="et-b ${owed > 0 ? 'cl' : 'off'}" data-tc="deposit" ${owed > 0 ? '' : 'disabled'}>${IC.spark}Claim</button></div></div></div>` : ''}
+  <div class="tkc"><small>◎ ONE-TIME TASKS</small>${d.once.map(etCard).join('')}</div>`;
+  bindEarn();
+  $$('#earn [data-tc]').forEach(b => b.onclick = () => etClaim(b.dataset.tc, b));
+  $$('#earn [data-tg]').forEach(b => b.onclick = () => {
+    const t = [...d.daily, ...d.once].find(x => x.id === b.dataset.tg); if (!t) return;
+    if (t.go) { go(t.go); return }
+    if (t.act === 'invite') { openLink(`https://t.me/share/url?url=${encodeURIComponent(refLink())}&text=${encodeURIComponent('🎁 ' + BRAND + ' — NFT gifts! Join:')}`); return }
+    if (t.act === 'dep') { openDeposit(); return }
+    if (t.act === 'vip') { go('profile'); return }
+    if (t.url) { if (tg && tg.openTelegramLink && /t\.me\//.test(t.url)) tg.openTelegramLink(t.url); else openLink(t.url); b.innerHTML = 'Checking…'; setTimeout(() => etClaim('chan', b, true), 5000); return }
+  });
+}
+async function etClaim(id, b, quiet) {
+  if (ET.busy) return; ET.busy = true; if (b) b.disabled = true;
+  try {
+    const r = await api('/api/tasks/claim?lang=' + tkLang(), { method: 'POST', body: { id } });
+    ET.d = r; ET.at = Date.now(); S.tix = r.tix; save(); hapN('success'); toastG(`+${r.got} tickets`);
+  } catch (e) {
+    const m = String(e.message || '');
+    toast(m === 'subscribe first' ? 'Subscribe to the channel first, then press Claim' : m === 'not completed yet' ? 'Task is not completed yet' : m === 'already claimed' ? 'Already claimed' : m === 'nothing to claim' ? 'Nothing to claim yet — make a deposit' : 'Error: ' + m);
+    if (quiet) await etPull(true);
+  }
+  ET.busy = false; if (cur === 'earn') earnRender();
+}
 function earnRender() {
   const tabs = `<div class="etabs"><button data-e="earn" class="${E5.tab === 'earn' ? 'on' : ''}">${IC.trophy}Earn</button><button data-e="ga" class="${E5.tab === 'ga' ? 'on' : ''}">${IC.gift}Giveaways ${(() => { const n = gaList().filter(g => !(g.endAt <= Date.now() || g.status === 'ended')).length; return n ? `<span class="bd">${n}</span>` : '' })()}</button></div>`;
+  if (E5.tab === 'earn' && NET.on) { earnSrvRender(tabs); return }
   if (E5.tab === 'ga') { if (!NET.on) gaLocalFinalize(); const dg = E5.det && gaList().find(x => x.id === E5.det); if (dg) { $id('earn').innerHTML = gaDetail(dg); bindGaDet(dg); return } E5.det = null; $id('earn').innerHTML = tabs + gaRender(); bindEarn(); return }
   const tkRow = (t, kind, ic) => {
     const s = tState(t, kind);
@@ -784,9 +845,9 @@ function bindEarn() {
 const API = (() => {
   const ok = u => { try { const x = new URL(u); if (x.protocol !== 'https:' && x.hostname !== 'localhost' && x.hostname !== '127.0.0.1') return false; const cfg = CFG.API_URL ? new URL(CFG.API_URL).host : ''; return x.host === cfg || /\.trycloudflare\.com$/i.test(x.hostname) || (CFG.API_HOSTS || []).includes(x.hostname) || x.hostname === 'localhost' || x.hostname === '127.0.0.1' } catch (e) { return false } };
   let q = ''; try { q = new URLSearchParams(location.search).get('api') || '' } catch (e) {}
-  let saved = ''; try { saved = localStorage.getItem('riki_api') || '' } catch (e) {}
+  let saved = ''; try { saved = localStorage.getItem('riki_api' + (CFG.API_KEY_SFX || '')) || '' } catch (e) {}
   const pick = [q, CFG.API_URL, saved].map(x => String(x || '').replace(/\/+$/, '')).find(x => x && ok(x)) || '';
-  if (pick && pick === q) { try { localStorage.setItem('riki_api', pick) } catch (e) {} }
+  if (pick && pick === q) { try { localStorage.setItem('riki_api' + (CFG.API_KEY_SFX || ''), pick) } catch (e) {} }
   return pick;
 })();
 const NET = { on: false, admin: false, lb: [], lbTs: 0, feed: [], ga: [], gaTs: 0 };
@@ -805,7 +866,7 @@ let statT = 0;
 function srvState(d) {
   if (d && d.wallet && typeof wApplyBal === 'function') { NET.wallet = Object.assign(NET.wallet || {}, d.wallet); wApplyBal(d.wallet.bal) }
   if (!d || !d.ep) return;
-  NET.cfg = { off: d.off || [], maint: !!d.maint }; if (d.rtp) CFG.RTP = d.rtp; if (d.tonRate) CFG.TON_RATE = d.tonRate; if (d.starsRate) CFG.STARS_RATE = d.starsRate;
+  NET.cfg = { off: d.off || [], maint: !!d.maint }; if (d.ch && d.ch !== CFG.CHANNEL_URL) { CFG.CHANNEL_URL = d.ch; try { const tk = TASKS.find(x => x.id === 'chan'); if (tk) tk.link = d.ch } catch (e) {} } if (d.rtp) CFG.RTP = d.rtp; if (d.tonRate) CFG.TON_RATE = d.tonRate; if (d.starsRate) CFG.STARS_RATE = d.starsRate;
   const e = d.ep;
   if (!S.ep) { S.ep = e; save(); }                       // birinchi ulanish: joriy holatni qabul qilamiz
   else if (S.ep.all !== e.all) {                          // to'liq reset
@@ -976,7 +1037,7 @@ async function gaJoin(id, n = 1) {
   n = Math.max(1, Math.floor(n));
   if (g.vip && S.wag < 5000) { toast('VIP Bronze required (5 000 ' + CUR + ' turnover)'); return }
   if (S.tix < n) { toast('Not enough tickets — complete tasks'); return }
-  if (NET.on) { try { const d = await api(`/api/giveaways/${id}/join`, { method: 'POST', body: { n } }); g.my = d.my; g.pool = d.pool; pullGa(true).then(() => { if (cur === 'earn' && E5.det === id) earnRender() }) } catch (e) { toast('Error: ' + e.message); return } }
+  if (NET.on) { try { const d = await api(`/api/giveaways/${id}/join`, { method: 'POST', body: { n } }); g.my = d.my; g.pool = d.pool; if (d.tix != null) { S.tix = d.tix + n } ET.at = 0; pullGa(true).then(() => { if (cur === 'earn' && E5.det === id) earnRender() }) } catch (e) { toast('Error: ' + e.message); return } }
   else S.ga[id] = (S.ga[id] || 0) + n;
   S.tix -= n; save(); toastG(`Joined with ${n} ticket(s)`); E5.qty = 1; earnRender();
 }
@@ -1065,7 +1126,7 @@ async function pullRewards() {
     wSkip(() => l.forEach(r => {
       if (r.kind === 'win') { win += +r.p || 0; setBal(+r.p || 0); S.pvpScore = (S.pvpScore || 0) + (+r.tot || +r.p || 0); wonFrom = r.from; wonGame = r.game || wonGame }
       else if (r.kind === 'gram') { gram += +r.p || 0; setBal(+r.p || 0); from = r.from }
-      else if (r.kind === 'ref') { tix += r.tix || 5; S.tix += r.tix || 5; S.ref = (S.ref || 0) + 1 }
+      else if (r.kind === 'ref') { const n = r.srv ? (r.tix || 0) : (r.tix || 5); tix += n; if (!r.srv) S.tix += n; else ET.at = 0; S.ref = (S.ref || 0) + 1 }
       else { const g = GBS[r.sh] || byName(r.n); const it = addItem(g, r.p || g.p, null, r.m || null, r.ms || null, true); if (r.win) { wonG += +r.p || 0; wonFrom = r.from; wonGame = r.game || wonGame; wonItems.push(it) } else firstGift = firstGift || { g, ms: it.ms, from: r.from, ga: !!r.ga } }
     }));
     save();
@@ -1151,7 +1212,7 @@ async function netInit() {
 }
 setInterval(() => { if (!NET.on) return; pushStats(true); if (cur === 'roulette') pullLb(true); pullFeed(); pullRewards(); if (cur === 'earn' && E5.tab === 'ga') pullGa().then(() => earnRender()) }, 20000);
 
-ENTER.earn = () => { earnRender(); if (E5.tab === 'ga') pullGa(true).then(() => { if (cur === 'earn') earnRender() }) };
+ENTER.earn = () => { earnRender(); if (E5.tab === 'ga') pullGa(true).then(() => { if (cur === 'earn') earnRender() }); else if (NET.on) etPull(true).then(() => { if (cur === 'earn' && E5.tab === 'earn') earnRender() }) };
 renderTasks = function () { const n = [...T5.lim, ...T5.day].filter(t => { const s = tState(t, T5.day.includes(t) ? 'day' : 'lim'); return !s.done && s.ready && !t.go }).length; const b = $id('earnBadge'); if (b) { b.style.display = n ? '' : 'none'; b.textContent = n } if (cur === 'earn' && E5.tab === 'earn') earnRender() };
 
 // =====================================================================
@@ -1629,12 +1690,17 @@ function lvPvp(d) {
     const w = PV.pl.find(p => p.uid === d.winner); if (w) pvSpin(w);
   }
   S.pvHist = (d.hist || []).map(x => ({ id: x.id, roll: x.id, n: x.n, photo: x.photo, tot: x.tot, ch: x.ch, win: x.win, ton: x.ton, wuid: x.wuid, pl: x.pl || [], me: (x.uids || []).some(isMe), won: isMe(x.wuid), t: x.t }));
-  if (cur === 'pvp') pvRender(true); if (cur === 'pvphub') pvHub();
+  // Last Game / Top of the Day — serverdan (hamma bir xil ko'radi)
+  const h0 = (d.hist || [])[0];
+  if (h0) PVS.last = { n: h0.n, w: h0.tot, c: h0.ch, photo: h0.photo, bot: h0.bot };
+  if (d.top) PVS.top = { n: d.top.n, w: d.top.tot, c: d.top.ch, photo: d.top.photo, bot: d.top.bot };
+  if (cur === 'pvp') { pvRender(true); pvStats() } if (cur === 'pvphub') pvHub();
 }
 function lvPvTick() {
   if (PV.phase === 'spin' && Date.now() >= PV.spinEnd) {
     PV.phase = 'done'; const mine = PV.pl.find(p => p.me);
-    if (mine) { if (PV.winner && PV.winner.me) pullRewards(); else if (cur === 'pvp') toast(`Winner: <b>${esc(PV.winner ? PV.winner.name : '')}</b>`) }
+    if (mine && PV.winner && PV.winner.me) pullRewards();
+    else if (cur === 'pvp' && PV.winner) pvWinSheet();
   }
 }
 
@@ -1808,7 +1874,7 @@ window.RIKI = { BOXES, openBox, sha256, minesFrom, boxOdds, dailyOdds };
 const RAR = ['#5eead4', '#4ade80', '#60a5fa', '#a78bfa', '#fbbf24'];
 const rarC = v => RAR[tierOf(v)];
 const BOMB = '<svg viewBox="0 0 64 64" class="bombi"><circle cx="28" cy="38" r="20" fill="#1f1f24"/><circle cx="21" cy="31" r="6" fill="#ffffff22"/><rect x="34" y="12" width="10" height="10" rx="3" transform="rotate(35 39 17)" fill="#3a3a44"/><path d="M44 10c4-6 10-4 12 0" stroke="#f59e0b" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="57" cy="10" r="4" fill="#fde047"/><circle cx="57" cy="10" r="2" fill="#fff"/></svg>';
-const GEMBIG = '<svg viewBox="0 0 64 64" class="gemi"><defs><linearGradient id="gg1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a7f3d0"/><stop offset=".5" stop-color="#10b981"/><stop offset="1" stop-color="#047857"/></linearGradient></defs><path d="M18 10h28l12 16-26 30L6 26z" fill="url(#gg1)"/><path d="M6 26h52M18 10l8 16 6-16 6 16 8-16M26 26l6 30 6-30" stroke="#ffffff66" stroke-width="1.5" fill="none"/></svg>';
+const GEMBIG = liftDefs('<svg viewBox="0 0 64 64" class="gemi"><defs><linearGradient id="gg1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#a7f3d0"/><stop offset=".5" stop-color="#10b981"/><stop offset="1" stop-color="#047857"/></linearGradient></defs><path d="M18 10h28l12 16-26 30L6 26z" fill="url(#gg1)"/><path d="M6 26h52M18 10l8 16 6-16 6 16 8-16M26 26l6 30 6-30" stroke="#ffffff66" stroke-width="1.5" fill="none"/></svg>');
 function burst(el, col, n) { const r = el.getBoundingClientRect(); for (let i = 0; i < (n || 14); i++) { const p = document.createElement('i'); p.className = 'pfx'; p.style.left = r.left + r.width / 2 + 'px'; p.style.top = r.top + r.height / 2 + 'px'; p.style.background = Array.isArray(col) ? pick(col) : col; const a = Math.random() * 6.28, d = rnd(30, 90); p.style.setProperty('--dx', Math.cos(a) * d + 'px'); p.style.setProperty('--dy', Math.sin(a) * d + 'px'); document.body.appendChild(p); setTimeout(() => p.remove(), 800) } }
 
 // ---------------------------------------------------------------- umumiy tikish paneli (TON yoki sovg'a)
@@ -2459,7 +2525,7 @@ function wApplyInv(list) {
   const sig = l => l.map(x => x.id).sort().join(',');
   if (sig(inv) !== sig(S.inv)) { S.inv = inv; save(); if (cur === 'backpack' && typeof bpRender === 'function') bpRender() }
 }
-function wApply(w) { if (!w) return; NET.wallet = Object.assign(NET.wallet || {}, w); wApplyBal(w.bal); if (w.inv) wApplyInv(w.inv) }
+function wApply(w) { if (!w) return; NET.wallet = Object.assign(NET.wallet || {}, w); wApplyBal(w.bal); if (w.inv) wApplyInv(w.inv); if (w.tix != null && S.tix !== w.tix) { S.tix = w.tix; save(); if (cur === 'earn' && E5.tab === 'earn' && !ET.busy) earnRender() } }
 async function wPull(force) {
   if (!wOn()) return; if (!force && !wIdle()) return;
   try { const d = await api('/api/wallet'); WQ.hold = 0; wApply(d); NET.walletTx = d.tx || [] } catch (e) {}
@@ -2753,4 +2819,21 @@ async function gCatalog() {
 $$('#home .b-pvp .sav .av').forEach((a, i) => { const g = byName(['Plush Pepe', "Durov's Cap", 'Heart Locket'][i] || 'Plush Pepe'); a.textContent = ''; a.innerHTML = GI(g); a.classList.add('gav') });
 window.RIKI_W = { on: () => wOn(), skip: wSkip, with: wWith, pull: wPull };
 Object.assign(window, { RIKI_STAKE: (g, ton, items, ex) => liveStake(g, ton, items, ex), winSheet, offSync, M2, m2Pick, u2Render, c2Render, NET, pushStats, pullFeed, balModal });
+// =====================================================================
+//  PvP — g'olib oynasi (hamma ko'radi): Winner · Game # · chance · Rewards
+// =====================================================================
+document.body.insertAdjacentHTML('beforeend', `<div class="modal sheet2" id="pvWM"><div class="mbox"><div class="mhead pvwh"><div><b>Winner</b><small id="pvWG"></small></div><button class="mx" data-close>✕</button></div><div class="mbody" id="pvWB"></div></div></div>`);
+function pvWinSheet() {
+  const w = PV.winner; if (!w) return;
+  const tot = pvTotal(), ch = w.amt / (tot || 1) * 100;
+  const ton = PV.pl.reduce((a, p) => a + (p.ton != null ? p.ton : (p.gifts && p.gifts.length ? 0 : p.amt)), 0);
+  const gifts = PV.pl.flatMap(p => p.gifts || []);
+  $id('pvWG').textContent = 'Game #' + PV.game;
+  const rw = (ton > 0 ? [`<div class="pvrw"><span class="v">${fmt(ton)}${GEM}</span><div class="im">${GEM}</div><em>TON Prize</em><b>TON</b></div>`] : [])
+    .concat(gifts.map(g => `<div class="pvrw"><span class="v">${fmt(g.p || g.v || 0)}${GEM}</span><div class="im">${GI(g)}</div><em>Gift</em><b>${esc(g.n || '')}</b></div>`));
+  $id('pvWB').innerHTML = `<div class="pvwc">${avP(w.name, w.photo)}<div class="n"><b>${esc(w.name)}${w.bot ? ' <span class="bt">BOT</span>' : ''}</b><em>Winner</em></div><div class="r"><span>${GEM}${fmt(tot)}</span><small>${ch.toFixed(1)}% chance</small></div></div>
+    <div class="pvwt">Rewards</div><div class="pvrg">${rw.join('')}</div>`;
+  openM('pvWM');
+}
+window.pvWinSheet = pvWinSheet;
 })();
