@@ -2641,3 +2641,26 @@ nav button:not([data-go="home"]).on{background:#8774e124}
 .lbme .x{width:40px;height:40px;border-radius:11px;background:#333;border:1px solid #444}
 .lbme .lpt{min-width:66px;height:40px;border-radius:11px;background:#2b2745;border:1px solid #4a4480;color:#9d93e8;font-size:14.5px}
 #leader .lbc .pw small{color:#a3a3ad;font-weight:500}
+
+/* ===== v18 · Crash — Epic: portlash raqami koeffitsient rangida, tiniq gradient; o'yinchi kartalari ===== */
+#rkBig{font-size:66px;letter-spacing:-2px;background:linear-gradient(180deg,color-mix(in srgb,var(--bc,#22c55e) 55%,#fff),var(--bc,#22c55e) 70%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;text-shadow:none;filter:drop-shadow(0 0 14px color-mix(in srgb,var(--bc,#22c55e) 45%,transparent))}
+#rkBig.fly{-webkit-text-fill-color:#fff;background:none;filter:drop-shadow(0 4px 14px #0009)}
+#rkPl .prow{min-height:74px;border-radius:18px;padding:12px 14px}
+#rkPl .prow .av{width:46px;height:46px;border-radius:12px;font-size:18px}
+#rkPl .prow b{font-size:15.5px}
+/* v18.1 · Crash — kulrangroq, jiddiyroq (multfilmdek emas) */
+#rocket .rkstage,.rkstage.v11{background:radial-gradient(90% 80% at 50% 45%,#232323,#1b1b1b 70%)}
+#rkBig{filter:drop-shadow(0 2px 6px #000a);font-weight:900;letter-spacing:-1.5px}
+#rkBig{background:linear-gradient(180deg,color-mix(in srgb,var(--bc,#22c55e) 75%,#fff),var(--bc,#22c55e) 75%);-webkit-background-clip:text;background-clip:text}
+#rkCount svg{filter:none}
+#rkCount b{text-shadow:none}
+#rkPl .prow{background:#232a26!important;border:1px solid #2f4a37!important;box-shadow:none!important}
+#rkPl .prow.win{background:#24382a!important;border-color:#3d7a4c!important}
+#rkPl .prow .av{box-shadow:none}
+.hist span,#rkHist span{box-shadow:none!important;text-shadow:none!important}
+#rkPl .prow .av{filter:saturate(.55) brightness(.92)}
+#rkCount{filter:none!important}
+#rkCount svg circle{filter:none}
+#rkCount{--cc-glow:0}
+#rkCount:before,#rkCount:after{opacity:.35}
