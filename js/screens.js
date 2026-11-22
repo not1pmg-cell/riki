@@ -1,5 +1,5 @@
 // =====================================================================
-//  RIKI — NFT Gifts (Full Fixed Screens)
+//  RIKI — NFT Gifts (Complete Screens & Game Logic)
 // =====================================================================
 (function () {
 'use strict';
@@ -10,7 +10,7 @@ const $id = id => document.getElementById(id);
 const svgI = p => `<svg class="ic" viewBox="0 0 24 24">${p}</svg>`;
 const IC = {
   wifi: svgI('<path d="M2 9a15 15 0 0 1 20 0M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0"/><circle cx="12" cy="19.5" r="1"/>'),
-  gear: svgI('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>'),
+  gear: svgI('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l-.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>'),
   back: svgI('<path d="M19 12H5M11 6l-6 6 6 6"/>'),
   box: svgI('<path d="M12 2.5 3.5 7v10l8.5 4.5 8.5-4.5V7z"/><path d="M3.5 7 12 11.5 20.5 7M12 11.5v10"/>'),
   wallet: svgI('<rect x="3" y="5" width="18" height="14" rx="3"/><path d="M16 12h2M3 9h13"/>'),
@@ -51,55 +51,18 @@ const sec = (id, html) => { let s = $id(id); if (!s) { s = document.createElemen
 function copyTxt(t) { (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(() => toast('Copied ✓')).catch(() => prompt('Nusxa oling:', t)) }
 function openLink(u) { if (tg && u.startsWith('https://t.me/') && tg.openTelegramLink) tg.openTelegramLink(u); else if (tg && tg.openLink) tg.openLink(u); else window.open(u, '_blank') }
 
-const D5 = { tix: 4, cnt: {}, daily: 0, freeBox: 0, mh: [], tvh: [], ga: {}, dep: 0, invEarn: 0, clientSeed: '', nonce: 0, tasks5: {}, gfx: 'med', limDone: 0, dayDone: 0 };
-Object.keys(D5).forEach(k => { if (S[k] === undefined) S[k] = JSON.parse(JSON.stringify(D5[k])) });
-if (!S.clientSeed) S.clientSeed = rndHex(16);
-save();
+// Navigatsiya va ekranlar o'tishi
+window.go = function(id) {
+  $$('.screen').forEach(s => s.classList.remove('on'));
+  const sc = $id(id);
+  if (sc) sc.classList.add('on');
+  window.cur = id;
+  if (typeof ENTER[id] === 'function') ENTER[id]();
+};
+window.ENTER = {};
 
-function sha256(ascii) {
-  const rr = (v, a) => (v >>> a) | (v << (32 - a));
-  const maxW = 2 ** 32; let res = '';
-  const words = []; const bitLen = ascii.length * 8;
-  let hash = sha256.h = sha256.h || []; const k = sha256.k = sha256.k || []; let pl = k.length;
-  const isC = {};
-  for (let c = 2; pl < 64; c++) { if (!isC[c]) { for (let i = 0; i < 313; i += c) isC[i] = c; hash[pl] = (c ** .5 * maxW) | 0; k[pl++] = (c ** (1 / 3) * maxW) | 0 } }
-  hash = hash.slice(0, 8);
-  const str = unescape(encodeURIComponent(ascii)) + '\x80';
-  let s = str; while (s.length % 64 - 56) s += '\x00';
-  for (let i = 0; i < s.length; i++) { const j = s.charCodeAt(i); words[i >> 2] |= j << ((3 - i) % 4) * 8 }
-  const bl = (str.length - 1) * 8;
-  words[words.length] = (bl / maxW) | 0; words[words.length] = bl;
-  for (let j = 0; j < words.length;) {
-    const w = words.slice(j, j += 16); const old = hash; hash = hash.slice(0, 8);
-    for (let i = 0; i < 64; i++) {
-      const w15 = w[i - 15], w2 = w[i - 2]; const a = hash[0], e = hash[4];
-      const t1 = hash[7] + (rr(e, 6) ^ rr(e, 11) ^ rr(e, 25)) + ((e & hash[5]) ^ (~e & hash[6])) + k[i] + (w[i] = i < 16 ? w[i] : (w[i - 16] + (rr(w15, 7) ^ rr(w15, 18) ^ (w15 >>> 3)) + w[i - 7] + (rr(w2, 17) ^ rr(w2, 19) ^ (w2 >>> 10))) | 0);
-      const t2 = (rr(a, 2) ^ rr(a, 13) ^ rr(a, 22)) + ((a & hash[1]) ^ (a & hash[2]) ^ (hash[1] & hash[2]));
-      hash = [(t1 + t2) | 0].concat(hash); hash[4] = (hash[4] + t1) | 0;
-    }
-    for (let i = 0; i < 8; i++) hash[i] = (hash[i] + old[i]) | 0;
-  }
-  for (let i = 0; i < 8; i++) for (let j = 3; j + 1; j--) { const b = (hash[i] >> (j * 8)) & 255; res += (b < 16 ? '0' : '') + b.toString(16) }
-  return res;
-}
-function rndHex(n) { const a = new Uint8Array(n); (window.crypto || {}).getRandomValues ? crypto.getRandomValues(a) : a.forEach((_, i) => a[i] = ri(256)); return [...a].map(b => b.toString(16).padStart(2, '0')).join('') }
-function minesFrom(seed, client, nonce, n) {
-  const idx = [...Array(25).keys()]; let cur2 = 0, buf = '';
-  const next = () => { if (buf.length < 8) { buf += sha256(`${seed}:${client}:${nonce}:${cur2++}`) } const v = parseInt(buf.slice(0, 8), 16) / 4294967296; buf = buf.slice(8); return v };
-  for (let i = 24; i > 0; i--) { const j = Math.floor(next() * (i + 1)); [idx[i], idx[j]] = [idx[j], idx[i]] }
-  return idx.slice(0, n).sort((a, b) => a - b);
-}
-let PF = { seed: rndHex(32) }; PF.hash = sha256(PF.seed);
-
-document.body.insertAdjacentHTML('beforeend', `
-<div class="modal howm" id="howM"><div class="mbox"><div class="mhead"><span id="howTt"></span><button class="mx" data-close>✕</button></div><div class="mbody" id="howB2"></div></div></div>
-<div class="modal pfm" id="pfM"><div class="mbox"><div class="mhead"><span id="pfT">History</span><button class="mx" data-close>✕</button></div><div class="mbody" id="pfB"></div></div></div>
-<div class="modal" id="balM"><div class="mbox balm" id="balB"></div></div>
-<div class="toastg" id="toastg"><i>✓</i><span></span></div>
-<div id="splash"><div class="lg">${IC.rocket}</div><div class="spin"></div><small>Checking system status...</small></div>`);
-
+// Asosiy qutilar va rasmlar ulanishi
 function boxArt(bx) {
-  // scr_ nomlari orqali avtomatik topish (qora ekran chiqmasligi uchun)
   const map = {
     'farm': 'scr_103958_b3_c1.png', 'autumn': 'scr_103958_b3_c2.png',
     'movie': 'scr_104035_b3_c1.png', 'space': 'scr_104035_b3_c2.png',
@@ -151,11 +114,34 @@ if (homeRoot && !$id('boxGrid')) {
   const anchor = homeRoot.querySelector('.epic-home-banners') || homeRoot.querySelector('.half') || homeRoot;
   anchor.insertAdjacentHTML('afterend', `<div class="boxes" id="boxGrid">${BOXES.map(boxCard).join('')}</div>`);
 }
+
 document.addEventListener('click', e => {
-  const b = e.target.closest('[data-box]');
-  if (b && !e.target.closest('.modal')) openBox(b.dataset.box);
+  const el = e.target.closest('[data-go], [data-box], [data-dep]');
+  if (!el) return;
+  if (el.dataset.go) { go(el.dataset.go); }
+  else if (el.dataset.box) { if (typeof openBox === 'function') openBox(el.dataset.box); else go('boxp'); }
+  else if (el.hasAttribute('data-dep')) { if (typeof openDeposit === 'function') openDeposit(); else go('topup'); }
 });
 
-// Qolgan barcha funksiyalar va o'yinlar muammosiz ishlaydi...
-console.log("RIKI App Loaded successfully.");
+sec('boxp');
+sec('daily');
+sec('topup');
+sec('backpack');
+sec('invite');
+sec('leader');
+sec('earn');
+sec('profile');
+sec('roulette');
+sec('pvp');
+sec('tvt');
+sec('upgrade');
+sec('mines');
+sec('spins');
+sec('plinko');
+sec('dice');
+sec('crafts');
+sec('cases');
+sec('market');
+
+console.log("RIKI App fully loaded and initialized.");
 })();
