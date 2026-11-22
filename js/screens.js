@@ -552,7 +552,7 @@ function boxOdds(bx, boost) {
 function rollOut(outs) { let r = Math.random(); for (const o of outs) { if (r < o.w) return o; r -= o.w } return outs[0] }
 // v14: qutilar va promo kartalarida Telegram sovg'alarining 3D rasmlari (o'z SVG chizmalarimiz o'rniga)
 function gStack(names, cls) { const g = names.map(n => gOk(n) || byName(n)).filter(Boolean); return `<div class="gstk ${cls || ''}">${g.map((x, i) => `<span class="gs${i}">${GI(x)}</span>`).join('')}</div>` }
-function boxArt(bx) { return `<div class="art cover gart" style="--bc:${bx.c}"><span class="glw"></span>${gStack([bx.art[1], bx.art[0], bx.art[2]])}</div>` }
+function boxArt(bx) { return `<div class="art cover gart" style="--bc:${bx.c}"><img src="assets/epic/${bx.id}.png" style="width:100%;height:100%;object-fit:cover;border-radius:16px 16px 0 0;"></div>` }
 function boxCard(bx) {
   const rib = bx.tag === 'lim' ? `<span class="rib lim">${IC.flame}LIMITED</span>` : bx.tag === 'new' ? `<span class="rib new">${IC.bolt}NEW</span>` : '';
   return `<button class="bx ${bx.tag === 'farm' ? 'farm' : ''}" data-box="${bx.id}">${bx.tag === 'farm' ? '<span class="ttl">FARM</span>' : ''}${rib}${boxArt(bx)}<div class="ft"><b>${esc(bx.n)}</b><em>${fmt(bx.p).replace(/\.00$/, '').replace(/(\.\d)0$/, '$1')} ${GEM}</em></div></button>`;
