@@ -2826,3 +2826,25 @@ nav button[data-go="home"].on {
   color: #fff !important;
   box-shadow: 0 4px 18px rgba(135, 116, 225, 0.55) !important;
 }
+/* ================= FREE24 VA FREE KARTALARINI TO'G'IRLASH ================= */
+.epic-half {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 12px !important;
+  margin-top: 4px !important;
+}
+
+.epic-ban.tall {
+  height: auto !important;
+  aspect-ratio: 171 / 240 !important;
+  border-radius: 20px !important;
+  overflow: hidden !important;
+  background: #242428 !important;
+}
+
+.epic-ban.tall img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: contain !important; /* Rasm to'liq sig'ishi va kesilmasligi uchun */
+  display: block !important;
+}
