@@ -552,21 +552,85 @@ function boxOdds(bx, boost) {
 function rollOut(outs) { let r = Math.random(); for (const o of outs) { if (r < o.w) return o; r -= o.w } return outs[0] }
 // v14: qutilar va promo kartalarida Telegram sovg'alarining 3D rasmlari (o'z SVG chizmalarimiz o'rniga)
 function gStack(names, cls) { const g = names.map(n => gOk(n) || byName(n)).filter(Boolean); return `<div class="gstk ${cls || ''}">${g.map((x, i) => `<span class="gs${i}">${GI(x)}</span>`).join('')}</div>` }
-function boxArt(bx) { 
-  return `<div class="art cover gart" style="--bc:${bx.c}"><img src="assets/epic/${bx.id}.png" style="width:100%;height:100%;object-fit:cover;border-radius:16px 16px 0 0;"></div>`; 
+function boxArt(bx) {
+  // PNG'ni kesmasdan ko'rsatamiz; rasm topilmasa bo'sh blok qoladi.
+  const src = `assets/epic/${bx.id}.png`;
+  return `<div class="art cover gart" style="--bc:${bx.c}">
+    <img src="${src}" alt="${esc(bx.n)} box"
+      loading="lazy" decoding="async"
+      style="display:block;width:100%;height:100%;object-fit:contain;object-position:center;border-radius:16px 16px 0 0;"
+      onerror="this.style.display='none'">
+  </div>`;
 }
 function boxCard(bx) {
   const rib = bx.tag === 'lim' ? `<span class="rib lim">${IC.flame}LIMITED</span>` : bx.tag === 'new' ? `<span class="rib new">${IC.bolt}NEW</span>` : '';
-  return `<button class="bx ${bx.tag === 'farm' ? 'farm' : ''}" data-box="${bx.id}">${bx.tag === 'farm' ? '<span class="ttl">FARM</span>' : ''}${rib}${boxArt(bx)}<div class="ft"><b>${esc(bx.n)}</b><em>${fmt(bx.p).replace(/\.00$/, '').replace(/(\.\d)0$/, '$1')} ${GEM}</em></div></button>`;
+  return `<button class="bx ${bx.tag === 'farm' ? 'farm' : ''}" data-box="${bx.id}">
+    ${bx.tag === 'farm' ? '<span class="ttl">FARM</span>' : ''}${rib}${boxArt(bx)}
+    <div class="ft"><b>${esc(bx.n)}</b><em>${fmt(bx.p).replace(/\\.00$/, '').replace(/(\\.\\d)0$/, '$1')} ${GEM}</em></div>
+  </button>`;
 }
-// home: FREE24 / FREE kartalari va qutilar
-const promos = $$('#home .half .promo');
-promos.forEach((pr, k) => { pr.querySelectorAll('[data-g], .bundle, .art').forEach(e => e.remove()); pr.insertAdjacentHTML('beforeend', `<span class="part gart"><span class="glw"></span>${k ? gStack(['Neko Helmet', 'Hypno Lollipop', 'B-Day Candle'], 'big') : gStack(['Signet Ring', 'Bonded Ring', 'Nail Bracelet'], 'big')}</span>`) });
-{ const sh = $('#home .b-rocket .shp'); if (sh) { sh.removeAttribute('data-g'); sh.innerHTML = GI(byName('Stellar Rocket')); sh.dataset.f = 1; sh.classList.add('gshp') } }
-if (promos[0]) { promos[0].dataset.go = 'daily'; promos[0].insertAdjacentHTML('beforeend', `<div class="pf"><span>Free<br>24h</span><em class="y">${IC.gift}FREE</em></div>`) }
-if (promos[1]) { promos[1].removeAttribute('data-go'); promos[1].dataset.box = 'free'; promos[1].insertAdjacentHTML('beforeend', `<div class="pf"><span>Free</span><em class="p">${IC.gift}FREE</em></div>`) }
-$('#home .half').insertAdjacentHTML('afterend', `<div class="boxes" id="boxGrid">${BOXES.map(boxCard).join('')}</div>`);
-document.addEventListener('click', e => { const b = e.target.closest('[data-box]'); if (b && !e.target.closest('.modal')) openBox(b.dataset.box) });
+
+// HOME: yangi epic-half bannerlari bo'lsa ulardan foydalanamiz.
+// Eski .promo bloklari faqat yangi bannerlar bo'lmagan holatda fallback bo'ladi.
+const homeRoot = $('#home');
+const epicBanners = homeRoot && (homeRoot.querySelector('.epic-home-banners') || homeRoot.querySelector('.epic-half'));
+const epicCards = epicBanners ? [...epicBanners.querySelectorAll('.epic-ban')] : [];
+if (epicCards.length) {
+  epicCards.forEach((card, i) => {
+    const isDaily = i === 0;
+    card.dataset.go = isDaily ? 'daily' : '';
+    if (isDaily) card.removeAttribute('data-box');
+    else { card.removeAttribute('data-go'); card.dataset.box = 'free'; }
+    let img = card.querySelector('img');
+    if (!img) { img = document.createElement('img'); card.appendChild(img); }
+    img.src = isDaily ? 'assets/epic/free24_tall.png' : 'assets/epic/free_tall.png';
+    img.alt = isDaily ? 'Free 24h' : 'Free';
+    img.loading = 'lazy';
+    img.decoding = 'async';
+    img.style.width = '100%';
+    img.style.height = '100%';
+    img.style.objectFit = 'contain';
+    img.style.objectPosition = 'center';
+  });
+} else {
+  const promos = $$('#home .half .promo');
+  promos.forEach((pr, k) => {
+    // Qayta ishga tushganda eski promo bezaklarini ko'paytirmaymiz.
+    if (pr.dataset.screensReady === '1') return;
+    pr.dataset.screensReady = '1';
+    const img = document.createElement('img');
+    img.src = k ? 'assets/epic/free_tall.png' : 'assets/epic/free24_tall.png';
+    img.alt = k ? 'Free' : 'Free 24h';
+    img.loading = 'lazy';
+    img.decoding = 'async';
+    img.style.cssText = 'width:100%;height:100%;object-fit:contain;object-position:center;';
+    pr.appendChild(img);
+    if (k === 0) pr.dataset.go = 'daily';
+    else { pr.removeAttribute('data-go'); pr.dataset.box = 'free'; }
+  });
+}
+
+// Rocket banner mavjud bo'lsagina yangilaymiz.
+const rocketShape = homeRoot && homeRoot.querySelector('.b-rocket .shp');
+if (rocketShape) {
+  const rocketGift = byName('Stellar Rocket');
+  if (rocketGift) {
+    rocketShape.removeAttribute('data-g');
+    rocketShape.innerHTML = GI(rocketGift);
+    rocketShape.dataset.f = '1';
+    rocketShape.classList.add('gshp');
+  }
+}
+
+// Qutilar gridini bir marta, bannerlardan keyin joylashtiramiz.
+if (homeRoot && !$id('boxGrid')) {
+  const anchor = epicBanners || homeRoot.querySelector('.half') || homeRoot;
+  anchor.insertAdjacentHTML('afterend', `<div class="boxes" id="boxGrid">${BOXES.map(boxCard).join('')}</div>`);
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-box]');
+  if (b && !e.target.closest('.modal')) openBox(b.dataset.box);
+});
 
 const FREEBOX = { id: 'free', n: 'Free', p: 0, c: '#8b5cf6', art: ['Hypno Lollipop', 'Neko Helmet', 'Desk Calendar'] };
 const BX = { cur: null, boost: 1, busy: false };
@@ -2062,7 +2126,7 @@ sec('upgrade', `<div class="up3-top"><div class="up3-col"><span class="up3-lb"><
     <div class="up2-nd" id="u2Nd"><i></i></div><div class="up2-cen"><b id="u2Ch">100.0%</b><small id="u2Lv">VERY HIGH</small></div></div>
   <div class="up2-tog" style="display:none"><button data-m="gift" class="on">${IC.gift} Gift</button><button data-m="ton">${GEM} ${CUR}</button></div>
   <div class="inp up2-ton" id="u2TonW" style="display:none"><input id="u2Ton" type="number" inputmode="decimal" placeholder="${CUR} amount" step="0.01"><span class="gm">${GEM}</span></div>
-  <div class="up2-q" id="u2Q" style="display:none">${[1.5, 2, 3, 5, 10, 20].map(x => `<button data-x="${x}">x${x}</button>`).join('')}</div>
+  <div class="up2-q" id="u2Q">${[2, 4, 8].map(x => `<button data-x="${x}">X${x}</button>`).join('')}${[35, 55, 75].map(p => `<button data-pct="${p}">${p}%</button>`).join('')}</div>
   <button class="go3 up3-go" id="u2Go"></button>
   ${howBlock('upgrade', true)}`);
 const upLvl = c => c >= 80 ? 'VERY HIGH' : c >= 50 ? 'HIGH' : c >= 25 ? 'MEDIUM' : c >= 10 ? 'LOW' : 'VERY LOW';
@@ -2086,7 +2150,29 @@ $id('u2From').onclick = () => { if (UP.spinning || UP.mode !== 'gift') return; p
 $id('u2To').onclick = () => { if (UP.spinning) return; const fv = u2From(); if (!fv) { toast('Select your gift first'); return } pickGifts({ source: 'cat', title: 'Select target gift', filter: g => g.p > fv * 1.05 && g.p <= fv * 200, done: gi => { UP.to = gi; u2Render() } }) };
 $$('.up2-tog button').forEach(b => b.onclick = () => { if (UP.spinning) return; UP.mode = b.dataset.m; UP.from = null; UP.to = null; u2Render() });
 $id('u2Ton').oninput = u2Render;
-$id('u2Q').onclick = e => { const b = e.target.closest('[data-x]'); if (!b || UP.spinning) return; const fv = u2From(); if (!fv) { toast('Select your gift first'); return } const t = fv * +b.dataset.x; let best = null; for (const g of BYPRICE) { if (g.p > fv * 1.05 && g.p <= t) best = g } best = best || BYPRICE.find(g => g.p > fv * 1.05); if (best) { UP.to = best.i; hap(); u2Render() } };
+$id('u2Q').onclick = e => {
+  const b = e.target.closest('[data-x], [data-pct]');
+  if (!b || UP.spinning) return;
+  const fv = u2From();
+  if (!fv) { toast('Select your gift first'); return; }
+  const candidates = BYPRICE.filter(g => g.p > fv * 1.05);
+  if (!candidates.length) { toast('No suitable target gift found'); return; }
+  let targetPrice;
+  if (b.dataset.pct) {
+    const wantedChance = clamp(+b.dataset.pct, 1, 90);
+    targetPrice = fv * RTP('upgrade') * 100 / wantedChance;
+  } else {
+    targetPrice = fv * +b.dataset.x;
+  }
+  let best = candidates[0], bestDiff = Infinity;
+  for (const g of candidates) {
+    const diff = Math.abs(Math.log(g.p / targetPrice));
+    if (diff < bestDiff) { best = g; bestDiff = diff; }
+  }
+  UP.to = best.i;
+  hap();
+  u2Render();
+};
 $id('u2Go').onclick = async () => {
   const ch = u2Chance(); if (!ch || UP.spinning) return; const fv = u2From(), tg_ = GIFTS[UP.to];
   if (UP.mode === 'ton') { if (fv > S.bal) { toast('Insufficient balance'); return } if (fv < .1) { toast('Minimum 0.10'); return } setBal(-fv) } else { U2.lockIt = invGet(UP.from); invDel([UP.from]) }
@@ -2840,4 +2926,4 @@ Object.assign(window, { RIKI_STAKE: (g, ton, items, ex) => liveStake(g, ton, ite
 // =====================================================================
 function pvWinSheet() { if (PV.winner) pvWinner(PV.winner, PV.pl.map(p => Object.assign({}, p)), PV.game) }   // bitta umumiy g'olib oynasi (pvWinner)
 window.pvWinSheet = pvWinSheet;
-})();
+})()
