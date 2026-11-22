@@ -2826,7 +2826,7 @@ nav button[data-go="home"].on {
   color: #fff !important;
   box-shadow: 0 4px 18px rgba(135, 116, 225, 0.55) !important;
 }
-/* ================= FREE24 VA FREE KARTALARINI TO'G'IRLASH ================= */
+/* ================= FREE24 VA FREE KARTALARINI 1:1 TO'G'IRLASH ================= */
 .epic-half {
   display: grid !important;
   grid-template-columns: 1fr 1fr !important;
@@ -2839,12 +2839,12 @@ nav button[data-go="home"].on {
   aspect-ratio: 171 / 240 !important;
   border-radius: 20px !important;
   overflow: hidden !important;
-  background: #242428 !important;
+  background: transparent !important;
 }
 
 .epic-ban.tall img {
   width: 100% !important;
   height: 100% !important;
-  object-fit: contain !important; /* Rasm to'liq sig'ishi va kesilmasligi uchun */
+  object-fit: fill !important; /* Katakchani to'liq egallashi uchun */
   display: block !important;
 }
