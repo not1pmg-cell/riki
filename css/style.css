@@ -2664,3 +2664,41 @@ nav button:not([data-go="home"]).on{background:#8774e124}
 #rkCount svg circle{filter:none}
 #rkCount{--cc-glow:0}
 #rkCount:before,#rkCount:after{opacity:.35}
+/* ================= EPIC GIFT 1:1 HOME BANNERS ================= */
+.epic-home-banners {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+  margin-bottom: 14px;
+}
+
+.epic-ban {
+  width: 100%;
+  padding: 0;
+  border: none;
+  background: transparent;
+  border-radius: 20px;
+  overflow: hidden;
+  display: block;
+  cursor: pointer;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.42);
+  transition: transform 0.14s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.epic-ban:active {
+  transform: scale(0.97);
+}
+
+.epic-ban img {
+  width: 100%;
+  height: auto;
+  display: block;
+  border-radius: 20px;
+}
+
+.epic-half {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 10px !important;
+  margin-top: 0 !important;
+}
