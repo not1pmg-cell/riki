@@ -553,14 +553,7 @@ function rollOut(outs) { let r = Math.random(); for (const o of outs) { if (r < 
 // v14: qutilar va promo kartalarida Telegram sovg'alarining 3D rasmlari (o'z SVG chizmalarimiz o'rniga)
 function gStack(names, cls) { const g = names.map(n => gOk(n) || byName(n)).filter(Boolean); return `<div class="gstk ${cls || ''}">${g.map((x, i) => `<span class="gs${i}">${GI(x)}</span>`).join('')}</div>` }
 function boxArt(bx) {
-  // PNG'ni kesmasdan ko'rsatamiz; rasm topilmasa bo'sh blok qoladi.
-  const src = `assets/epic/${bx.id}.png`;
-  return `<div class="art cover gart" style="--bc:${bx.c}">
-    <img src="${src}" alt="${esc(bx.n)} box"
-      loading="lazy" decoding="async"
-      style="display:block;width:100%;height:100%;object-fit:contain;object-position:center;border-radius:16px 16px 0 0;"
-      onerror="this.style.display='none'">
-  </div>`;
+  return `<div class="art cover gart" style="--bc:${bx.c}"><img src="assets/epic/${bx.id}.png" style="width:100%;height:100%;object-fit:cover;border-radius:16px 16px 0 0;"></div>`;
 }
 function boxCard(bx) {
   const rib = bx.tag === 'lim' ? `<span class="rib lim">${IC.flame}LIMITED</span>` : bx.tag === 'new' ? `<span class="rib new">${IC.bolt}NEW</span>` : '';
@@ -576,21 +569,18 @@ const homeRoot = $('#home');
 const epicBanners = homeRoot && (homeRoot.querySelector('.epic-home-banners') || homeRoot.querySelector('.epic-half'));
 const epicCards = epicBanners ? [...epicBanners.querySelectorAll('.epic-ban')] : [];
 if (epicCards.length) {
-  epicCards.forEach((card, i) => {
+  // Rocket, PvP va Play bannerlarining HTML'dagi yo'nalishi va rasmini saqlaymiz.
+  // Faqat ikki tall banner Daily va Free Box uchun sozlanadi.
+  const tallCards = epicCards.filter(card => card.classList.contains('tall'));
+  tallCards.forEach((card, i) => {
     const isDaily = i === 0;
-    card.dataset.go = isDaily ? 'daily' : '';
-    if (isDaily) card.removeAttribute('data-box');
-    else { card.removeAttribute('data-go'); card.dataset.box = 'free'; }
-    let img = card.querySelector('img');
-    if (!img) { img = document.createElement('img'); card.appendChild(img); }
-    img.src = isDaily ? 'assets/epic/free24_tall.png' : 'assets/epic/free_tall.png';
-    img.alt = isDaily ? 'Free 24h' : 'Free';
-    img.loading = 'lazy';
-    img.decoding = 'async';
-    img.style.width = '100%';
-    img.style.height = '100%';
-    img.style.objectFit = 'contain';
-    img.style.objectPosition = 'center';
+    if (isDaily) {
+      card.dataset.go = 'daily';
+      card.removeAttribute('data-box');
+    } else {
+      card.removeAttribute('data-go');
+      card.dataset.box = 'free';
+    }
   });
 } else {
   const promos = $$('#home .half .promo');
@@ -599,11 +589,11 @@ if (epicCards.length) {
     if (pr.dataset.screensReady === '1') return;
     pr.dataset.screensReady = '1';
     const img = document.createElement('img');
-    img.src = k ? 'assets/epic/free_tall.png' : 'assets/epic/free24_tall.png';
+    img.src = k ? 'assets/epic/free.png' : 'assets/epic/free24.png';
     img.alt = k ? 'Free' : 'Free 24h';
     img.loading = 'lazy';
     img.decoding = 'async';
-    img.style.cssText = 'width:100%;height:100%;object-fit:contain;object-position:center;';
+    img.style.cssText = 'width:100%;height:100%;object-fit:cover;object-position:center;';
     pr.appendChild(img);
     if (k === 0) pr.dataset.go = 'daily';
     else { pr.removeAttribute('data-go'); pr.dataset.box = 'free'; }
