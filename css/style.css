@@ -2664,86 +2664,165 @@ nav button:not([data-go="home"]).on{background:#8774e124}
 #rkCount svg circle{filter:none}
 #rkCount{--cc-glow:0}
 #rkCount:before,#rkCount:after{opacity:.35}
-/* ================= EPIC GIFT 1:1 EXACT MATCH ================= */
+/* =====================================================================
+   EPIC GIFT 1:1 — VIDEODAGI BARCHA ANIMATSIYA VA DIZAYNLAR
+   ===================================================================== */
+
+/* 1. Home bannerlar (jonli animatsiyali) */
 .epic-home-banners {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin-bottom: 14px;
-  width: 100%;
+  margin-bottom: 12px;
 }
-
 .epic-ban {
   width: 100% !important;
   height: 102px !important;
   padding: 0 !important;
   border: none !important;
-  background: transparent !important;
   border-radius: 18px !important;
   overflow: hidden !important;
+  position: relative !important;
   display: block !important;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45) !important;
+  transition: transform 0.14s ease !important;
 }
-
+.epic-ban:active { transform: scale(0.97) !important; }
 .epic-ban img {
   width: 100% !important;
   height: 100% !important;
-  object-fit: fill !important;
+  object-fit: cover !important;
   display: block !important;
+}
+/* Banner ustida jonli nur (shimmer) animatsiyasi */
+.epic-ban::after {
+  content: "";
+  position: absolute;
+  top: 0; bottom: 0; left: -80px;
+  width: 60px;
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.28), transparent);
+  transform: skewX(-22deg);
+  animation: epicShine 3.8s infinite;
+  pointer-events: none;
+}
+@keyframes epicShine {
+  0% { left: -80px; }
+  30%, 100% { left: 120%; }
 }
 
 .epic-half {
   display: grid !important;
   grid-template-columns: 1fr 1fr !important;
-  gap: 14px !important;
-  margin-top: 4px !important;
+  gap: 12px !important;
+  margin-top: 2px !important;
 }
-
 .epic-ban.tall {
   height: auto !important;
-  aspect-ratio: 171 / 240 !important;
+  aspect-ratio: 171 / 238 !important;
   border-radius: 20px !important;
 }
 
-/* Qutilar ichidagi 3D rasmlar to'liq qoplashi uchun */
-#home .bx .art.cover {
-  padding: 0 !important;
-  inset: 0 0 46px 0 !important;
+/* 2. Qutilar (Cases) — Farm, Autumn, Heaven, Hell, Oscar, Space */
+#home .boxes {
+  display: grid !important;
+  grid-template-columns: 1fr 1fr !important;
+  gap: 12px !important;
+  margin-top: 12px !important;
 }
-
+#home .bx {
+  aspect-ratio: 171 / 238 !important;
+  border-radius: 20px !important;
+  background: #242428 !important;
+  border: 1.5px solid #323238 !important;
+  overflow: hidden !important;
+  position: relative !important;
+  transition: transform 0.14s ease !important;
+}
+#home .bx:active { transform: scale(0.97) !important; }
+#home .bx.farm {
+  border-color: #22c55e !important;
+  box-shadow: 0 0 20px rgba(34, 197, 94, 0.25) !important;
+}
+#home .bx .art.cover {
+  position: absolute !important;
+  inset: 0 0 46px 0 !important;
+  padding: 0 !important;
+}
 #home .bx .art.cover img {
   width: 100% !important;
   height: 100% !important;
   object-fit: cover !important;
+  animation: caseFloat 3.4s ease-in-out infinite;
+}
+@keyframes caseFloat {
+  0%, 100% { transform: scale(1) translateY(0); }
+  50% { transform: scale(1.03) translateY(-3px); }
+}
+#home .bx .ft {
+  height: 46px !important;
+  background: #28282d !important;
+  padding: 0 12px !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: space-between !important;
+}
+#home .bx .ft b { font-size: 14px !important; font-weight: 700 !important; color: #fff !important; }
+#home .bx .ft em {
+  background: #8774e1 !important;
+  border-radius: 8px !important;
+  padding: 4px 9px !important;
+  font-size: 12px !important;
+  font-weight: 800 !important;
+}
+#home .bx.farm .ft em { background: #22c55e !important; }
+
+/* 3. Play Hub — jonli harakatlanuvchi kartochkalar */
+#playhub .c-upg .uring { animation: spinSlow 14s linear infinite; }
+#playhub .c-upg .ugift { animation: pulseGift 2.4s ease-in-out infinite; }
+#playhub .c-spn .pepe { animation: pulseGift 2.6s ease-in-out infinite; }
+#playhub .c-spn .bub i { animation: floatBub 3s ease-in-out infinite alternate; }
+#playhub .c-dic .cube { animation: cubeWobble 4s ease-in-out infinite; }
+@keyframes spinSlow { to { transform: rotate(360deg); } }
+@keyframes pulseGift { 50% { transform: scale(1.08); } }
+@keyframes floatBub { 100% { transform: translateY(-6px); } }
+@keyframes cubeWobble {
+  0%, 100% { transform: rotateX(-24deg) rotateY(38deg); }
+  50% { transform: rotateX(-16deg) rotateY(52deg) translateY(-4px); }
 }
 
-/* Pastki Home tugmasi (original oq hoshiya va binafsha fon) */
+/* 4. Mines — portlash qizil hoshiyasi va yashil Cash Out */
+.mn3-wrap.boomr, .mbox2.boomr {
+  box-shadow: 0 0 0 3px #ef4444, 0 0 36px rgba(239, 68, 68, 0.7) !important;
+  background: #3a1818 !important;
+}
+.mn3-chips span.max {
+  border: 1.5px solid #f59e0b !important;
+  background: #3a2e12 !important;
+  color: #fde68a !important;
+}
+
+/* 5. Rocket — yulduzli osmon foni */
+#rocket .rkstage {
+  background: radial-gradient(circle at 50% 45%, #232329 0%, #141418 85%) !important;
+  background-image:
+    radial-gradient(1.5px 1.5px at 15% 25%, #fff 90%, transparent),
+    radial-gradient(2px 2px at 32% 65%, #a5b4fc 90%, transparent),
+    radial-gradient(1.5px 1.5px at 58% 18%, #fff 90%, transparent),
+    radial-gradient(2px 2px at 78% 55%, #fde047 90%, transparent),
+    radial-gradient(1.5px 1.5px at 88% 28%, #fff 90%, transparent),
+    radial-gradient(1.5px 1.5px at 24% 80%, #fff 90%, transparent),
+    radial-gradient(circle at 50% 45%, #232329 0%, #141418 85%) !important;
+}
+
+/* 6. Pastki menyu — faol Home tugmasi (videodagi oq hoshiya) */
+nav {
+  background: #1c1c1e !important;
+  border-top: 1px solid #2c2c30 !important;
+}
 nav button[data-go="home"].on {
-  background: #7c6cf6 !important;
-  border: 2px solid #c4b5fd !important;
+  background: #8774e1 !important;
+  border: 2px solid #ffffff !important;
   border-radius: 16px !important;
   color: #fff !important;
-  padding: 8px 16px !important;
-  box-shadow: 0 4px 16px rgba(124, 108, 246, 0.5) !important;
-}
-/* ================= V19 — 1:1 VIDEO ACCURATE POLISH ================= */
-#home .bx {
-  border-radius: 20px !important;
-  overflow: hidden !important;
-}
-
-#home .bx .ft {
-  background: #2b2b30 !important;
-  border-top: 1px solid rgba(255, 255, 255, 0.06);
-}
-
-/* Play Hub kartalari va animatsiyalar */
-#playhub .pc {
-  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4) !important;
-}
-
-/* Modal oynalar va g'olib panellari */
-.modal .mbox {
-  border-radius: 24px !important;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7) !important;
+  box-shadow: 0 4px 18px rgba(135, 116, 225, 0.55) !important;
 }
