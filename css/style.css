@@ -2848,3 +2848,8 @@ nav button[data-go="home"].on {
   object-fit: fill !important; /* Katakchani to'liq egallashi uchun */
   display: block !important;
 }
+/* ================= FREE24 BANNERINI TO'LIG'ICHA KO'RSATISH ================= */
+.epic-half .epic-ban.tall:first-child img {
+  object-position: left center !important; /* Rasmni o'ngroqqa surib to'liq ko'rsatish */
+  transform: scale(1.05); /* Harflar to'liq sig'ishi uchun kichik masshtab */
+}
