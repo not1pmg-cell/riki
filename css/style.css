@@ -2668,37 +2668,43 @@ nav button:not([data-go="home"]).on{background:#8774e124}
 .epic-home-banners {
   display: flex;
   flex-direction: column;
-  gap: 11px;
-  margin-bottom: 14px;
+  gap: 10px;
+  margin-bottom: 12px;
+  width: 100%;
 }
 
 .epic-ban {
-  width: 100%;
-  padding: 0;
-  border: none;
-  background: transparent;
-  border-radius: 20px;
-  overflow: hidden;
-  display: block;
+  width: 100% !important;
+  max-width: 100% !important;
+  height: 104px !important;
+  padding: 0 !important;
+  margin: 0 !important;
+  border: none !important;
+  background: transparent !important;
+  border-radius: 18px !important;
+  overflow: hidden !important;
+  display: block !important;
+  position: relative !important;
   cursor: pointer;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.42);
-  transition: transform 0.14s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.epic-ban:active {
-  transform: scale(0.97);
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
 }
 
 .epic-ban img {
-  width: 100%;
-  height: auto;
-  display: block;
-  border-radius: 20px;
+  width: 100% !important;
+  height: 100% !important;
+  max-width: 100% !important;
+  object-fit: fill !important;
+  display: block !important;
+  border-radius: 18px !important;
 }
 
 .epic-half {
   display: grid !important;
   grid-template-columns: 1fr 1fr !important;
   gap: 10px !important;
-  margin-top: 0 !important;
+  width: 100% !important;
+}
+
+.epic-half .epic-ban {
+  height: 148px !important;
 }
