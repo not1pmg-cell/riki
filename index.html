@@ -56,10 +56,10 @@
 
     <div class="half epic-half">
       <button class="epic-ban tall" data-go="daily">
-        <img src="assets/epic/free24.png" alt="Free 24h">
+        <img src="assets/epic/free24_tall.png" alt="Free 24h">
       </button>
       <button class="epic-ban tall" data-box="free">
-        <img src="assets/epic/free.png" alt="Free">
+        <img src="assets/epic/free_tall.png" alt="Free">
       </button>
     </div>
   </div>
@@ -252,21 +252,6 @@
   <div class="mkgrid" id="mkGrid"></div>
 </section>
 
----
-
-### 2. Barcha kesilgan rasmlarni (`github_upload` ichidagilarni) GitHub'ga yuklash
-Oldingi bosqichda tayyorlagan 21 ta rasmni GitHub'dagi **`assets/epic/`** papkasiga to'liq tashlab chiq (`Add files via upload`). 
-
-Bular:
-* `rocket.png`, `pvp.png`, `play.png`, `free24.png`, `free.png`
-* `farm.png`, `autumn.png`, `movie.png`, `space.png`, `telegram.png`, `adult.png`, `money.png`, `pepe.png`, `black.png`, `onyx.png`, `perfume.png`, `oscar.png`, `magic.png`, `kitty.png`, `gem.png`, `cap.png`, `ring.png`, `epic.png`, `elite.png`
-
----
-
-### 3. `js/screens.js` faylini to'g'irlash
-GitHub'da **`js/screens.js`** faylini ochib, 555-qatordagi `boxArt` funksiyasini top va uni mana bunga o'zgartir:
-
-```js
-function boxArt(bx) { 
-  return `<div class="art cover gart" style="--bc:${bx.c}"><img src="assets/epic/${bx.id}.png" style="width:100%;height:100%;object-fit:cover;border-radius:16px 16px 0 0;"></div>`; 
-}
+</div>
+</body>
+</html>
