@@ -2917,7 +2917,6 @@ Object.assign(window, { RIKI_STAKE: (g, ton, items, ex) => liveStake(g, ton, ite
 function pvWinSheet() { if (PV.winner) pvWinner(PV.winner, PV.pl.map(p => Object.assign({}, p)), PV.game) }   // bitta umumiy g'olib oynasi (pvWinner)
 window.pvWinSheet = pvWinSheet;
 })()
-// Qutilar va barcha elementlar uchun original PNG rasmlarni ulash
-function boxArt(bx) { 
-  return `<div class="art cover gart" style="--bc:${bx.c}"><img src="assets/epic/${bx.id}.png" style="width:100%;height:100%;object-fit:cover;border-radius:16px 16px 0 0;"></div>`; 
-}
+function pvWinSheet() { if (PV.winner) pvWinner(PV.winner, PV.pl.map(p => Object.assign({}, p)), PV.game) }
+window.pvWinSheet = pvWinSheet;
+})();
