@@ -2726,3 +2726,24 @@ nav button[data-go="home"].on {
   padding: 8px 16px !important;
   box-shadow: 0 4px 16px rgba(124, 108, 246, 0.5) !important;
 }
+/* ================= V19 — 1:1 VIDEO ACCURATE POLISH ================= */
+#home .bx {
+  border-radius: 20px !important;
+  overflow: hidden !important;
+}
+
+#home .bx .ft {
+  background: #2b2b30 !important;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+/* Play Hub kartalari va animatsiyalar */
+#playhub .pc {
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.4) !important;
+}
+
+/* Modal oynalar va g'olib panellari */
+.modal .mbox {
+  border-radius: 24px !important;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7) !important;
+}
