@@ -2664,47 +2664,65 @@ nav button:not([data-go="home"]).on{background:#8774e124}
 #rkCount svg circle{filter:none}
 #rkCount{--cc-glow:0}
 #rkCount:before,#rkCount:after{opacity:.35}
-/* ================= EPIC GIFT 1:1 HOME BANNERS ================= */
+/* ================= EPIC GIFT 1:1 EXACT MATCH ================= */
 .epic-home-banners {
   display: flex;
   flex-direction: column;
   gap: 10px;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
   width: 100%;
 }
 
 .epic-ban {
   width: 100% !important;
-  max-width: 100% !important;
-  height: 104px !important;
+  height: 102px !important;
   padding: 0 !important;
-  margin: 0 !important;
   border: none !important;
   background: transparent !important;
   border-radius: 18px !important;
   overflow: hidden !important;
   display: block !important;
-  position: relative !important;
-  cursor: pointer;
   box-shadow: 0 6px 16px rgba(0, 0, 0, 0.4);
 }
 
 .epic-ban img {
   width: 100% !important;
   height: 100% !important;
-  max-width: 100% !important;
   object-fit: fill !important;
   display: block !important;
-  border-radius: 18px !important;
 }
 
 .epic-half {
   display: grid !important;
   grid-template-columns: 1fr 1fr !important;
-  gap: 10px !important;
-  width: 100% !important;
+  gap: 14px !important;
+  margin-top: 4px !important;
 }
 
-.epic-half .epic-ban {
-  height: 148px !important;
+.epic-ban.tall {
+  height: auto !important;
+  aspect-ratio: 171 / 240 !important;
+  border-radius: 20px !important;
+}
+
+/* Qutilar ichidagi 3D rasmlar to'liq qoplashi uchun */
+#home .bx .art.cover {
+  padding: 0 !important;
+  inset: 0 0 46px 0 !important;
+}
+
+#home .bx .art.cover img {
+  width: 100% !important;
+  height: 100% !important;
+  object-fit: cover !important;
+}
+
+/* Pastki Home tugmasi (original oq hoshiya va binafsha fon) */
+nav button[data-go="home"].on {
+  background: #7c6cf6 !important;
+  border: 2px solid #c4b5fd !important;
+  border-radius: 16px !important;
+  color: #fff !important;
+  padding: 8px 16px !important;
+  box-shadow: 0 4px 16px rgba(124, 108, 246, 0.5) !important;
 }
