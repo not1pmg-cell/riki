@@ -1,5 +1,6 @@
 // =====================================================================
-//  RIKI — NFT Gifts (Complete Screens & Game Logic)
+//  v5 — videodagi ekranlar: Rocket, qutilar, Daily Box, Top Up, Earn,
+//  Giveaways, Leaderboard, Invite, Backpack, VIP, Provably Fair tarix
 // =====================================================================
 (function () {
 'use strict';
@@ -41,27 +42,203 @@ const IC = {
   target: svgI('<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5"/>'),
   rocket: '<svg viewBox="0 0 48 48"><path d="M24 4c8 6 10 16 8 28H16C14 20 16 10 24 4z" fill="#7c6cf6"/><circle cx="24" cy="20" r="4" fill="#fff"/><path d="M16 26l-6 10 7-2zM32 26l6 10-7-2z" fill="#a78bfa"/><path d="M19 34h10l-5 10z" fill="#c4b5fd"/></svg>'
 };
-
 const gem = n => `${GEM}${fmt(n)}`;
 const tk = n => `<span class="tkic"></span>${n}`;
 const pad2 = n => String(n).padStart(2, '0');
 const dur = ms => { ms = Math.max(0, ms); const d = Math.floor(ms / 864e5), h = Math.floor(ms % 864e5 / 36e5), m = Math.floor(ms % 36e5 / 6e4), s = Math.floor(ms % 6e4 / 1e3); return d ? `${d}d ${h}h ${pad2(m)}m ${pad2(s)}s` : h ? `${h}h ${m}m` : `${m}m ${pad2(s)}s` };
 const hms = ms => { ms = Math.max(0, ms); const h = Math.floor(ms / 36e5), m = Math.floor(ms % 36e5 / 6e4), s = Math.floor(ms % 6e4 / 1e3); return `${h}h ${pad2(m)}m ${pad2(s)}s` };
+const mask = n => n.length <= 4 ? n : n.slice(0, 2) + '***' + n.slice(-2);
 const sec = (id, html) => { let s = $id(id); if (!s) { s = document.createElement('section'); s.className = 'screen'; s.id = id; document.querySelector('.app').appendChild(s) } if (html != null) s.innerHTML = html; return s };
 function copyTxt(t) { (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(() => toast('Copied ✓')).catch(() => prompt('Nusxa oling:', t)) }
 function openLink(u) { if (tg && u.startsWith('https://t.me/') && tg.openTelegramLink) tg.openTelegramLink(u); else if (tg && tg.openLink) tg.openLink(u); else window.open(u, '_blank') }
 
-// Navigatsiya va ekranlar o'tishi
-window.go = function(id) {
-  $$('.screen').forEach(s => s.classList.remove('on'));
-  const sc = $id(id);
-  if (sc) sc.classList.add('on');
-  window.cur = id;
-  if (typeof ENTER[id] === 'function') ENTER[id]();
-};
-window.ENTER = {};
+const D5 = { tix: 4, cnt: {}, daily: 0, freeBox: 0, mh: [], tvh: [], ga: {}, dep: 0, invEarn: 0, clientSeed: '', nonce: 0, tasks5: {}, gfx: 'med', limDone: 0, dayDone: 0 };
+Object.keys(D5).forEach(k => { if (S[k] === undefined) S[k] = JSON.parse(JSON.stringify(D5[k])) });
+if (!S.clientSeed) S.clientSeed = rndHex(16);
+save();
 
-// Asosiy qutilar va rasmlar ulanishi
+function sha256(ascii) {
+  const rr = (v, a) => (v >>> a) | (v << (32 - a));
+  const maxW = 2 ** 32; let res = '';
+  const words = []; const bitLen = ascii.length * 8;
+  let hash = sha256.h = sha256.h || []; const k = sha256.k = sha256.k || []; let pl = k.length;
+  const isC = {};
+  for (let c = 2; pl < 64; c++) { if (!isC[c]) { for (let i = 0; i < 313; i += c) isC[i] = c; hash[pl] = (c ** .5 * maxW) | 0; k[pl++] = (c ** (1 / 3) * maxW) | 0 } }
+  hash = hash.slice(0, 8);
+  const str = unescape(encodeURIComponent(ascii)) + '\x80';
+  let s = str; while (s.length % 64 - 56) s += '\x00';
+  for (let i = 0; i < s.length; i++) { const j = s.charCodeAt(i); words[i >> 2] |= j << ((3 - i) % 4) * 8 }
+  const bl = (str.length - 1) * 8;
+  words[words.length] = (bl / maxW) | 0; words[words.length] = bl;
+  for (let j = 0; j < words.length;) {
+    const w = words.slice(j, j += 16); const old = hash; hash = hash.slice(0, 8);
+    for (let i = 0; i < 64; i++) {
+      const w15 = w[i - 15], w2 = w[i - 2]; const a = hash[0], e = hash[4];
+      const t1 = hash[7] + (rr(e, 6) ^ rr(e, 11) ^ rr(e, 25)) + ((e & hash[5]) ^ (~e & hash[6])) + k[i] + (w[i] = i < 16 ? w[i] : (w[i - 16] + (rr(w15, 7) ^ rr(w15, 18) ^ (w15 >>> 3)) + w[i - 7] + (rr(w2, 17) ^ rr(w2, 19) ^ (w2 >>> 10))) | 0);
+      const t2 = (rr(a, 2) ^ rr(a, 13) ^ rr(a, 22)) + ((a & hash[1]) ^ (a & hash[2]) ^ (hash[1] & hash[2]));
+      hash = [(t1 + t2) | 0].concat(hash); hash[4] = (hash[4] + t1) | 0;
+    }
+    for (let i = 0; i < 8; i++) hash[i] = (hash[i] + old[i]) | 0;
+  }
+  for (let i = 0; i < 8; i++) for (let j = 3; j + 1; j--) { const b = (hash[i] >> (j * 8)) & 255; res += (b < 16 ? '0' : '') + b.toString(16) }
+  return res;
+}
+function rndHex(n) { const a = new Uint8Array(n); (window.crypto || {}).getRandomValues ? crypto.getRandomValues(a) : a.forEach((_, i) => a[i] = ri(256)); return [...a].map(b => b.toString(16).padStart(2, '0')).join('') }
+function minesFrom(seed, client, nonce, n) {
+  const idx = [...Array(25).keys()]; let cur2 = 0, buf = '';
+  const next = () => { if (buf.length < 8) { buf += sha256(`${seed}:${client}:${nonce}:${cur2++}`) } const v = parseInt(buf.slice(0, 8), 16) / 4294967296; buf = buf.slice(8); return v };
+  for (let i = 24; i > 0; i--) { const j = Math.floor(next() * (i + 1)); [idx[i], idx[j]] = [idx[j], idx[i]] }
+  return idx.slice(0, n).sort((a, b) => a - b);
+}
+let PF = { seed: rndHex(32) }; PF.hash = sha256(PF.seed);
+
+document.body.insertAdjacentHTML('beforeend', `
+<div class="modal howm" id="howM"><div class="mbox"><div class="mhead"><span id="howTt"></span><button class="mx" data-close>✕</button></div><div class="mbody" id="howB2"></div></div></div>
+<div class="modal pfm" id="pfM"><div class="mbox"><div class="mhead"><span id="pfT">History</span><button class="mx" data-close>✕</button></div><div class="mbody" id="pfB"></div></div></div>
+<div class="modal" id="balM"><div class="mbox balm" id="balB"></div></div>
+<div class="toastg" id="toastg"><i>✓</i><span></span></div>
+<div id="splash"><div class="lg">${IC.rocket}</div><div class="spin"></div><small>Checking system status...</small></div>`);
+function toastG(t) { const e = $id('toastg'); e.querySelector('span').textContent = t; e.classList.add('on'); clearTimeout(e._t); e._t = setTimeout(() => e.classList.remove('on'), 2200) }
+function howModal(title, steps, extra) {
+  $id('howTt').textContent = title;
+  $id('howB2').innerHTML = steps.map((s, i) => `<div class="st1"><i>${i + 1}</i><div><b>${s[0]}</b><small>${s[1]}</small></div></div>`).join('') + (extra || '');
+  openM('howM');
+}
+function balModal(v, g, title) {
+  $id('balB').innerHTML = `<button class="mx" data-close style="position:absolute;right:11px;top:11px">✕</button><h3>${title || 'Balance Increased!'}</h3><p>${g ? 'Gift added to your Backpack' : 'Your balance has been updated'}</p><div class="gc">${g ? GIM(g.g || g, g.ms).replace(/loading="lazy"/g, '') : GEM}</div><b>${g ? esc((g.g || g).n) : fmt(v) + ' ' + CUR + ' Balance'}</b><span class="bp">${g ? 'Gift' : 'Balance'}</span><div class="bv">${gem(v)}</div><button class="btn-g" data-close>Continue</button>`;
+  openM('balM'); hapN('success');
+}
+const HOWS = {
+  mines: ['How it works', [['Choose how many mines', 'Mines are hidden under the cells of a 5×5 board, and every other cell contains a gem. More mines mean higher multipliers and higher risk.'], ['Place your bet', `Use ${CUR} or pick a gift from your Backpack. A gift is played as one full stake for the round.`], ['Open cells', 'Each gem you find increases your multiplier. If you hit a mine, the round ends and the stake is lost.'], ['Take the win', `You can cash out after any gem. Wins are credited to your ${CUR} balance instantly.`]]],
+  rocket: ['How Rocket works', [['Place your bet', `Bet ${CUR} or a gift before the countdown ends.`], ['Watch the rocket', 'The multiplier grows while the rocket flies. It can explode at any moment.'], ['Cash out in time', `Press Cash out before it explodes. Your win is paid as the most valuable real NFT that fits the amount, the rest goes to your ${CUR} balance.`], ['Auto cashout', 'Set a target multiplier and your bet will be cashed out automatically.']]],
+  tvt: ['How TvT works', [['Pick a team', `Choose Ice or Fire and bet ${CUR}, gifts, or both.`], ['Wait for the round to start', 'Once both teams have bets, a 20-second betting period begins. When it ends, no more bets can be placed and the game starts to determine the winner.'], ['Winners share the pool', `The losing pool is shared among winners in proportion to their bets. Losing gifts are distributed where possible, and the remaining value is paid in ${CUR}.`], ['Stay with your team', "During the betting period, you can add to your bet, but you can't switch teams."]]],
+  pvp: ['How PvP works', [['Join the battle', `Bet ${CUR} or gifts. Your chance equals your share of the total pool.`], ['Wait for the timer', 'The round starts when at least 2 players join and the timer ends.'], ['Winner takes all', 'The wheel picks one winner who receives the whole pool.']]],
+  plinko: ['How Plinko works', [['Choose risk', 'Easy, Medium or Hard. Hard has 16 rows and up to 1000x.'], ['Drop the ball', 'The ball bounces through the pins and lands in a multiplier slot.'], ['Get paid', `Bet × multiplier is credited to your ${CUR} balance.`]]],
+  dice: ['How Dice works', [['Pick a target', 'Drag the slider or type a multiplier or chance.'], ['Higher or Lower', 'Swap the direction with the arrows button.'], ['Roll', 'A number from 0 to 100 is rolled. Land in the green zone to win.']]],
+  spins: ['How Spins works', [['Spin the board', '25 gifts drop on the board.'], ['Match gifts', '8 or more of the same gift pay out. 12+ pays the most.'], ['Features', 'Double Chance adds 25% to the bet and boosts win chance. Buy Features gives 10 free spins with x10 wins.']]],
+  upgrade: ['How Upgrades Work', [['Select Your Gift', 'Choose a gift from your backpack to upgrade'], ['Choose Target', 'Pick the gift you want to upgrade to from the available pool'], ['Spin the Wheel', 'Press the upgrade button and watch as your gift is upgraded to a higher value or lost in the attempt']]],
+  crafts: ['How Crafts Work', [['Add Gifts', 'Select 2 to 10 gifts from your inventory to start a craft'], ['Choose Risk Level', 'Pick SAFE, NORMAL, or RISKY mode based on your risk tolerance'], ['Execute Craft', 'Confirm and execute your craft to combine the gifts'], ['Receive Reward', 'Get a new gift based on the craft outcome']]]
+};
+
+$id('hPill').insertAdjacentHTML('afterbegin', `<div class="hrk" id="hRk"><div class="wf"><i></i>${IC.wifi}</div><button class="gr" id="gfxB">${IC.gear}</button><div class="gdd" id="gfxD"><small>GRAPHICS</small><button data-g="high">High</button><button data-g="med">Medium</button><button data-g="low">Low</button></div></div>`);
+function gfxSync() { $$('#gfxD [data-g]').forEach(b => b.classList.toggle('on', b.dataset.g === S.gfx)) }
+$id('gfxB').onclick = e => { e.stopPropagation(); gfxSync(); $id('gfxD').classList.toggle('on') };
+$id('gfxD').onclick = e => { e.stopPropagation(); const b = e.target.closest('[data-g]'); if (!b) return; S.gfx = b.dataset.g; S.gfxSet = 1; save(); hqGfx(); gfxSync(); $id('gfxD').classList.remove('on'); rkResize() };
+document.addEventListener('click', e => { if (!e.target.closest('#gfxB,#gfxD')) $id('gfxD').classList.remove('on') });
+$$('#hMain .avw, #hAv').forEach(a => { a.style.cursor = 'pointer'; a.onclick = () => go('profile') });
+
+const _go = go;
+const MAIN5 = ['boxp', 'daily', 'topup', 'profile'];
+go = function (id, np) {
+  _go(id, np);
+  const main = MAIN_HDR.includes(id) || MAIN5.includes(id);
+  $id('hMain').style.display = main ? 'flex' : 'none';
+  $id('hPill').style.display = main ? 'none' : 'flex';
+  const rk = id === 'rocket';
+  $id('hRk').style.display = rk ? 'flex' : 'none';
+  $id('hIcons').style.display = rk ? 'none' : 'flex';
+};
+
+const RKV = { rkGift: byName('Stellar Rocket'), boomAt: 0, curve: [] };
+const stage = $id('rkStage');
+if (stage) {
+  stage.insertAdjacentHTML('beforeend', `<canvas id="rkCv"></canvas><div id="rkImg"></div><div id="rkBoom"><svg viewBox="0 0 100 100"><defs><radialGradient id="bmg"><stop offset="0" stop-color="#fff"/><stop offset=".35" stop-color="#fde047"/><stop offset=".7" stop-color="#f97316"/><stop offset="1" stop-color="#ef4444"/></radialGradient></defs><path d="M50 2l9 26 22-16-10 25 27 3-25 12 20 18-27-5 3 27-16-22-16 22 3-27-27 5 20-18L8 40l27-3-10-25 22 16z" fill="url(#bmg)"/></svg></div><div id="rkBig"></div><div id="rkCount"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="44" stroke="#2e2e2e" stroke-width="5" fill="#161616"/><circle id="rkArc" cx="50" cy="50" r="44" stroke="#22c55e" stroke-width="5" fill="none" stroke-linecap="round" stroke-dasharray="276.5" stroke-dashoffset="0"/></svg><b id="rkCnt">5</b></div><div class="rkload" id="rkLoad">${IC.rocket.replace('<svg', '<svg width="46" height="46"')}<div class="spin"></div></div>`);
+}
+const cv = $id('rkCv'), cx = cv ? cv.getContext('2d') : null;
+function rkResize() { if (!stage) return; const r = stage.getBoundingClientRect(); const dpr = S.gfx === 'low' ? 1 : Math.min(2, window.devicePixelRatio || 1); if (cv) { cv.width = r.width * dpr; cv.height = r.height * dpr; cv.style.width = r.width + 'px'; cv.style.height = r.height + 'px' } RKV.dpr = dpr; RKV.W = r.width; RKV.H = r.height }
+window.addEventListener('resize', rkResize);
+const RK_MODELS = 'alien_pizza astro_peach baby_carrot banana bitcoin black_wing cardboard checkered chrome clever_bird doomsday fireworks first_step fishing_cat flower_power green_jelly gunship hornet jet_bike jewels knowledge laika lava_lamp little_journey lollipop malfunction mega_death mission_uranus neon_fuel normandy nostromo pencil pepelatz planet_express police_box popsicle rocket_plush ruby_sparkle silver_ride sky_ghost soap_bubbles space_bot space_veggie squirrel submarine telegram to_the_moon unicorn vintage_toy worm_gun'.split(' ');
+let rkPrevM = '';
+function rkSetSkin() { const g = byName('Stellar Rocket'); let ms; do { ms = pick(RK_MODELS) } while (ms === rkPrevM && RK_MODELS.length > 1); rkPrevM = ms; RKV.rkGift = g; RKV.rkModel = ms; const img = $id('rkImg'); if (img) img.innerHTML = GIM(g, ms).replace(/loading="lazy"/g, ''); setTimeout(() => { const im = $('#rkImg img'); if (im && window.RIKI_HQ) window.RIKI_HQ(im) }, 0) }
+function rkPos(t) { const W = RKV.W || 300, H = RKV.H || 300, q = 1 - Math.exp(-t / 3.2); return [W * (.08 + .5 * q), H * (.86 - .52 * q)]; }
+function rkDraw(now) {
+  if (!RKV.W && stage) rkResize();
+  if (!cx || !RKV.W) return;
+  const W = RKV.W, H = RKV.H, dpr = RKV.dpr; cx.setTransform(dpr, 0, 0, dpr, 0, 0); cx.clearRect(0, 0, W, H);
+  const img = $id('rkImg'), big = $id('rkBig'), cnt = $id('rkCount');
+  if (RK.phase === 'wait') {
+    if (img) img.classList.remove('on'); if (big) big.classList.remove('on', 'fly'); if (cnt) cnt.classList.add('on');
+    const left = Math.max(0, (RK.waitEnd - now) / 1000), tot = 7;
+    const rc = $id('rkCnt'); if (rc) rc.textContent = Math.ceil(left) || '0';
+    const arc = $id('rkArc'); if (arc) { arc.style.strokeDashoffset = 276.5 * (1 - left / tot); arc.style.stroke = left > 3 ? '#22c55e' : '#fbbf24' }
+    return;
+  }
+  if (cnt) cnt.classList.remove('on');
+  const t = RK.phase === 'fly' ? (now - RK.t0) / 1000 : (RK.crashAt - RK.t0) / 1000;
+  const [rx, ry] = rkPos(t);
+  const x0 = -10, y0 = H * .92, c1x = rx * .55, c1y = H * .92;
+  const crashed = RK.phase === 'crash', col = crashed ? '#ef4444' : '#7c6cf6';
+  cx.lineCap = 'round';
+  if (S.gfx !== 'low') { cx.shadowColor = col; cx.shadowBlur = 16 }
+  const gr = cx.createLinearGradient(x0, y0, rx, ry);
+  gr.addColorStop(0, crashed ? '#ef444433' : '#6d5cf633'); gr.addColorStop(.5, col); gr.addColorStop(1, crashed ? '#f87171' : '#a5b4fc');
+  cx.strokeStyle = gr; cx.lineWidth = 6; cx.beginPath(); cx.moveTo(x0, y0); cx.quadraticCurveTo(c1x, c1y, rx, ry); cx.stroke(); cx.shadowBlur = 0;
+  if (!crashed) { cx.fillStyle = '#fff'; cx.shadowColor = '#fff'; cx.shadowBlur = 12; cx.beginPath(); cx.arc(rx, ry, 5, 0, 7); cx.fill(); cx.shadowBlur = 0 }
+  const ang = Math.atan2(ry - c1y, rx - c1x) * 180 / Math.PI;
+  if (!crashed) {
+    const sz = Math.min(84, W * .24), bob = Math.sin(now / 160) * 3;
+    if (img) { img.style.width = img.style.height = sz + 'px'; img.style.transform = `translate(${rx - sz * .25}px,${ry - sz * .78 + bob}px) rotate(${ang + 45}deg)`; img.classList.add('on') }
+    if (big) { big.classList.remove('on'); big.classList.add('fly'); big.textContent = RK.m.toFixed(2) + 'x' }
+  } else {
+    if (img) img.classList.remove('on'); if (big) big.classList.remove('fly');
+    const bm = $id('rkBoom');
+    if (bm) {
+      bm.style.left = rx + 'px'; bm.style.top = ry + 'px';
+      if (!bm.classList.contains('on') && now - RK.crashAt < 100) { bm.classList.remove('on'); void bm.offsetWidth; bm.classList.add('on') }
+    }
+    if (big) {
+      big.textContent = RK.crash.toFixed(2) + 'x';
+      big.style.color = RK.crash < 1.2 ? '#ef4444' : RK.crash < 2 ? '#7c6cf6' : RK.crash < 5 ? '#8b5cf6' : '#a855f7';
+      if (now - RK.crashAt > 500) big.classList.add('on');
+    }
+  }
+}
+
+const _rkNew = rkNew;
+rkNew = function () { _rkNew(); rkSetSkin(); const b = $id('rkBoom'); if (b) b.classList.remove('on') };
+let rkL = 0;
+const _rkRender = rkRender;
+rkRender = function (force) {
+  _rkRender(force);
+  const now = performance.now();
+  if (cur === 'rocket') rkDraw(now);
+  if (!force && now - rkL < 280) return; rkL = now;
+  const chip = RK.phase === 'wait' ? `<span class="bet">BET</span>` : RK.phase === 'fly' ? `<span class="now">${RK.m.toFixed(2)}x</span>` : '';
+  const rh = $id('rkHist'); if (rh) rh.innerHTML = chip + RK.hist.map(h => `<span class="${h < 1.2 ? 'c-red' : h < 2 ? 'c-blu' : h < 5 ? 'c-grn' : h < 10 ? 'c-pur' : 'c-gld'}">${h.toFixed(2)}x</span>`).join('');
+  const list = [...RK.bets].sort((a, b) => (b.me ? 1 : 0) - (a.me ? 1 : 0) || (b.out ? 1 : 0) - (a.out ? 1 : 0) || b.amt - a.amt);
+  const rp = $id('rkPl');
+  if (rp) rp.innerHTML = list.length ? list.map(b => {
+    const lose = RK.phase === 'crash' && !b.out, m = b.out || (RK.phase === 'fly' ? RK.m : RK.phase === 'crash' ? RK.crash : 1);
+    const val = b.out ? b.amt * b.out : lose ? b.amt : b.amt * m;
+    return `<div class="prow ${b.out ? 'win' : ''} ${lose ? 'lose' : ''} ${b.me ? 'me' : ''}">${avHTML(b.name)}<div class="pi"><b>${esc(b.name)}${b.me ? ' (you)' : ''}${b.bot ? ' <span class="bt">BOT</span>' : ''}</b><span class="chipg">${GEM}${fmt(b.amt)} ×${m.toFixed(2)}</span></div><span class="pv">${gem(val)}</span>${b.nf ? `<span class="gsq">${GIM(b.nf.g, b.nf.ms)}</span>` : ''}</div>`;
+  }).join('') : `<div class="noply"><i>${ICO.rocket}</i><b>No Players Yet</b><small>Waiting for next round...</small></div>`;
+};
+
+const bm = $id('betM');
+if (bm) {
+  bm.classList.add('bm2', 'sheet2');
+  const mb = bm.querySelector('.mbody');
+  if (mb) {
+    mb.innerHTML = `
+      <div class="tabs" id="btTabs"><button data-t="gift">Gifts</button><button data-t="coin" class="on">${CUR}</button></div>
+      <div id="btCoin" class="mcard">
+        <div class="mrow"><span>Available Balance</span><b><span class="balv"></span><span class="gm">${GEM}</span></b></div>
+        <div class="lbl">Bet Amount</div><div class="inp"><input id="btAmt" type="number" inputmode="decimal" placeholder="${CUR} amount" step="0.01"><span class="gm">${GEM}</span></div>
+        <div class="mrow" style="margin:15px 0 0"><span>Auto cashout</span><label class="sw"><input type="checkbox" id="btAutoOn"><i></i></label></div>
+        <div class="acrow" id="btAutoW" style="display:none"><button id="acM">−</button><div class="inp"><input id="btAuto" type="number" value="2.00" step="0.1"><span>x</span></div><button id="acP">+</button></div>
+        <button class="mbtn dis" id="btGo">Place ${CUR} Bet ${ICO.rocket}</button>
+      </div>
+      <div id="btGift" style="display:none"><div class="grid" id="btGifts"></div><button class="mbtn dis hide" id="btGoG">Place Gift Bet ${ICO.rocket}</button></div>`;
+  }
+}
+
+// Barcha bo'limlar ishga tushishi uchun ekranlarni ro'yxatdan o'tkazamiz
+sec('boxp'); sec('daily'); sec('topup'); sec('backpack'); sec('invite');
+sec('leader'); sec('earn'); sec('profile'); sec('roulette'); sec('pvp');
+sec('tvt'); sec('upgrade'); sec('mines'); sec('spins'); sec('plinko');
+sec('dice'); sec('crafts'); sec('cases'); sec('market');
+
+// Qutilar dizayni va ulanishi
 function boxArt(bx) {
   const map = {
     'farm': 'scr_103958_b3_c1.png', 'autumn': 'scr_103958_b3_c2.png',
@@ -123,25 +300,6 @@ document.addEventListener('click', e => {
   else if (el.hasAttribute('data-dep')) { if (typeof openDeposit === 'function') openDeposit(); else go('topup'); }
 });
 
-sec('boxp');
-sec('daily');
-sec('topup');
-sec('backpack');
-sec('invite');
-sec('leader');
-sec('earn');
-sec('profile');
-sec('roulette');
-sec('pvp');
-sec('tvt');
-sec('upgrade');
-sec('mines');
-sec('spins');
-sec('plinko');
-sec('dice');
-sec('crafts');
-sec('cases');
-sec('market');
-
-console.log("RIKI App fully loaded and initialized.");
+rkSetSkin(); rkResize();
+console.log("RIKI App fully loaded with all sections & game logic.");
 })();
