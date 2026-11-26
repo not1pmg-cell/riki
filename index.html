@@ -9,7 +9,7 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-<link rel="stylesheet" href="css/style.css?v=20261122d">
+<link rel="stylesheet" href="css/style.css?v=20261126a">
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
@@ -53,29 +53,18 @@
     <button class="epic-ban" data-go="playhub">
       <img src="assets/epic/play.png" alt="Play Hub">
     </button>
-
-    <div class="half epic-half">
-      <button class="epic-ban tall" data-go="daily">
-        <img src="assets/epic/free24.png" alt="Free 24h">
-      </button>
-      <button class="epic-ban tall" data-box="free">
-        <img src="assets/epic/free.png" alt="Free">
-      </button>
-    </div>
   </div>
 </section>
 
 <!-- PLAY HUB -->
 <section class="screen" id="playhub">
   <div class="live"><div class="lbl">Live</div><div class="feed" id="feed2"></div></div>
-  <div class="pc c-upg" data-go="upgrade"><span class="tex"></span><span class="tag"><span data-icon="flame"></span>HOT</span><span class="uring" data-hero="ring2"></span><span class="ugift" data-g="Neko Helmet"></span><span class="uarr"></span><span class="pct24">24%</span><b>Upgrade</b><small>Choose a dream gift</small></div>
-  <div class="two">
-    <div class="pc c-min" data-go="mines"><span class="tex"></span><div class="mgrid-d"><i></i><i></i><i class="g" data-g="Astral Shard"></i><i class="b"><em>Boom</em><span data-g="Hex Pot"></span></i><i></i><i></i><i></i><i class="g" data-g="Astral Shard"></i><i class="g" data-g="Astral Shard"></i></div><b>Mines</b><small>Dodge the mines</small></div>
-    <div class="pc c-spn" data-go="spins"><span class="tex"></span><div class="bub"><i data-g="Stellar Rocket" style="left:20%;top:10%"></i><i data-g="Stellar Rocket" style="right:6%;top:4%"></i><i data-g="Hypno Lollipop" style="right:10%;top:36%"></i><i data-g="Jolly Chimp" style="left:26%;top:62%"></i><i data-g="Stellar Rocket" style="right:12%;top:62%"></i></div><span class="pepe" data-g="Plush Pepe"></span><b>Spins <i class="newt">NEW</i></b><small>Match the gifts</small></div>
-  </div>
-  <div class="two">
-    <div class="pc c-pln" data-go="plinko"><span class="tex"></span><span class="plh" data-hero="pyramid"></span><b>Plinko</b><small>Win up to 170x</small></div>
-    <div class="pc c-dic" data-go="dice"><span class="tex"></span><div class="cube"><i class="f1" data-g="Precious Peach"></i><i class="f2" data-g="Kissed Frog"></i><i class="f3" data-g="Plush Pepe"></i></div><span class="dbg d1"></span><span class="dbg d2"></span><b>Dice</b><small>Higher or Lower</small></div>
+  <button class="hubimg wide" data-go="upgrade"><img src="assets/hub/upgrade.png" alt="Upgrade" draggable="false"></button>
+  <div class="hubg">
+    <button class="hubimg" data-go="mines"><img src="assets/hub/mines.png" alt="Mines" draggable="false"></button>
+    <button class="hubimg" data-go="spins"><img src="assets/hub/spins.png" alt="Spins" draggable="false"></button>
+    <button class="hubimg" data-go="plinko"><img src="assets/hub/plinko.png" alt="Plinko" draggable="false"></button>
+    <button class="hubimg" data-go="dice"><img src="assets/hub/dice.png" alt="Dice" draggable="false"></button>
   </div>
   <div class="pc c-crf" data-go="crafts"><span class="tex"></span><div class="ctile" style="right:42%;top:46%"><i data-g="Kissed Frog"></i></div><div class="ctile" style="right:24%;top:12%"><i data-g="Signet Ring"></i></div><div class="ctile" style="right:4%;top:44%"><i data-g="Astral Shard"></i></div><b>Crafts</b><small>Merge your gifts</small></div>
 </section>
@@ -140,7 +129,7 @@
       <svg class="crys" viewBox="0 0 200 120" preserveAspectRatio="none"><defs><linearGradient id="cr1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#7dd3fc"/></linearGradient></defs><path d="M10 120 L22 30 L34 120Z M30 120 L48 10 L62 120Z M58 120 L70 50 L84 120Z M78 120 L92 70 L104 120Z M100 120 L110 85 L122 120Z" fill="url(#cr1)" opacity=".85"/></svg>
       <div class="avs" id="tvIav"></div></div>
     <div class="fire" id="tvFire"><span id="tvFp">50%</span>
-      <svg class="cracks" viewBox="0 0 300 260" preserveAspectRatio="none"><path d="M0 200 L60 170 L120 190 L180 150 L240 170 L300 140 M120 190 L140 230 L180 150 L170 110" stroke="#fb923c" stroke-width="2" fill="none"/></svg>
+      <svg class="cracks" viewBox="0 0 300 260" preserveAspectRatio="none"><path d="M0 200 L60 170 L120 190 L180 150 L240 170 L300 140 M120 190 L140 230 M180 150 L170 110" stroke="#fb923c" stroke-width="2" fill="none"/></svg>
       <svg class="flm" viewBox="0 0 300 150" preserveAspectRatio="none"><defs><linearGradient id="fl1" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#fde68a"/><stop offset=".5" stop-color="#f97316"/><stop offset="1" stop-color="#dc2626" stop-opacity="0"/></linearGradient></defs><path d="M20 150 Q30 90 45 120 Q55 60 70 150Z" fill="url(#fl1)"/><path d="M200 150 Q210 40 235 100 Q250 30 270 150Z" fill="url(#fl1)"/><path d="M240 150 Q255 70 270 110 Q285 50 300 150Z" fill="url(#fl1)"/><path d="M60 150 Q70 100 85 130 Q95 90 105 150Z" fill="url(#fl1)" opacity=".8"/></svg>
       <div class="avs" id="tvFav"></div></div>
     <div class="ball idle" id="tvBall"></div>
@@ -252,6 +241,87 @@
   <div class="mkgrid" id="mkGrid"></div>
 </section>
 
+<!-- BACKPACK -->
+<section class="screen" id="backpack">
+  <div class="box" style="display:flex;align-items:center"><div><b>Backpack</b><p style="margin:2px 0 0">Total: <b id="bpTotal" style="color:#fff"></b></p></div><button class="depbtn" id="sellAll" style="font-size:10px;padding:7px 9px">Sell all</button></div>
+  <div class="grid" id="bpGrid"></div>
+</section>
+
+<!-- INVITE -->
+<section class="screen" id="invite">
+  <div class="box"><b>Invite friends</b><p>Get 5 tickets for every friend and 10% of their deposits.</p><div class="link" id="refLink"></div>
+  <div class="two" style="margin-top:3px"><button class="bigbtn p" id="copyRef">Copy</button><button class="bigbtn ok" id="shareRef">Share</button></div></div>
+  <div class="box"><b>Statistics</b><p>Invited: <b id="refN" style="color:#fff">0</b> · Bonus: <b id="refB" style="color:#fff">0</b> TON</p></div>
+</section>
+
+<!-- LEADERBOARD -->
+<section class="screen" id="leader">
+  <h4 style="margin-top:3px">Leaderboard</h4>
+  <div class="seg lbtabs" id="lbTabs"><button data-t="pvp" class="on">PvP</button><button data-t="rich">Boylar</button><button data-t="nft">NFT</button></div>
+  <div id="lbList"></div>
+</section>
+
+<!-- EARN -->
+<section class="screen" id="earn"><h4 style="margin-top:3px">Tasks</h4><div id="taskList"></div></section>
 </div>
-</body>
-</html>
+
+<nav><div class="in">
+  <button data-go="backpack"><span data-icon="box"></span>Backpack</button>
+  <button data-go="invite"><span data-icon="users"></span>Invite</button>
+  <button data-go="home" class="on"><span data-icon="home"></span>Home</button>
+  <button data-go="leader"><span data-icon="trophy"></span>Leaderboard</button>
+  <button data-go="earn"><span data-icon="coins"></span>Earn<span class="badge" id="earnBadge" style="display:none"></span></button>
+</div></nav>
+
+<!-- modals -->
+<div class="modal" id="betM"><div class="mbox">
+  <div class="mhead">Place bet<button class="mx" data-close>✕</button></div>
+  <div class="mbody">
+    <div class="tabs" id="btTabs"><button data-t="gift">Gifts</button><button data-t="coin" class="on">Balance</button></div>
+    <div class="mcard">
+      <div id="btCoin"><div class="mrow"><span>Available Balance</span><b><span class="balv"></span><span class="gm"></span></b></div>
+        <div class="mrow" style="margin:4px 0 7px">Bet Amount</div><div class="inp" style="border-color:#2f7cf6"><input id="btAmt" type="number" inputmode="decimal" placeholder="Amount" step="0.01"><span class="gm"></span></div>
+        <div class="amts" style="margin-top:7px"><button data-q="0.5">½</button><button data-q="2">x2</button><button data-q="max">Max</button></div></div>
+      <div id="btGift" style="display:none"><div class="grid" id="btGifts"></div></div>
+      <div class="mrow" style="margin:13px 0 0">Auto cashout<label class="sw"><input type="checkbox" id="btAutoOn"><i></i></label></div>
+      <div class="inp" id="btAutoW" style="display:none;margin-top:7px"><input id="btAuto" type="number" value="2" step="0.1"><span>x</span></div>
+      <button class="mbtn ok" id="btGo">Place Bet 🚀</button>
+    </div>
+  </div>
+</div></div>
+<div class="modal" id="gpM"><div class="mbox">
+  <div class="mhead"><span id="gpT">Select a gift</span><button class="mx" data-close>✕</button></div>
+  <div class="mbody"><input class="gpsearch" id="gpQ" placeholder="Search..."><div class="grid" id="gpGrid"></div><div class="pickbar" id="gpBar"><b id="gpSum"></b><button id="gpOk">Done</button></div></div>
+</div></div>
+<div class="modal depm" id="depM"><div class="mbox">
+  <div class="mhead">Deposit<button class="mx" data-close>✕</button></div>
+  <div class="mbody">
+    <div class="tabs" id="depTabs"><button data-t="ton" class="on">💎 TON</button><button data-t="stars">⭐ Stars</button><button data-t="gift">🎁 Gift</button></div>
+    <div id="depBody"></div>
+    <button class="ghost" id="resetBtn">Reset everything</button>
+  </div>
+</div></div>
+<div class="modal" id="welM"><div class="mbox" style="text-align:center">
+  <div class="mbody" style="padding:21px 15px">
+    <div style="width:89px;height:89px;margin:0 auto" data-g="Loot Bag"></div>
+    <div style="font-size:19px;font-weight:900;margin:10px 0 4px">Welcome to RIKI!</div>
+    <div style="font-size:13px;color:#cfcfd6">Your welcome gift</div>
+    <div style="font-size:30px;font-weight:900;margin:7px 0;display:flex;align-items:center;justify-content:center;gap:6px"><span class="gm"></span><span id="welV">1000</span></div>
+    <div class="note" style="margin:0">This is a demo balance for playing.</div>
+    <button class="bigbtn ok" data-close>Start</button>
+  </div></div></div>
+<div class="modal" id="nftM"><div class="mbox nftbox">
+  <div class="nfthero" id="nftHero"><button class="mx" data-close style="position:absolute;right:9px;top:9px;z-index:3;background:#0006">✕</button><div class="nftart" id="nftArt"></div><div class="nftname" id="nftName"></div><div class="nftsn" id="nftSn"></div></div>
+  <div class="mbody"><div class="nfttab" id="nftTab"></div><div class="nftbtns" id="nftBtns"></div></div>
+</div></div>
+<div class="modal" id="infoM"><div class="mbox">
+  <div class="mhead"><span id="infoT"></span><button class="mx" data-close>✕</button></div>
+  <div class="mbody" id="infoB"></div>
+</div></div>
+<div class="res-ov" id="resOv"></div>
+<div id="toast"></div>
+
+<script src="js/vendor/lottie.min.js"></script>
+<script src="js/app.js?v=20261126a"></script>
+<script src="js/screens.js?v=20261126a"></script>
+</body></html>

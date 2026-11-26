@@ -2668,113 +2668,32 @@ nav button:not([data-go="home"]).on{background:#8774e124}
    EPIC GIFT 1:1 — VIDEODAGI BARCHA ANIMATSIYA VA DIZAYNLAR
    ===================================================================== */
 
-/* 1. Home bannerlar (jonli animatsiyali) */
-.epic-home-banners {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  margin-bottom: 12px;
-}
-.epic-ban {
-  width: 100% !important;
-  height: 102px !important;
-  padding: 0 !important;
-  border: none !important;
-  border-radius: 18px !important;
-  overflow: hidden !important;
-  position: relative !important;
-  display: block !important;
-  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.45) !important;
-  transition: transform 0.14s ease !important;
-}
-.epic-ban:active { transform: scale(0.97) !important; }
-.epic-ban img {
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover !important;
-  display: block !important;
-}
-/* Banner ustida jonli nur (shimmer) animatsiyasi */
-.epic-ban::after {
-  content: "";
-  position: absolute;
-  top: 0; bottom: 0; left: -80px;
-  width: 60px;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.28), transparent);
-  transform: skewX(-22deg);
-  animation: epicShine 3.8s infinite;
-  pointer-events: none;
-}
-@keyframes epicShine {
-  0% { left: -80px; }
-  30%, 100% { left: 120%; }
-}
+/* 1. Home bannerlar — Epic Gift kabi: to'liq kenglik, rasm proporsiyasi saqlanadi (kesilmaydi) */
+.epic-home-banners{display:flex;flex-direction:column;gap:10px;margin:2px 0 0}
+.epic-ban{display:block;width:100%;padding:0;border:0;background:#1f1f22;border-radius:18px;overflow:hidden;position:relative;
+  aspect-ratio:721/173;box-shadow:0 6px 18px rgba(0,0,0,.45);transition:transform .14s ease;-webkit-tap-highlight-color:transparent}
+.epic-ban:active{transform:scale(.97)}
+.epic-ban img{display:block;width:100%;height:100%;object-fit:cover;object-position:center;pointer-events:none;user-select:none}
+.epic-ban::after{content:"";position:absolute;top:0;bottom:0;left:-80px;width:60px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.22),transparent);transform:skewX(-22deg);animation:epicShine 4.2s infinite;pointer-events:none}
+@keyframes epicShine{0%{left:-80px}30%,100%{left:120%}}
 
-.epic-half {
-  display: grid !important;
-  grid-template-columns: 1fr 1fr !important;
-  gap: 12px !important;
-  margin-top: 2px !important;
-}
-.epic-ban.tall {
-  height: auto !important;
-  aspect-ratio: 171 / 238 !important;
-  border-radius: 20px !important;
-}
-
-/* 2. Qutilar (Cases) — Farm, Autumn, Heaven, Hell, Oscar, Space */
-#home .boxes {
-  display: grid !important;
-  grid-template-columns: 1fr 1fr !important;
-  gap: 12px !important;
-  margin-top: 12px !important;
-}
-#home .bx {
-  aspect-ratio: 171 / 238 !important;
-  border-radius: 20px !important;
-  background: #242428 !important;
-  border: 1.5px solid #323238 !important;
-  overflow: hidden !important;
-  position: relative !important;
-  transition: transform 0.14s ease !important;
-}
-#home .bx:active { transform: scale(0.97) !important; }
-#home .bx.farm {
-  border-color: #22c55e !important;
-  box-shadow: 0 0 20px rgba(34, 197, 94, 0.25) !important;
-}
-#home .bx .art.cover {
-  position: absolute !important;
-  inset: 0 0 46px 0 !important;
-  padding: 0 !important;
-}
-#home .bx .art.cover img {
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: cover !important;
-  animation: caseFloat 3.4s ease-in-out infinite;
-}
-@keyframes caseFloat {
-  0%, 100% { transform: scale(1) translateY(0); }
-  50% { transform: scale(1.03) translateY(-3px); }
-}
-#home .bx .ft {
-  height: 46px !important;
-  background: #28282d !important;
-  padding: 0 12px !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: space-between !important;
-}
-#home .bx .ft b { font-size: 14px !important; font-weight: 700 !important; color: #fff !important; }
-#home .bx .ft em {
-  background: #8774e1 !important;
-  border-radius: 8px !important;
-  padding: 4px 9px !important;
-  font-size: 12px !important;
-  font-weight: 800 !important;
-}
-#home .bx.farm .ft em { background: #22c55e !important; }
+/* 2. Qutilar (Free24, Free, Farm, Autumn, Heaven, Hell ...) — Epic kartasi: rasm + pastki panel */
+#home .boxes{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+#home .bx{aspect-ratio:auto;display:flex;flex-direction:column;border-radius:20px;background:#262629;border:1.5px solid #303034;overflow:hidden;position:relative;padding:0;transition:transform .14s ease}
+#home .bx:active{transform:scale(.97)}
+#home .bx .art.cover{position:relative;inset:auto;aspect-ratio:1/1;width:100%;min-height:0;overflow:hidden;flex:none;padding:0;background:#1d1d20!important;display:block}
+#home .bx .art.cover:before{display:none}
+#home .bx .art.cover img{position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:cover;pointer-events:none;user-select:none;animation:none}
+#home .bx .ft{position:relative;height:48px;flex:none;background:#2a2a2e;padding:0 10px 0 12px;display:flex;align-items:center;justify-content:space-between}
+#home .bx .ft b{font-size:14px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#home .bx .ft em{background:#8774e1;border-radius:9px;padding:5px 10px;font-size:12.5px;font-weight:800;font-style:normal;display:flex;align-items:center;gap:4px}
+#home .bx.farm{border-color:#22c55e;box-shadow:0 0 18px rgba(34,197,94,.22)}
+#home .bx.farm .ft em{background:#22c55e}
+#home .bx.f24{border-color:#f5b819;box-shadow:0 0 18px rgba(245,184,25,.18)}
+#home .bx.fre{border-color:#8774e1;box-shadow:0 0 18px rgba(135,116,225,.2)}
+#home .bx .ft em.fy{background:#f5b819;color:#fff}
+#home .bx .ft em svg{width:13px;height:13px}
+#home .bx .rib{top:8px;left:8px}
 
 /* 3. Play Hub — jonli harakatlanuvchi kartochkalar */
 #playhub .c-upg .uring { animation: spinSlow 14s linear infinite; }
@@ -2826,30 +2745,12 @@ nav button[data-go="home"].on {
   color: #fff !important;
   box-shadow: 0 4px 18px rgba(135, 116, 225, 0.55) !important;
 }
-/* ================= FREE24 VA FREE KARTALARINI 1:1 TO'G'IRLASH ================= */
-.epic-half {
-  display: grid !important;
-  grid-template-columns: 1fr 1fr !important;
-  gap: 12px !important;
-  margin-top: 4px !important;
-}
 
-.epic-ban.tall {
-  height: auto !important;
-  aspect-ratio: 171 / 240 !important;
-  border-radius: 20px !important;
-  overflow: hidden !important;
-  background: transparent !important;
-}
-
-.epic-ban.tall img {
-  width: 100% !important;
-  height: 100% !important;
-  object-fit: fill !important; /* Katakchani to'liq egallashi uchun */
-  display: block !important;
-}
-/* ================= FREE24 BANNERINI TO'LIG'ICHA KO'RSATISH ================= */
-.epic-half .epic-ban.tall:first-child img {
-  object-position: left center !important; /* Rasmni o'ngroqqa surib to'liq ko'rsatish */
-  transform: scale(1.05); /* Harflar to'liq sig'ishi uchun kichik masshtab */
-}
+/* Play Hub — Epic kabi rasmli kartalar */
+#playhub .hubimg{display:block;width:100%;padding:0;border:0;background:#1f1f22;border-radius:20px;overflow:hidden;position:relative;transition:transform .14s ease;box-shadow:0 8px 20px -10px #000c;-webkit-tap-highlight-color:transparent}
+#playhub .hubimg:active{transform:scale(.97)}
+#playhub .hubimg img{display:block;width:100%;height:100%;object-fit:cover;pointer-events:none;user-select:none}
+#playhub .hubimg.wide{aspect-ratio:530/198;margin-top:2px}
+#playhub .hubg{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
+#playhub .hubg .hubimg{aspect-ratio:257/223}
+#playhub .c-crf{margin-top:0}
