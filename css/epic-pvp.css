@@ -1,0 +1,15 @@
+/* PvP — Epic videosidan (frames/18,19,21; A 69.5–77.5 s). 390 px bo'yicha o'lchangan. */
+#pvp #pvSt{height:44px!important;min-height:0!important;margin:2px 0 2px!important;padding:0!important;overflow:hidden}
+#pvp .pvarc{height:206px!important;margin:0 -12px!important}
+#pvp .arcring{top:191px!important}                 /* g'ildirak markazi y=293 (ekran), radius 161 */
+#pvp .arcc{top:96px!important}                     /* taymer pilli markazi y=216 */
+#pvp #pvStrip{height:129px!important}
+#pvHash{display:none!important}                    /* videoda yo'q */
+#pvp .arcring.idle{animation:pvSpin 75s linear infinite!important}   /* 4.8°/s, soat yo'nalishida */
+@keyframes pvSpin{to{transform:rotate(360deg)}}
+
+/* g'ildirak plitkalari: Epic ~76 px, qadam ~30–33° */
+#pvp .atile{left:-38px!important;top:-38px!important;width:76px!important;height:76px!important;border-radius:20px!important;transform-origin:38px 38px!important}
+/* pastki panel ekran pastida (Epic: tugma pastki menyudan ~10 px yuqorida) */
+#pvp{display:flex!important;flex-direction:column;min-height:calc(100vh - 54px - 71px)}
+#pvp .dock{position:static!important;margin-top:auto!important;margin-bottom:10px!important}

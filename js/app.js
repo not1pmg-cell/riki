@@ -364,7 +364,7 @@ function feedTick() {
 const RK = { phase: 'wait', t0: 0, waitEnd: 0, crash: 1, m: 1, bets: [], my: null, next: null, hist: [], round: 10231 };
 function rkCrashPoint() { const r = Math.random(); if (r < 0.03) return 1; return Math.min(1000, Math.max(1, Math.floor(0.97 / (1 - r) * 100) / 100)) }
 function rkNew() {
-  RK.phase = 'wait'; RK.waitEnd = performance.now() + 7000; RK.m = 1; RK.round++;
+  RK.phase = 'wait'; RK.waitEnd = performance.now() + 5000; RK.m = 1; RK.round++;
   RK.crash = rkCrashPoint(); RK.bets = []; RK.my = null;
   if (RK.next) { RK.my = RK.next; RK.next = null; RK.bets.push(RK.my) }
   const stg = $('#rkStage'); stg.classList.remove('fly', 'boom');
@@ -394,7 +394,7 @@ function rkTick(now) {
       rkFrags();
     }
   } else if (RK.phase === 'crash') {
-    if (now - RK.crashAt > 3000) rkNew();
+    if (now - RK.crashAt > 3800) rkNew();
   }
   if (cur === 'rocket') rkRender();
 }
@@ -550,9 +550,9 @@ function pvRender(force) {
   jb.className = 'bigbtn' + (ok ? ' y' : ''); jb.textContent = PV.phase === 'wait' ? 'Join the Battle' : PV.phase === 'spin' ? 'Spinning…' : 'Next round soon';
   if (!force && now - pvLast < 400) return; pvLast = now;
   // yoy (arc)
-  const ring = $('#pvRing'); const N = 12, R = 176; let h = '';
+  const ring = $('#pvRing'); const N = 12, R = 161; let h = '';
   for (let i = 0; i < N; i++) {
-    const a = -90 + (i - (N - 1) / 2) * 24; const p = PV.pl[PV_SLOT.indexOf(i)];
+    const a = -90 + (i - (N - 1) / 2) * 30; const p = PV.pl[PV_SLOT.indexOf(i)];
     const tr = `transform:rotate(${a + 90}deg) translateY(-${R}px)`;
     const gf = p && p.gifts && p.gifts.length ? [...p.gifts].sort((x, y) => (y.p || y.v || 0) - (x.p || x.v || 0))[0] : null;
     h += p ? `<div class="atile f" style="${tr};--c:${p.c}">${gf ? GI(gf) : GEM}<b>${fmt(p.amt)}</b></div>` : `<div class="atile e" style="${tr}"><span class="ph">${esc((CFG.BRAND || 'RIKI').toUpperCase())}<br>GIFT</span></div>`;

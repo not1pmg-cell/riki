@@ -1470,8 +1470,8 @@ def rk_bot_auto() -> float:
 BET_TIME = 25.0   # 2+ o'yinchi bo'lgach kutish (s)
 SPIN_TIME = 8.0   # PvP tasmasi / g'ildirak aylanishi (s) — ilovadagi 7 s animatsiyadan keyin natija
 DONE_TIME = 5.0   # natija ko'rsatish (s)
-RK_WAIT = 7.0     # rocket tikish vaqti (s)
-RK_AFTER = 3.0    # crashdan keyin (s)
+RK_WAIT = 5.0     # rocket sanoq (s) — Epic: 5→1, har biri 1 s
+RK_AFTER = 3.8    # crashdan keyin (s) — Epic: portlash 0.83 s + yozuv 1.1–2.65 s + pauza
 
 def now_ms() -> int:
     return int(time.time() * 1000)

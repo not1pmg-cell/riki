@@ -1,0 +1,82 @@
+/* =====================================================================
+   ROCKET — Epic videosidan 1:1 (spec.md, frames/26,28,29,31,34–38,79,80)
+   Barcha qiymatlar kadrdan o'lchangan; 390 px kenglik.
+   ===================================================================== */
+:root{
+  --rk-bg:#191919;                 /* 31 @300,60 */
+  --rk-pill:#282828;               /* 37 header pill */
+  --rk-pill-in:#353535;            /* "+" doira */
+  --rk-dot-green:#40e79b;
+  --rk-btn-h:52px;                 /* 36: 302.4–354.4 */
+  --rk-btn-bet-a:#2193e3; --rk-btn-bet-b:#247be3;
+  --rk-btn-grey:#4b5461;           /* Waiting / Cancel Bet */
+  --rk-btn-cash:#27d66b;
+  --rk-gap-under-btn:6.2px;        /* 355.8–361.9 */
+  --rk-list-bg:#282828;
+  --rk-row-h:62px; --rk-row-gap:6px;
+  --rk-row-idle:#263334; --rk-row-win:#304c38; --rk-row-lose:#4c3236;
+  --rk-chip-h:30px; --rk-chip-r:7.5px; --rk-chip-gap:4.9px;
+  --rk-c-red-bg:#401d22; --rk-c-red-bd:#925058; --rk-c-red-tx:#f4c2c9;
+  --rk-c-grn-bg:#1e3f26; --rk-c-grn-bd:#559c69; --rk-c-grn-tx:#bffbd0;
+  --rk-c-blu-bg:#212d45; --rk-c-blu-bd:#53729b; --rk-c-blu-tx:#c0d9f5;
+  --rk-c-pur-bg:#352244; --rk-c-pur-bd:#7e599b; --rk-c-pur-tx:#e5cdf9;
+  --rk-c-yel-bg:#423218; --rk-c-yel-bd:#ad8926; --rk-c-yel-tx:#f7e58f;
+}
+#rocket{padding:0!important}
+#rocket>*:not(#rkStage):not(#rkBtn):not(#rkPl){display:none!important}
+#rkStage{position:relative;height:300px;margin:0!important;background:var(--rk-bg)!important;overflow:hidden;border-radius:0!important}
+#rkStage>*:not(#erk){display:none!important}
+#erk{position:absolute;inset:0}
+#erk canvas{position:absolute;inset:0;width:100%;height:100%}
+/* NFT sovg'a (iz uchida) */
+#erkG{position:absolute;left:0;top:0;width:72px;height:72px;will-change:transform;pointer-events:none}
+#erkG .gi-wrap,#erkG img{width:100%;height:100%;object-fit:contain;display:block}
+#erkG.off{opacity:0}
+/* sanoq halqasi: d=122.5, markaz (201,151) */
+#erkC{position:absolute;left:201px;top:151px;width:122.5px;height:122.5px;margin:-61.25px 0 0 -61.25px;border-radius:50%;display:none;
+  background:radial-gradient(circle,color-mix(in srgb,var(--cc) 22%,transparent) 0,transparent 70%)}
+#erkC.on{display:block}
+#erkC svg{position:absolute;inset:0;transform:rotate(-90deg)}
+#erkC b{position:absolute;inset:0;display:grid;place-items:center;font-size:55px;font-weight:800;color:#fff;line-height:1}
+/* crash yozuvi: balandligi 52.7 px, markaz x=201, tepa 130 */
+#erkT{position:absolute;left:0;right:0;top:120px;text-align:center;font-size:72px;font-weight:900;letter-spacing:-2px;line-height:1;display:none}
+#erkT.on{display:block}
+/* tarix chiplari — sahna pastida (y 265.5) */
+#erkH{position:absolute;left:0;right:0;top:265.5px;height:var(--rk-chip-h);display:flex;gap:var(--rk-chip-gap);overflow:hidden;white-space:nowrap}
+#erkH span{flex:none;height:var(--rk-chip-h);padding:0 9px;display:flex;align-items:center;border-radius:var(--rk-chip-r);border:1.5px solid;font-size:12px;font-weight:800}
+#erkH .red{background:var(--rk-c-red-bg);border-color:var(--rk-c-red-bd);color:var(--rk-c-red-tx)}
+#erkH .grn{background:var(--rk-c-grn-bg);border-color:var(--rk-c-grn-bd);color:var(--rk-c-grn-tx)}
+#erkH .blu{background:var(--rk-c-blu-bg);border-color:var(--rk-c-blu-bd);color:var(--rk-c-blu-tx)}
+#erkH .pur{background:var(--rk-c-pur-bg);border-color:var(--rk-c-pur-bd);color:var(--rk-c-pur-tx)}
+#erkH .yel{background:var(--rk-c-yel-bg);border-color:var(--rk-c-yel-bd);color:var(--rk-c-yel-tx)}
+/* tugma: to'liq kenglik, burchaksiz */
+#rkBtn{display:block!important;width:100%;height:var(--rk-btn-h)!important;margin:0!important;border:0!important;border-radius:0!important;box-shadow:none!important;
+  font-size:16px!important;font-weight:700!important;color:#fff!important;background:linear-gradient(90deg,var(--rk-btn-bet-a),var(--rk-btn-bet-b))!important}
+#rkBtn.e-grey{background:var(--rk-btn-grey)!important;color:#aab2bc!important}
+#rkBtn.e-cash{background:var(--rk-btn-cash)!important}
+/* o'yinchilar ro'yxati */
+#rkPl{margin-top:var(--rk-gap-under-btn)!important;background:var(--rk-list-bg)!important;border-radius:0!important;padding:8px 0 10px!important;display:flex!important;flex-direction:column;gap:var(--rk-row-gap)!important;min-height:0!important}
+#rkPl .er{height:var(--rk-row-h);display:flex;align-items:center;gap:11px;padding:0 12px;background:var(--rk-row-idle);border-top:1px solid #2f4448}
+#rkPl .er.w{background:var(--rk-row-win);border-top-color:#3f6b4b}
+#rkPl .er.l{background:var(--rk-row-lose);border-top-color:#6b3f45}
+#rkPl .er .av{width:40px;height:40px;border-radius:8px;flex:none;font-size:15px}
+#rkPl .er .nm{flex:1;min-width:0}
+#rkPl .er .nm b{display:block;font-size:14px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#rkPl .er .nm small{display:inline-flex;align-items:center;gap:4px;margin-top:3px;font-size:12px;color:#cfd6d6}
+#rkPl .er .nm small .gem{width:12px;height:12px}
+#rkPl .er .v{display:flex;align-items:center;gap:4px;font-size:14px;font-weight:700;color:#fff}
+#rkPl .er .v .gem{width:14px;height:14px}
+#rkPl .more{text-align:center;color:#8b8b8b;font-size:12px;font-weight:600;padding:6px 0 0}
+#rkPl .none{display:flex;flex-direction:column;align-items:center;padding:33px 0 20px;gap:0}
+#rkPl .none i{width:44px;height:44px;border-radius:10px;background:#343334;display:grid;place-items:center;color:#9a9a9a;margin-bottom:12px}
+#rkPl .none i svg{width:22px;height:22px}
+#rkPl .none b{font-size:15px;font-weight:700;color:#e5e5e5}
+#rkPl .none small{font-size:13px;color:#9a9a9a;margin-top:3px}
+#rkPl .none em{font-style:normal;color:#898989;letter-spacing:3px;margin-top:6px}
+/* Rocket sarlavhasi: wifi + sozlama + balans pillari */
+body.e-rk #hPill{background:var(--rk-bg)!important;border:0!important;box-shadow:none!important}
+body.e-rk #hRk .wf,body.e-rk #hRk .gr,body.e-rk #hPill .pill{background:var(--rk-pill)!important;height:35.6px;border-radius:10px!important;border:0!important}
+/* sarlavha sahna ustida turadi (kadrlarda sahna foni ekran tepasidan boshlanadi) */
+body.e-rk #hPill{position:absolute!important;top:0;left:0;right:0;z-index:20;background:transparent!important}
+body.e-rk .app{padding-top:0!important}
+body.e-rk #rkStage{height:302px}
