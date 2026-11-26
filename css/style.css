@@ -2778,3 +2778,21 @@ img.dm{object-fit:contain;flex:none}
 .lgdd button.on{background:#ffffff14}
 .lgdd button i{font-style:normal;color:#34d399;opacity:0}
 .lgdd button.on i{opacity:1}
+
+/* ROCKET banneri — Epic kabi jonli ko'paytiruvchilar (rasmdagi yozuvlar ustidan) */
+.epic-ban[data-go="rocket"]{container-type:inline-size}
+.epic-ban .rkx{position:absolute;display:flex;align-items:center;justify-content:center;padding:0 1.1cqw;box-sizing:border-box;border-radius:.6cqw;
+  background:linear-gradient(180deg,#2bd47a,#13b862);color:#fff;font-family:Inter,system-ui,sans-serif;font-weight:900;font-style:italic;letter-spacing:-.02em;
+  text-shadow:0 .25cqw 0 #0c7a3f;box-shadow:0 .4cqw 1.2cqw #0a4d2a55;white-space:nowrap;pointer-events:none;transition:transform .18s}
+.epic-ban .rkx.pop{animation:rkxPop .28s ease-out}
+@keyframes rkxPop{0%{filter:brightness(1.35)}100%{filter:none}}
+.epic-ban .rkx.a{left:59.64%;top:19.65%;min-width:16.48%;height:23.95%;transform:translate(-50%,-50%) rotate(24deg);font-size:4.30cqw}
+.epic-ban .rkx.b{left:59.50%;top:70.52%;min-width:10.04%;height:15.54%;transform:translate(-50%,-50%) rotate(25deg);font-size:2.90cqw}
+.epic-ban .rkx.c{left:92.23%;top:63.01%;min-width:9.89%;height:15.54%;transform:translate(-50%,-50%) rotate(24deg);font-size:2.90cqw}
+.epic-ban .rkx.d{left:83.22%;top:88.44%;min-width:7.19%;height:11.01%;transform:translate(-50%,-50%) rotate(22deg);font-size:2.10cqw}
+
+/* PvP g'ildiragi: bo'sh kartalarda Epic kabi brend yozuvi */
+#pvp .atile.e .ph{color:#424246;font-size:17px;font-weight:900;letter-spacing:.5px;transform:rotate(-28deg);line-height:1.1}
+#pvp .arcring{animation:spinr 60s linear infinite}
+
+#pvphub .rlcard{display:none!important}

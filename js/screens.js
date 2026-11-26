@@ -1507,7 +1507,7 @@ setInterval(rlTick, 250);
 
 // ---------------------------------------------------------------- PvP Hub: 3 bo'lim
 $id('pvphub').querySelector('.tvtcard').insertAdjacentHTML('afterend', `<div class="rlcard" data-go="roulette"><span class="tex"></span><div class="rlct"><b>🎡 Roulette</b><small>Spin the wheel, winner takes all</small><div class="rlcp" id="rhPot">${GEM}0.00</div></div><div class="rlmini" id="rhWheel"><i>LIVE</i></div><span class="rlst" id="rhSt">Waiting for players</span><button class="joinb">Join ›</button></div>`);
-$id('pvphub').insertAdjacentHTML('afterbegin', `<div class="hubtabs"><button data-go="pvp">⚔️ PvP</button><button data-go="tvt">🛡 TvT</button><button data-go="roulette">🎡 Roulette</button></div>`);
+if (0) $id('pvphub').insertAdjacentHTML('afterbegin', `<div class="hubtabs"><button data-go="pvp">⚔️ PvP</button><button data-go="tvt">🛡 TvT</button><button data-go="roulette">🎡 Roulette</button></div>`);
 function rlHub() {
   const segs = rlSegs(); $id('rhPot').innerHTML = `${GEM}${fmt(rlTot())}`;
   $id('rhWheel').style.background = segs.length ? `conic-gradient(${segs.map(s => `${s.p.c} ${s.a0}deg ${s.a1}deg`).join(',')})` : '#2f2f2f';
@@ -2885,4 +2885,15 @@ Object.assign(window, { RIKI_STAKE: (g, ton, items, ex) => liveStake(g, ton, ite
 // =====================================================================
 function pvWinSheet() { if (PV.winner) pvWinner(PV.winner, PV.pl.map(p => Object.assign({}, p)), PV.game) }   // bitta umumiy g'olib oynasi (pvWinner)
 window.pvWinSheet = pvWinSheet;
+// ROCKET banneri: katta chip — joriy uchish (yoki oxirgi crash), kichiklari — oldingi raundlar
+(function rkBanner() {
+  const set = (id, v) => { const e = $id(id); if (!e) return; const t = 'x' + (v || 1).toFixed(2); if (e.textContent !== t) { e.textContent = t; e.classList.remove('pop'); void e.offsetWidth; e.classList.add('pop') } };
+  setInterval(() => {
+    if (cur !== 'home' || typeof RK === 'undefined') return;
+    const h = RK.hist || [];
+    set('rkxA', RK.phase === 'fly' ? RK.m : (h[0] || 1));
+    const o = RK.phase === 'fly' ? 0 : 1;
+    set('rkxB', h[o]); set('rkxC', h[o + 1]); set('rkxD', h[o + 2]);
+  }, 150);
+})();
 })()
