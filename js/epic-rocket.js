@@ -12,10 +12,11 @@
 const T = { cnt: 5000, boom: [170, 330, 830], txtOn: 1100, txtOff: 2650 };
 const COUNT_COL = { 5: '#65a5f4', 4: '#41e49b', 3: '#ecc32e', 2: '#eb6c1b', 1: '#de3243' };
 const TRAIL_FLY = '#ded147', TRAIL_CRASH = '#c93346';
+const TRAIL_COL = { red: '#c93346', grn: '#2fbf71', blu: '#4874e6', pur: '#9b5de5', yel: '#ded147' };   // grn/blu: 409.mp4 10:55/10:59; yel: desktop 80x; pur: chip rangidan (UNCLEAR)
 const W = 390, H = 300;
 const P0 = [0, 218], PC = [230, 210], P2 = [W, 125];          // iz egri chizig'i (31, 36 kadrlar)
 const bz = t => [(1 - t) ** 2 * P0[0] + 2 * (1 - t) * t * PC[0] + t * t * P2[0], (1 - t) ** 2 * P0[1] + 2 * (1 - t) * t * PC[1] + t * t * P2[1]];
-const chipCls = m => m < 1.2 ? 'red' : m < 2 ? 'grn' : m < 5 ? 'blu' : m < 10 ? 'pur' : 'yel';
+const chipCls = m => m < 1.2 ? 'red' : m < 2 ? 'grn' : m < 5 ? 'blu' : m < 10 ? 'pur' : 'yel';   // 408/409.mp4: 1.08 qizil, 1.20/1.52 yashil, 2.21/2.56/3.11 ko'k, 5.31/9.04 binafsha, 10.0/39.0 sariq
 const txtCol = m => m < 10 ? '#4181ef' : '#ec9e12';      // 1.48x → #4181ef, 80.03x → #ec9e12 (UNCLEAR: oraliq chegaralar)
 const chipTxt = m => (m >= 10 ? m.toFixed(1) : m.toFixed(2)) + 'x';   // "11.3x", "3.11x"
 
@@ -30,7 +31,7 @@ const dpr = Math.min(2, window.devicePixelRatio || 1); cv.width = W * dpr; cv.he
 
 // yulduzlar (pastel nuqtalar)
 const STAR_C = ['#cdb6ea', '#e9d3b8', '#ffffff', '#b9a3e3', '#d8c4f0'];
-const stars = Array.from({ length: 26 }, () => ({ x: Math.random() * W, y: Math.random() * (H - 50), r: 2 + Math.random() * 2.5, c: STAR_C[Math.floor(Math.random() * STAR_C.length)] }));
+const stars = Array.from({ length: 12 }, () => ({ x: Math.random() * W, y: Math.random() * (H - 50), r: 2 + Math.random() * 2.5, c: STAR_C[Math.floor(Math.random() * STAR_C.length)] }));
 
 let roundGift = null, lastRound = -1, lastPhase = '', boomAt = 0, tipX = 200, tipY = 144;
 function pickGift() { const pool = (typeof GIFTS !== 'undefined' ? GIFTS : []).filter(g => g && g.p > 3); return pool.length ? pool[Math.floor(Math.random() * pool.length)] : null }
@@ -55,22 +56,21 @@ function draw(now) {
     return;
   }
   C.classList.remove('on');
-  // iz
+  // iz — 409.mp4 10:55/10:59: chap chetdan, deyarli gorizontal, y≈227, uchi oq nuqta (r 5), rang = ko'paytiruvchi toifasi
   const crashed = ph === 'crash';
-  const tf = crashed ? (RK.crashAt - RK.t0) / 1000 : (now - RK.t0) / 1000;
-  const grow = Math.min(1, 1 - Math.pow(1 - Math.min(1, tf / 1.2), 3));   // UNCLEAR: iz o'sishi videoda ko'rinmaydi
-  const col = crashed ? TRAIL_CRASH : TRAIL_FLY;
-  cx.lineCap = 'round'; cx.strokeStyle = col; cx.lineWidth = crashed ? 6.2 : 7.5; cx.shadowColor = col; cx.shadowBlur = 14;
-  cx.beginPath(); cx.moveTo(P0[0], P0[1]);
-  for (let i = 1; i <= 40; i++) { const p = bz(i / 40 * grow); cx.lineTo(p[0], p[1]) }
-  cx.stroke(); cx.shadowBlur = 0;
-  // sovg'a — iz ustida, markazda
-  const tp = bz(Math.min(grow, .52)); tipX = tp[0]; tipY = tp[1] - 34;
+  const m = crashed ? RK.crash : RK.m;
+  const col = crashed ? TRAIL_CRASH : TRAIL_COL[chipCls(m)];
+  const tx = Math.min(W - 10, 45 + 121 * (Math.log(Math.max(1, m)) - 0.231));
+  const yAt = x => 227 - 200 * Math.pow(Math.max(0, x) / W, 4);
+  cx.lineCap = 'round'; cx.strokeStyle = col; cx.lineWidth = 6; cx.shadowColor = col; cx.shadowBlur = 10;
+  cx.beginPath(); cx.moveTo(0, yAt(0)); for (let x = 4; x <= tx; x += 4) cx.lineTo(x, yAt(x)); cx.lineTo(tx, yAt(tx)); cx.stroke();
+  cx.shadowColor = '#fff'; cx.shadowBlur = 12; cx.fillStyle = '#fff'; cx.beginPath(); cx.arc(tx, yAt(tx), 5, 0, 7); cx.fill(); cx.shadowBlur = 0;
+  tipX = 195; tipY = 149;
   if (!crashed) {
     const g = RK.my && !RK.my.out && typeof giftFor === 'function' ? (giftFor(RK.my.amt * RK.m) || {}).g || roundGift : roundGift;
     setGift(g); G.classList.remove('off');
     const bob = Math.sin(now / 230) * 3;
-    G.style.transform = `translate(${tipX - 36}px,${tipY - 36 + bob}px)`;
+    G.style.transform = `translate(${tipX - 52}px,${tipY - 52 + bob}px)`;
     TX.classList.remove('on');
   } else {
     G.classList.add('off');
@@ -98,7 +98,8 @@ function boom(e, x, y) {
 let listAt = 0;
 function ui(now) {
   if (now - listAt < 200) return; listAt = now;
-  HI.innerHTML = (RK.hist || []).slice(0, 12).map(m => `<span class="${chipCls(m)}">${chipTxt(m)}</span>`).join('');
+  const first = RK.phase === 'fly' ? `<span class="${chipCls(RK.m)} live">${chipTxt(RK.m)}</span>` : RK.phase === 'wait' ? `<span class="bet">BET</span>` : '';   // 409.mp4 10:26 "BET", 408.mp4 4:56 jonli chip
+  HI.innerHTML = first + (RK.hist || []).slice(0, 12).map(m => `<span class="${chipCls(m)}">${chipTxt(m)}</span>`).join('');
   const L = document.getElementById('rkPl');
   const bets = [...RK.bets].sort((a, b) => (b.me ? 1 : 0) - (a.me ? 1 : 0) || b.amt - a.amt);
   if (!bets.length) L.innerHTML = `<div class="none"><i><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="9" cy="8" r="3.6"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><path d="M15.5 4.6a3.6 3.6 0 0 1 0 6.8M21.5 20c0-2.8-1.6-4.8-4-5.6"/></svg></i><b>No players yet</b><small>Wait for next round</small><em>•••</em></div>`;
@@ -106,7 +107,8 @@ function ui(now) {
     const rows = bets.slice(0, 5).map(b => {
       const lose = RK.phase === 'crash' && !b.out, m = b.out || (RK.phase === 'fly' ? RK.m : RK.phase === 'crash' ? RK.crash : 1);
       const val = b.out ? b.amt * b.out : lose ? b.amt : b.amt * m;
-      return `<div class="er ${b.out ? 'w' : lose ? 'l' : ''}">${avHTML(b.name)}<div class="nm"><b>${esc(b.name)}</b><small>${GEM}${fmt(b.amt)} ×${m.toFixed(2)}</small></div><span class="v">${GEM}${fmt(val)}</span></div>`;
+      const gg = typeof giftFor === 'function' ? (giftFor(val) || {}).g : null;
+      return `<div class="er ${b.out ? 'w' : lose ? 'l' : ''}">${avHTML(b.name)}<div class="nm"><b>${esc(b.name)}</b><small>${GEM}${fmt(b.amt)} ×${m.toFixed(2)}</small></div><span class="v">${GEM}${fmt(val)}</span><span class="gt">${gg ? GI(gg) : ''}</span></div>`;
     }).join('');
     L.innerHTML = rows + (bets.length > 5 ? `<div class="more">+${bets.length - 5} more players</div>` : '');
   }

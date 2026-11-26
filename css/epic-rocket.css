@@ -29,7 +29,7 @@
 #erk{position:absolute;inset:0}
 #erk canvas{position:absolute;inset:0;width:100%;height:100%}
 /* NFT sovg'a (iz uchida) */
-#erkG{position:absolute;left:0;top:0;width:72px;height:72px;will-change:transform;pointer-events:none}
+#erkG{position:absolute;left:0;top:0;width:104px;height:104px;will-change:transform;pointer-events:none}
 #erkG .gi-wrap,#erkG img{width:100%;height:100%;object-fit:contain;display:block}
 #erkG.off{opacity:0}
 /* sanoq halqasi: d=122.5, markaz (201,151) */
@@ -80,3 +80,26 @@ body.e-rk #hRk .wf,body.e-rk #hRk .gr,body.e-rk #hPill .pill{background:var(--rk
 body.e-rk #hPill{position:absolute!important;top:0;left:0;right:0;z-index:20;background:transparent!important}
 body.e-rk .app{padding-top:0!important}
 body.e-rk #rkStage{height:302px}
+
+/* ===== 390 px (telefon) — 408.mp4 4:56 / 409.mp4 10:26 kadrlari: 1:1 o'lchamlar ===== */
+:root{--rk-m:15.9px;--rk-btn-h:59px;--rk-btn-r:14px;--rk-chip-w:58.4px;--rk-chip-h:33.8px;--rk-chip-r:8px;--rk-chip-gap:4.6px;
+  --rk-panel:#282828;--rk-card:#243234;--rk-card-bd:#1a353a;--rk-pill:#223f45;--rk-tile:#303b3e;
+  --rk-cash-a:#21c25e;--rk-cash-b:#0eb77f;--rk-bet-bg:#1d2d45;--rk-bet-bd:#4071c3;--rk-bet-tx:#c1d6f4}
+#erkH{top:263px;left:var(--rk-m);right:0}
+#erkH span{min-width:var(--rk-chip-w);height:var(--rk-chip-h);border-radius:var(--rk-chip-r);justify-content:center;font-size:13px;box-sizing:border-box}
+#erkH .bet{background:var(--rk-bet-bg);border-color:var(--rk-bet-bd);color:var(--rk-bet-tx);box-shadow:0 0 8px #4071c399}
+#erkH .live{box-shadow:0 0 8px currentColor}
+#rkBtn{width:calc(100% - 2*var(--rk-m))!important;margin:0 var(--rk-m)!important;height:var(--rk-btn-h)!important;border-radius:var(--rk-btn-r)!important;font-size:18px!important}
+#rkBtn.e-cash{background:linear-gradient(90deg,var(--rk-cash-a),var(--rk-cash-b))!important}
+#rkPl{margin:10px var(--rk-m) 0!important;background:var(--rk-panel)!important;border-radius:14px 14px 0 0!important;padding:13.3px 13.3px 10px!important;gap:10px!important}
+#rkPl .er{height:72.3px;border-radius:10px;border:1px solid var(--rk-card-bd)!important;background:var(--rk-card);padding:0 13px 0 14.6px;box-sizing:border-box}
+#rkPl .er.w{background:#2a4a35;border-color:#3f6b4b!important}
+#rkPl .er.l{background:#4a2b2e;border-color:#6b3f45!important}
+#rkPl .er .av{width:36.5px;height:36.5px;border-radius:8px}
+#rkPl .er .nm small{background:var(--rk-pill);border-radius:7px;padding:3px 8px;color:#7fd3e6}
+#rkPl .er .v{height:27.2px;padding:0 8px;border-radius:8px;background:var(--rk-pill);color:#7fd3e6;font-size:15px}
+#rkPl .er .gt{width:45px;height:38.5px;border-radius:8px;background:var(--rk-tile);border:1px solid #3d4a4d;display:grid;place-items:center;flex:none;overflow:hidden}
+#rkPl .er .gt:empty{display:none}
+#rkPl .er .gt .gi-wrap,#rkPl .er .gt img{width:30px;height:30px;object-fit:contain}
+#rocket.on,#rocket .rkstage,#rkStage{background:var(--rk-bg)!important;background-image:none!important}
+#rkStage::before,#rkStage::after{display:none!important}
