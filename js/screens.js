@@ -2778,4 +2778,90 @@ balModal = function (v, g, title) {
   return rwSheet('box', null, v);
 };
 window.balModal = balModal;
+// =====================================================================
+//  DEPOSIT | TRANSFER oynasi + WITHDRAW (spec.md "ISTISNO"). Faqat videodagi komponentlar.
+//  "+" (balans pilli) va header "Deposit" — Deposit tabida ochiladi.
+// =====================================================================
+document.body.insertAdjacentHTML('beforeend', `<div class="modal" id="dtM"><div class="mbox"><span class="grab"></span><div class="dh"><b id="dtT"></b><button data-close>✕</button></div><div id="dtB"></div></div></div>`);
+const DT = { tab: 'dep', sub: 'ton', to: null, sel: [], step: 'form', wd: null };
+const SRCH = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>';
+function dtMsg(t) { toastG(t) }   // frames/25 uslubi, faqat matn o'zgaradi
+function dtOpen(tab, opts) { Object.assign(DT, { tab: tab || 'dep', sub: 'ton', to: null, sel: [], step: 'form', wd: null }, opts || {}); dtRender(); openM('dtM') }
+function dtRcp(id) { return `<div class="dl">${T('Recipient')}</div><div class="ds">${SRCH}<input id="${id}" placeholder="${T('Username or ID')}" autocomplete="off"></div><div class="dwho" id="dtWho"></div>` }
+async function dtLook(q) {
+  DT.to = null; const W = $id('dtWho'); if (!W) return;
+  if (q.length < 2) { W.innerHTML = ''; dtSync(); return }
+  try { const u = await api('/api/user?q=' + encodeURIComponent(q)); if (String(u.id) === String(TGU.id)) throw new Error("You can't send to yourself"); DT.to = u; W.innerHTML = `${avP(u.name, u.photo)}${esc(u.name)}${u.username ? ' · @' + esc(u.username) : ''}` }
+  catch (e) { W.textContent = e.message || 'Recipient not found' }
+  dtSync();
+}
+function dtTotal() { return sumV(DT.sel.map(id => (invGet(id) || {}).v || 0)) }
+function dtSync() {
+  const b = $id('dtGo'); if (!b) return;
+  if (DT.tab === 'dep') { const v = numIn('dtA'); b.textContent = `Deposit ${fmt(v || 0)} ${CUR}`; b.classList.toggle('dim', !(v >= .1)); return }
+  if (DT.wd) { b.textContent = DT.to ? `${T('Send')} (1) - ${fmt(dtTotal())}` : 'Withdraw'; b.classList.remove('dim'); return }
+  if (DT.sub === 'ton') { const v = numIn('dtA'); b.textContent = `${T('Send')} ${fmt(v || 0)} ${CUR}`; b.classList.toggle('dim', !(DT.to && v >= .1)); return }
+  b.className = 'db ' + (DT.sel.length ? 'g' : 'dim'); b.textContent = DT.sel.length ? `${T('Send')} (${DT.sel.length}) - ${fmt(dtTotal())}` : 'Select gifts';
+  const sv = $id('dtSv'); if (sv) sv.innerHTML = `${GEM}${fmt(dtTotal())}`;
+}
+function dtRender() {
+  const wd = !!DT.wd;
+  $id('dtT').textContent = wd ? 'Withdraw' : DT.tab === 'dep' ? 'Deposit' : 'Transfer';
+  let h = wd ? '' : `<div class="dt"><button data-t="dep" class="${DT.tab === 'dep' ? 'on' : ''}">Deposit</button><button data-t="tr" class="${DT.tab === 'tr' ? 'on' : ''}">Transfer</button></div>`;
+  if (DT.step === 'confirm') {
+    const what = DT.wd ? (DT.to ? `<b>${esc(GIFTS[invGet(DT.sel[0]).g].n)}</b> → <b>${esc(DT.to.name)}</b>` : `<b>${esc(GIFTS[invGet(DT.sel[0]).g].n)}</b> → Telegram`)
+      : DT.sub === 'ton' ? `<b>${fmt(DT.amt)} ${CUR}</b> → <b>${esc(DT.to.name)}</b>` : `<b>${DT.sel.length}</b> gift(s) · <b>${fmt(dtTotal())} ${CUR}</b> → <b>${esc(DT.to.name)}</b>`;
+    $id('dtB').innerHTML = h + `<div class="dc"><div class="dcf">${what}</div><button class="db c" id="dtOk">Confirm</button></div>`;
+  } else if (DT.tab === 'dep') {
+    h += `<div class="dc"><div class="dr"><span>Available balance</span><b><span class="balv"></span>${GEM}</b></div><div class="df"><input id="dtA" type="number" inputmode="decimal" placeholder="10" step="0.01">${GEM}</div><button class="db" id="dtGo"></button></div>`;
+    $id('dtB').innerHTML = h;
+  } else if (wd) {
+    const it = invGet(DT.sel[0]);
+    h += `<div class="dc">${dtRcp('dtTo')}<div class="dg" style="grid-template-columns:1fr"><button class="on" style="cursor:default"><em>${fmt(it.v)}${GEM}</em><span class="im">${GII(it)}</span><b>${esc(GIFTS[it.g].n)}</b><small>${esc(it.m || 'Random')}</small></button></div><button class="db g" id="dtGo"></button></div>`;
+    $id('dtB').innerHTML = h;
+  } else {
+    h += `<div class="dt"><button data-s="gift" class="${DT.sub === 'gift' ? 'on' : ''}">Gifts</button><button data-s="ton" class="${DT.sub === 'ton' ? 'on' : ''}">TON</button></div><div class="dc">${dtRcp('dtTo')}`;
+    if (DT.sub === 'ton') h += `<div class="dr"><span>Available balance</span><b><span class="balv"></span>${GEM}</b></div><div class="df"><input id="dtA" type="number" inputmode="decimal" placeholder="10" step="0.01">${GEM}</div><button class="db" id="dtGo"></button>`;
+    else h += (S.inv.length ? `<div class="dl">${S.inv.length} gifts available</div><div class="dg" id="dtG">${S.inv.map(it => `<button data-id="${it.id}" class="${DT.sel.includes(it.id) ? 'on' : ''}"><em>${fmt(it.v)}${GEM}</em><span class="im">${GII(it)}</span><b>${esc(GIFTS[it.g].n)}</b><small>${esc(it.m || 'Random')}</small></button>`).join('')}</div>` : `<div class="dnone">Your backpack is empty</div>`)
+      + `<div class="dsum"><span>Select gifts</span><b id="dtSv"></b></div><button class="db dim" id="dtGo"></button>`;
+    $id('dtB').innerHTML = h + '</div>';
+  }
+  renderBal();
+  $$('#dtB [data-t]').forEach(b => b.onclick = () => { DT.tab = b.dataset.t; DT.step = 'form'; DT.to = null; dtRender() });
+  $$('#dtB [data-s]').forEach(b => b.onclick = () => { DT.sub = b.dataset.s; DT.to = null; dtRender() });
+  const to = $id('dtTo'); let lk = 0; if (to) to.oninput = () => { clearTimeout(lk); lk = setTimeout(() => dtLook(to.value.trim()), 400) };
+  const A = $id('dtA'); if (A) A.oninput = dtSync;
+  const G = $id('dtG'); if (G) G.onclick = e => { const c = e.target.closest('[data-id]'); if (!c) return; const id = c.dataset.id; DT.sel = DT.sel.includes(id) ? DT.sel.filter(x => x !== id) : [...DT.sel, id]; c.classList.toggle('on'); hap(); dtSync() };
+  const go_ = $id('dtGo'); if (go_) go_.onclick = dtSubmit;
+  const ok_ = $id('dtOk'); if (ok_) ok_.onclick = dtSend;
+  dtSync();
+}
+function dtSubmit() {
+  if (DT.tab === 'dep') { const v = numIn('dtA'); if (!(v >= .1)) return; if (!NET.on) { offSync(); return } closeM('dtM'); return tonPay(v) }
+  if (!NET.on) { dtMsg('Server is not connected'); return }
+  if (DT.wd) { if ($id('dtTo').value.trim() && !DT.to) { dtMsg('User not found'); return } DT.step = 'confirm'; return dtRender() }
+  if (!DT.to) { dtMsg('User not found'); return }
+  if (DT.sub === 'ton') { const v = Math.floor(numIn('dtA') * 100) / 100; if (!(v >= .1)) return; if (v > S.bal + 1e-9) { dtMsg('Insufficient balance'); return } DT.amt = v }
+  else if (!DT.sel.length) return;
+  DT.step = 'confirm'; dtRender();
+}
+async function dtSend() {
+  const b = $id('dtOk'); if (b.disabled) return; b.disabled = true;
+  try {
+    if (DT.wd && !DT.to) {
+      const it = invGet(DT.sel[0]); await api('/api/withdraw', { method: 'POST', body: { gift: { id: it.id, n: GIFTS[it.g].n, m: it.m } } }); wSkip(() => invDel([it.id])); dtMsg('Withdraw request sent');
+    } else if (!DT.wd && DT.sub === 'ton') {
+      await api('/api/transfer', { method: 'POST', body: { to: String(DT.to.id), kind: 'gram', amount: DT.amt } }); wSkip(() => setBal(-DT.amt)); dtMsg(`Sent ${fmt(DT.amt)} ${CUR} to ${DT.to.name}`);
+    } else {
+      let n = 0; for (const id of DT.sel) { const it = invGet(id); if (!it) continue; await api('/api/transfer', { method: 'POST', body: { to: String(DT.to.id), kind: 'gift', gift: { id: it.id, sh: GIFTS[it.g].sh, n: GIFTS[it.g].n, p: it.v, m: it.m, ms: it.ms } } }); wSkip(() => invDel([it.id])); n++ }
+      dtMsg(`Sent ${n} gift(s) to ${DT.to.name}`);
+    }
+    try { wPull(true) } catch (e) {} save(); closeM('dtM'); if (cur === 'backpack') bpRender();
+  } catch (e) { dtMsg(/balance/i.test(e.message) ? 'Insufficient balance' : /not found/i.test(e.message) ? 'User not found' : e.message); b.disabled = false; DT.step = 'form'; dtRender() }
+}
+openDeposit = () => dtOpen('dep'); window.openDeposit = openDeposit;
+trOpen = (kind, item) => item ? dtOpen('tr', { wd: true, sel: [item.id] }) : dtOpen('tr', { sub: kind === 'gift' ? 'gift' : 'ton' });
+document.addEventListener('click', e => { const p = e.target.closest('#hPill .plus, #hMain .depbtn, [data-dep]'); if (!p) return; e.stopImmediatePropagation(); e.preventDefault(); dtOpen('dep') }, true);
+// Backpack "Withdraw" → Withdraw oynasi (qabul qiluvchi bo'sh = o'zimga)
+document.addEventListener('click', e => { const a = e.target.closest('#backpack [data-a="wd"]'); if (!a) return; e.stopImmediatePropagation(); const c = a.closest('.bpc'); const it = c && invGet(c.dataset.id); if (it) dtOpen('tr', { wd: true, sel: [it.id] }) }, true);
 })()

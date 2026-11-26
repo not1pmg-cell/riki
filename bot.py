@@ -1321,6 +1321,37 @@ async def h_transfer(request: web.Request) -> web.Response:
     return ok({"ok": True, "to": {"id": int(to_uid), "name": to_u.get("name", "Player")}})
 
 
+async def h_withdraw(request: web.Request) -> web.Response:
+    """Withdraw (qabul qiluvchi bo'sh): sovg'a o'yinchining o'z Telegram'iga chiqariladi.
+    Sovg'a balansdan olinadi va so'rov adminlarga yuboriladi (NFT'ni admin/gift-bot yuboradi)."""
+    user = auth_user(request)
+    b = await request.json()
+    g = b.get("gift") or {}
+    gid = str(g.get("id", "")).strip()
+    if not gid:
+        return web.json_response({"error": "Gift id missing — reopen the app and try again"}, status=400)
+    wallet_user(user, str(user["id"]))
+    rid = uuid.uuid4().hex[:10]
+    try:
+        v = W.take_items(int(user["id"]), [gid], "withdraw", "Gift withdraw", idem="wd:" + rid)
+    except WalletError as e:
+        return web.json_response({"error": str(e)}, status=400)
+    req = {"id": rid, "uid": int(user["id"]), "name": clean_name(user), "username": user.get("username", ""), "n": str(g.get("n", ""))[:40],
+           "m": str(g.get("m") or "")[:40], "p": v, "t": int(time.time()), "status": "pending"}
+    async with store.lock:
+        store.d.setdefault("withdrawals", []).insert(0, req)
+        del store.d["withdrawals"][2000:]
+        store.save()
+    bot = bot_ref.get("bot")
+    if bot:
+        for a in ADMIN_IDS:
+            try:
+                await bot.send_message(a, f"📤 <b>Withdraw</b>\n{req['name']} (@{req['username'] or '-'}, <code>{req['uid']}</code>)\n🎁 {req['n']} {req['m']} — {v} TON\nID: <code>{rid}</code>")
+            except Exception as e:  # noqa: BLE001
+                log.info("withdraw xabari yuborilmadi: %s", e)
+    return ok({"ok": True, "id": rid})
+
+
 # ================================================================ giveaway yakunlash
 async def finalize_giveaways() -> None:
     now = time.time() * 1000
@@ -1914,6 +1945,7 @@ def make_app() -> web.Application:
     r.add_post("/api/ton/bind", h_ton_bind)
     r.add_post("/api/stars/invoice", h_stars_invoice)
     r.add_post("/api/transfer", h_transfer)
+    r.add_post("/api/withdraw", h_withdraw)
     r.add_get("/api/live", h_live)
     r.add_post("/api/live/bet", h_live_bet)
     r.add_post("/api/live/cancel", h_live_cancel)

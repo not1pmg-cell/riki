@@ -86,6 +86,7 @@ const UZ = {
   // depozit
   'Top Up': "To'ldirish", 'Connect Wallet': 'Hamyonni ulash', 'Other Crypto': 'Boshqa kripto',
   'No drops yet — be the first!': "Hali yutuq yo'q — birinchi bo'ling!", 'Loading live drops...': 'Jonli yutuqlar yuklanmoqda...', 'To': 'Keyingi:',
+  'Recipient': 'Qabul qiluvchi', 'Username or ID': 'Username yoki ID', 'Transfer': "O'tkazma", 'User not found': 'Foydalanuvchi topilmadi', 'Insufficient balance': 'Balans yetarli emas', 'Withdraw request sent': "Yechib olish so'rovi yuborildi",
   'Server is not connected': 'Server ulanmagan', 'Connecting to server…': 'Serverga ulanmoqda…', 'Retry': 'Qayta urinish'
 };
 const RX = [   // o'zgaruvchan matnlar
@@ -99,6 +100,8 @@ const RX = [   // o'zgaruvchan matnlar
   [/^To (.*) Level$/, (m, x) => `${x} darajasigacha`],
   [/^(.*) left$/, (m, x) => `${x} qoldi`],
   [/^Win up to (\d+)x$/, (m, n) => `${n}x gacha yuting`],
+  [/^Send ([\d.,]+) (\w+)$/, (m, v, c) => `${v} ${c} yuborish`],
+  [/^Send \((\d+)\) - (.*)$/, (m, n, v) => `Yuborish (${n}) - ${v}`],
   [/^(\S+) Box$/, (m, x) => `${x} qutisi`],
   [/^(\S+) Turnover$/, (m, x) => `${x} aylanma`],
   [/^(\w+) Level$/, (m, x) => `${x} darajasi`]

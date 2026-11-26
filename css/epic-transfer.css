@@ -1,0 +1,47 @@
+/* Deposit | Transfer oynasi va Withdraw — faqat videodagi komponentlardan:
+   oyna/tablar/qatorlar/maydon/tugma: frames/33 (B 2.0 s "Place bet"), tutqich+qidiruv+sovg'a kartalari: frames/46 (B 27.5 s),
+   Confirm tugmasi: frames/61 (B 114.5 s), yashil "Confirm (1) - 11.83": B 28.5 s, xabar: frames/25 (A 95.6 s). */
+:root{--tr-sheet:#1e1e1e;--tr-card:#282828;--tr-field:#292929;--tr-tab-on:#9c3ce8;--tr-tab-off:#2c2830;--tr-tabs-bg:#1d1d1d;
+  --tr-btn-a:#0da1e3;--tr-btn-b:#10e5f8;--tr-green-a:#34ea6d;--tr-green-b:#9efe7f;--tr-confirm:#8c3cf0;--tr-x:#2c2c2c}
+#dtM{align-items:flex-end}
+#dtM .mbox{background:var(--tr-sheet)!important;border-radius:18px 18px 0 0!important;padding:8px 18.5px 18px!important;max-height:88vh;overflow:auto;width:100%;max-width:430px}
+#dtM .grab{display:block;width:40px;height:4px;border-radius:2px;background:#4a4a4a;margin:0 auto 10px}
+#dtM .dh{display:flex;align-items:center;justify-content:space-between;height:40px;margin-bottom:10px}
+#dtM .dh b{font-size:15px;font-weight:700;color:#fff}
+#dtM .dh button{width:30px;height:30px;border-radius:50%;background:var(--tr-x);border:0;color:#fff;font-size:14px}
+#dtM .dt{display:grid;grid-template-columns:1fr 1fr;gap:4.6px;background:var(--tr-tabs-bg);border-radius:10px;padding:0;margin-bottom:8px}
+#dtM .dt button{height:43.8px;border:0;border-radius:7.5px;background:var(--tr-tab-off);color:#d4d4d8;font-size:14px;font-weight:700}
+#dtM .dt button.on{background:var(--tr-tab-on);color:#fff}
+#dtM .dc{background:var(--tr-card);border-radius:12px;padding:11px}
+#dtM .dr{display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:700;color:#e4e4e7;margin:6px 0 12px}
+#dtM .dr b{display:flex;align-items:center;gap:5px;font-size:13px;color:#fff}
+#dtM .dr .gem{width:14px;height:14px}
+#dtM .dl{font-size:11px;color:#bdbdbd;font-weight:600;margin:0 0 6px}
+#dtM .df{position:relative;height:46.5px;background:var(--tr-field);border-radius:8px;margin-bottom:12px}
+#dtM .df input{width:100%;height:100%;background:none;border:0;outline:0;color:#fff;font-size:15px;font-weight:700;text-align:center;padding:0 34px}
+#dtM .df .gem{position:absolute;right:12px;top:50%;width:14px;height:14px;margin-top:-7px}
+#dtM .ds{position:relative;height:30px;background:#262626;border-radius:7px;margin-bottom:10px}
+#dtM .ds input{width:100%;height:100%;background:none;border:0;outline:0;color:#fff;font-size:12px;padding:0 10px 0 30px}
+#dtM .ds svg{position:absolute;left:9px;top:8px;width:14px;height:14px;color:#8a8a8a}
+#dtM .dwho{min-height:18px;font-size:11px;color:#9a9a9a;margin:-4px 0 8px;display:flex;align-items:center;gap:6px}
+#dtM .dwho .av{width:18px;height:18px;border-radius:50%;font-size:9px}
+#dtM .db{width:100%;height:43.8px;border:0;border-radius:6.2px;background:linear-gradient(90deg,var(--tr-btn-a),var(--tr-btn-b));color:#fff;font-size:14px;font-weight:700}
+#dtM .db.dim{background:#282828;color:#8a8a8a}   /* frames/46 "Select gifts" (o'chiq) */
+#dtM .db.g{background:linear-gradient(90deg,var(--tr-green-a),var(--tr-green-b));color:#1d2a1f}
+#dtM .db.c{background:var(--tr-confirm)}
+#dtM .dg{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;max-height:260px;overflow:auto;margin-bottom:10px}
+#dtM .dg button{position:relative;background:#262626;border:1.5px solid #8c6a1d;border-radius:10px;padding:16px 4px 6px;display:flex;flex-direction:column;align-items:center;gap:4px;color:#fff}
+#dtM .dg button.on{border-color:#2bd96b;box-shadow:0 0 0 1px #2bd96b}
+#dtM .dg button em{position:absolute;top:4px;right:4px;font-style:normal;font-size:10px;font-weight:800;background:#111;border-radius:6px;padding:1px 5px;display:flex;gap:3px;align-items:center}
+#dtM .dg button em .gem{width:10px;height:10px}
+#dtM .dg button .im{width:54px;height:54px}
+#dtM .dg button .im .gi-wrap,#dtM .dg button .im img{width:100%;height:100%;object-fit:contain}
+#dtM .dg button b{font-size:11px;font-weight:700;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#dtM .dg button small{font-size:9px;color:#a78bfa;background:#2e2741;border-radius:5px;padding:1px 6px}
+#dtM .dsum{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:#bdbdbd;margin:4px 0 10px}
+#dtM .dsum b{display:flex;gap:4px;align-items:center;color:#3b9cf0;font-weight:800}
+#dtM .dsum .gem{width:13px;height:13px}
+#dtM .dcf{text-align:center;padding:10px 0 14px;color:#e4e4e7;font-size:14px;line-height:1.5}
+#dtM .dcf b{color:#fff}
+#dtM .dnone{text-align:center;color:#8a8a8a;font-size:12px;padding:24px 0}
+#dtM input::-webkit-outer-spin-button,#dtM input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}#dtM input{-moz-appearance:textfield}#dtM .df:focus-within{outline:0;box-shadow:none}
