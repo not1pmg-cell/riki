@@ -2796,3 +2796,35 @@ img.dm{object-fit:contain;flex:none}
 #pvp .arcring{animation:spinr 60s linear infinite}
 
 #pvphub .rlcard{display:none!important}
+
+/* ===== Yutuq oynasi — Epic 1:1 ===== */
+.rwm .mbox{position:relative;overflow:hidden;background:#1f1f23!important;border-radius:26px 26px 0 0!important;padding:14px 20px 22px!important;text-align:center}
+.rwm .grab{display:block;width:44px;height:5px;border-radius:3px;background:#4a4a50;margin:0 auto 6px}
+.rwm .mx{position:absolute;right:16px;top:20px;width:40px;height:40px;border-radius:50%;background:#34343a;border:0;color:#fff;font-size:17px;z-index:3}
+.rwh{padding:12px 0 14px}
+.rwh h3{margin:0;font-size:27px;font-weight:900;color:#fff;letter-spacing:-.3px}
+.rwh p{margin:8px 0 0;color:#a1a1aa;font-size:15px}
+.rwh.l{text-align:left;padding:18px 0 22px}.rwh.l h3{font-size:22px}
+.rwt{width:168px;height:168px;margin:0 auto;border-radius:26px;background:linear-gradient(160deg,#3c3c42,#2b2b30);display:grid;place-items:center;box-shadow:inset 0 0 0 1px #ffffff12;animation:rwIn .55s cubic-bezier(.2,1.5,.4,1)}
+.rwt.glow{width:190px;height:190px;box-shadow:inset 0 0 0 1px #ffffff12,0 0 46px #34d39933}
+.rwt .gi-wrap{width:80%;height:80%;display:block}.rwt .gi-wrap img{width:100%;height:100%;object-fit:contain}
+@keyframes rwIn{0%{transform:scale(.4);opacity:0}100%{transform:none;opacity:1}}
+.rwn{display:block;margin:14px 0 8px;font-size:20px;font-weight:800;color:#fff}.rwn.big{font-size:28px;margin-top:20px}
+.rwch{display:inline-block;padding:5px 12px;border-radius:9px;background:#3b2a5e;border:1px solid #6d4fb8;color:#c4b5fd;font-size:14px;font-weight:600}
+.rwch.t{padding:9px 16px;border-radius:12px;background:#163a4a;border-color:#2b6b80;color:#7dd3fc;font-size:16px}
+.rwv{display:flex;justify-content:center;align-items:center;gap:7px;margin:12px 0 4px;font-size:19px;font-weight:800;color:#fff}.rwv .gem{width:20px;height:20px}
+.rwp{display:inline-flex;align-items:center;gap:9px;margin:16px 0 4px;padding:12px 22px;border-radius:16px;background:#2a2a2f;border:1px solid #3a3a40;font-size:21px;font-weight:800;color:#fff}.rwp .gem{width:22px;height:22px}
+.rwbtns{display:flex;flex-direction:column;gap:12px;margin-top:22px}
+.rw2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.rwb{display:flex;align-items:center;justify-content:center;gap:9px;height:62px;border:0;border-radius:16px;font-size:19px;font-weight:800;color:#fff;transition:transform .12s,filter .12s}
+.rwb:active{transform:scale(.97);filter:brightness(.92)}
+.rwb .ic{width:24px;height:24px}.rwb .gem{width:18px;height:18px}.rwb b{font-size:22px}
+.rwb.green{background:linear-gradient(90deg,#1fc45c,#2ee06e)}
+.rwb.orange{background:linear-gradient(90deg,#f59e0b,#ea6a1a)}
+.rwb.purple{background:linear-gradient(90deg,#8b3cf0,#a855f7)}
+.rwb.blue{background:linear-gradient(90deg,#14a8e8,#2563eb)}
+.rwb.dark{background:#2c2c32;border:1px solid #3a3a40}
+.rwm .cf{position:absolute;top:-14px;width:7px;height:12px;border-radius:2px;z-index:2;pointer-events:none;animation:cfFall linear forwards}
+@keyframes cfFall{0%{transform:translate(0,0) rotate(0)}100%{transform:translate(var(--dx),900px) rotate(var(--r));opacity:.9}}
+
+.rwbody{display:flex;flex-direction:column;align-items:center}

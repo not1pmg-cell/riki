@@ -2142,7 +2142,7 @@ $id('u2Go').onclick = async () => {
   const nd = $id('u2Nd'); nd.style.transition = 'transform 4.6s cubic-bezier(.12,.75,.1,1)'; nd.style.transform = `rotate(${U2.rot}deg)`;
   hap('medium'); await sleep(4700);
   UP.spinning = false; U2.lock = 0; U2.lockIt = null; W.className = 'up2-wheel up3-wheel ' + (win ? 'win' : 'lose');
-  if (win) { const it = addItem(tg_, tg_.p); burst(W, ['#34d399', '#fde047', '#a78bfa'], 26); logGame('Upgrade', fv, tg_.p, tg_.n); setTimeout(() => showRes(true, tg_, 'Upgrade successful! ⚡', `${esc(tg_.n)} · ${g$(tg_.p)}`), 500) }
+  if (win) { const it = addItem(tg_, tg_.p); burst(W, ['#34d399', '#fde047', '#a78bfa'], 26); logGame('Upgrade', fv, tg_.p, tg_.n); setTimeout(() => rwSheet('upgrade', it && it.g != null ? it : { g: GIFTS.indexOf(tg_), v: tg_.p }, 0), 500) }
   else { logGame('Upgrade', fv, 0, tg_.n); hapN('error'); setTimeout(() => showRes(false, tg_, 'Upgrade failed', `${ch.toFixed(1)}% chance`), 500) }
   UP.from = null; if (UP.mode === 'ton') $id('u2Ton').value = ''; setTimeout(() => { W.className = 'up2-wheel up3-wheel'; u2Render() }, 1600); u2Render();
 };
@@ -2896,4 +2896,68 @@ window.pvWinSheet = pvWinSheet;
     set('rkxB', h[o]); set('rkxC', h[o + 1]); set('rkxD', h[o + 2]);
   }, 150);
 })();
+// =====================================================================
+//  YUTUQ OYNASI — Epic videosi bo'yicha 1:1
+//  Box/Daily/Free: "Congratulations!"  ·  Rocket: "Rocket Reward!"  ·  Upgrade: "Upgrade Successful!"
+// =====================================================================
+document.body.insertAdjacentHTML('beforeend', `<div class="modal sheet2 rwm" id="rwM"><div class="mbox"><span class="grab"></span><button class="mx" data-close>✕</button><div id="rwB"></div></div></div>`);
+function rwConf() {
+  const box = $id('rwM'); box.querySelectorAll('.cf').forEach(e => e.remove());
+  const cols = ['#f472b6', '#facc15', '#34d399', '#60a5fa', '#a78bfa', '#fb923c', '#22d3ee'];
+  for (let i = 0; i < 70; i++) { const c = document.createElement('i'); c.className = 'cf'; c.style.left = Math.random() * 100 + '%'; c.style.background = cols[i % cols.length];
+    c.style.setProperty('--dx', (Math.random() * 160 - 80) + 'px'); c.style.setProperty('--r', (Math.random() * 720 - 360) + 'deg');
+    c.style.animationDelay = (Math.random() * .5) + 's'; c.style.animationDuration = (2.2 + Math.random() * 1.6) + 's'; if (i % 3 === 0) c.style.borderRadius = '50%'; box.appendChild(c) }
+  setTimeout(() => box.querySelectorAll('.cf').forEach(e => e.remove()), 4500);
+}
+function rwSheet(kind, it, ton) {
+  const isG = !!it, g = isG ? GIFTS[it.g] : null, v = isG ? it.v : ton, sell = r2(v * .95);
+  const tile = isG ? GII(it).replace(/loading="lazy"/g, '') : GEM.replace('class="gem"', 'class="gem" style="width:62%;height:62%"');
+  const name = isG ? esc(g.n) : `${fmt(ton)} ${CUR}`, chip = isG ? `<span class="rwch ${kind === 'rocket' ? 't' : ''}">${it.m ? esc(it.m) : 'Random'}</span>` : `<span class="rwch">${CUR} Balance</span>`;
+  const sellLbl = `Sell for ${fmt(sell)} ${GEM}`;
+  let head, body, btns;
+  if (kind === 'rocket') {
+    head = `<h3 class="l">Rocket Reward!</h3>`;
+    body = `<div class="rwt">${tile}</div><b class="rwn big">${name}</b>${chip}<div class="rwp">${fmt(v)} ${GEM}</div>`;
+    btns = `<button class="rwb blue" data-a="rocket">${IC.rocket ? '' : ''}<svg class="ic" viewBox="0 0 24 24"><path d="M5 15c-1.5 1.5-2 4-2 6 2 0 4.5-.5 6-2M9 18l-3-3M14.5 4.5C17 2 21 3 21 3s1 4-1.5 6.5L13 16l-5-5z"/><circle cx="15.5" cy="8.5" r="1.5"/></svg>Place bet in rocket</button>
+      <div class="rw2">${isG ? `<button class="rwb green" data-a="sell"><b>$</b>Sell</button>` : ''}<button class="rwb dark" data-a="keep">Keep</button></div>`;
+  } else if (kind === 'upgrade') {
+    head = `<h3>Upgrade Successful!</h3><p>Congratulations! Your gift has been upgraded.</p>`;
+    body = `<div class="rwt glow">${tile}</div><b class="rwn">${name}</b>${chip}<div class="rwv">${GEM}${fmt(v)}</div>`;
+    btns = `${isG ? `<button class="rwb green" data-a="sell">${sellLbl}</button>` : ''}<button class="rwb orange" data-a="upgrade">Upgrade Again</button><button class="rwb dark" data-a="keep">Keep Gift</button>`;
+  } else {
+    head = `<h3>Congratulations!</h3><p>${isG ? "You've received a special gift" : 'Added to your balance'}</p>`;
+    body = `<div class="rwt glow">${tile}</div><b class="rwn">${name}</b>${chip}<div class="rwv">${GEM}${fmt(v)}</div>`;
+    btns = isG ? `<button class="rwb green" data-a="sell">${sellLbl}</button><div class="rw2"><button class="rwb orange" data-a="upgrade">Upgrade</button><button class="rwb purple" data-a="playhub"><svg class="ic" viewBox="0 0 24 24"><rect x="2" y="7" width="20" height="11" rx="5"/><path d="M7 11v3M5.5 12.5h3M15 12h.01M18 13h.01"/></svg>Play Hub</button></div>
+      <div class="rw2"><button class="rwb blue" data-a="rocket">Rocket</button><button class="rwb dark" data-a="keep">Keep Gift</button></div>`
+      : `<div class="rw2"><button class="rwb blue" data-a="rocket">Rocket</button><button class="rwb purple" data-a="playhub">Play Hub</button></div><button class="rwb dark" data-a="keep">Continue</button>`;
+  }
+  $id('rwB').innerHTML = `<div class="rwh ${kind === 'rocket' ? 'l' : ''}">${head}</div><div class="rwbody">${body}</div><div class="rwbtns">${btns}</div>`;
+  $id('rwB').onclick = e => {
+    const b = e.target.closest('[data-a]'); if (!b) return; const a = b.dataset.a; closeM('rwM');
+    const inv = isG ? (invGet(it.id) || S.inv.find(x => x.g === it.g && Math.abs(x.v - it.v) < .01)) : null;
+    if (a === 'sell' && inv) sellItem(inv);
+    else if (a === 'upgrade') { if (inv) { UP.mode = 'gift'; UP.from = inv.id; UP.to = null } go('upgrade') }
+    else if (a === 'playhub') go('playhub');
+    else if (a === 'rocket') go('rocket');
+  };
+  openM('rwM'); hapN('success'); rwConf();
+}
+window.RIKI_RW = rwSheet;
+// yagona yutuqlar: barcha o'yinlar shu oynani ochadi (bir nechta sovg'a / PvP pot — eski "Winner" oynasi)
+const _winFx0 = winFx;
+winFx = function (game, cash, items) {
+  items = items || [];
+  const kind = /rocket/i.test(game || '') ? 'rocket' : /upgrade/i.test(game || '') ? 'upgrade' : 'box';
+  if (items.length === 1 && (!(cash > 0) || kind === 'rocket')) return setTimeout(() => rwSheet(kind, items[0], 0), 150);
+  if (!items.length && cash > 0 && kind !== 'box') return setTimeout(() => rwSheet(kind, null, cash), 150);
+  return _winFx0(game, cash, items);
+};
+window.RIKI_WIN = winFx;
+const _balModal0 = balModal;
+balModal = function (v, g, title) {
+  if (title && /giveaway|Deposit|Bonus|Balance Increased/i.test(title)) return _balModal0(v, g, title);
+  if (g) { const gg = g.g || g; const it = S.inv.slice().reverse().find(x => GIFTS[x.g] === gg) || { g: GIFTS.indexOf(gg), v, ms: g.ms }; return rwSheet('box', it, 0) }
+  return rwSheet('box', null, v);
+};
+window.balModal = balModal;
 })()
