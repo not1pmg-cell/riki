@@ -243,3 +243,13 @@ Uchish paytida markazda raketa emas, **tikilgan summa × koeffitsiyentga mos NFT
 O'zingiz tikmagan bo'lsangiz — raunddagi eng katta faol tikish ko'rsatiladi. Hech kim tikmasa — Stellar Rocket uchadi.
 
 📘 Noldan joylash bo'yicha to'liq qo'llanma: **QOLLANMA.md**
+
+## Yangi (2026-11-26)
+
+* **Rasmlar** — Epic videosi/skrinshotlaridan olingan haqiqiy rasmlar:
+  `assets/epic2/` — `gram.png` (GRAM belgisi), `vip_*.png` (Iron…Obsidian olmoslari), `banner_playhub.png`, `hub_*.png` (Play Hub kartalari);
+  `assets/box/<id>.png` — har bir quti o'z nomi bilan (farm, autumn, heaven, hell, … vip, elite, free24, free).
+* **Til: English / O'zbekcha** — ilovada profil → 🌐 tugmasi; botda `/lang` yoki "🌐 Til" tugmasi. Bot ilovani `?lang=uz|en` bilan ochadi.
+  Tarjimalar `js/i18n.js` da (yangi matn qo'shsangiz — `"English": "O'zbekcha"` qatorini yozing).
+* **Referal foizi admin paneldan** — ⚙️ Settings → `🤝 Referral: 10% of deposits` (0–50%), `🎟 Ref tickets`, `📅 Max/day`.
+  Taklif qilingan do'st depozit qilganda shu foiz taklif qilganning balansiga tushadi; Invite ekranida ham shu foiz ko'rinadi.

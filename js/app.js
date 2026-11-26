@@ -59,7 +59,7 @@ function mountDefs() {
   d.innerHTML = '<defs>' + SVGDEFS.html + '</defs>';
 }
 document.addEventListener('DOMContentLoaded', mountDefs);
-const GEM = liftDefs('<svg class="gem" viewBox="0 0 24 24"><defs><linearGradient id="gemG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7fe3ff"/><stop offset=".5" stop-color="#2d9bff"/><stop offset="1" stop-color="#1458db"/></linearGradient></defs><path d="M6.4 3.2h11.2l4.6 6L12 21.2 1.8 9.2z" fill="url(#gemG)"/><path d="M6.4 3.2h11.2l4.6 6H1.8z" fill="#fff" fill-opacity=".22"/><path d="M1.8 9.2L12 21.2 7.8 9.2zM22.2 9.2L12 21.2l4.2-12z" fill="#0b3fa8" fill-opacity=".25"/><path d="M12 7.3l1.15 2.95 2.95 1.15-2.95 1.15L12 15.5l-1.15-2.95-2.95-1.15 2.95-1.15z" fill="#fff"/></svg>');
+const GEM = '<img class="gem" src="assets/epic2/gram.png" alt="" draggable="false">';   // Epic GRAM belgisi (haqiqiy rasm)
 const g$ = n => GEM + fmt(n);
 
 // ---------- ikonkalar ----------

@@ -2671,7 +2671,7 @@ nav button:not([data-go="home"]).on{background:#8774e124}
 /* 1. Home bannerlar — Epic Gift kabi: to'liq kenglik, rasm proporsiyasi saqlanadi (kesilmaydi) */
 .epic-home-banners{display:flex;flex-direction:column;gap:10px;margin:2px 0 0}
 .epic-ban{display:block;width:100%;padding:0;border:0;background:#1f1f22;border-radius:18px;overflow:hidden;position:relative;
-  aspect-ratio:721/173;box-shadow:0 6px 18px rgba(0,0,0,.45);transition:transform .14s ease;-webkit-tap-highlight-color:transparent}
+  aspect-ratio:543/130;box-shadow:0 6px 18px rgba(0,0,0,.45);transition:transform .14s ease;-webkit-tap-highlight-color:transparent}
 .epic-ban:active{transform:scale(.97)}
 .epic-ban img{display:block;width:100%;height:100%;object-fit:cover;object-position:center;pointer-events:none;user-select:none}
 .epic-ban::after{content:"";position:absolute;top:0;bottom:0;left:-80px;width:60px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.22),transparent);transform:skewX(-22deg);animation:epicShine 4.2s infinite;pointer-events:none}
@@ -2750,7 +2750,31 @@ nav button[data-go="home"].on {
 #playhub .hubimg{display:block;width:100%;padding:0;border:0;background:#1f1f22;border-radius:20px;overflow:hidden;position:relative;transition:transform .14s ease;box-shadow:0 8px 20px -10px #000c;-webkit-tap-highlight-color:transparent}
 #playhub .hubimg:active{transform:scale(.97)}
 #playhub .hubimg img{display:block;width:100%;height:100%;object-fit:cover;pointer-events:none;user-select:none}
-#playhub .hubimg.wide{aspect-ratio:530/198;margin-top:2px}
+#playhub .hubimg.wide{aspect-ratio:543/206;margin-top:2px}
 #playhub .hubg{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:12px 0}
-#playhub .hubg .hubimg{aspect-ratio:257/223}
+#playhub .hubg .hubimg{aspect-ratio:267/232}
 #playhub .c-crf{margin-top:0}
+
+/* GRAM belgisi va VIP olmoslari — Epic rasmlari */
+img.gem{object-fit:contain;display:inline-block;vertical-align:middle;flex:none}
+img.dm{object-fit:contain;flex:none}
+#profile .vl:not(.got) img.dm,#profile .vipc img.dm.lock{filter:grayscale(1) brightness(.55)}
+
+#home .bx .cdov{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:10px;background:rgba(14,14,16,.55);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
+#home .bx .cdov.on{display:flex}
+#home .bx .cdov i svg{width:30px;height:30px;color:#d4d4d8}
+#home .bx .cdov span{background:rgba(255,255,255,.12);border-radius:10px;padding:6px 12px;font-weight:700;font-size:14px;color:#e4e4e7}
+
+/* Rocket — Epic: yutqazganlar qizil, yutganlar yashil fon */
+#rkPl .prow.lose{background:#4a2b2e!important;border-color:#7a3a40!important;opacity:1}
+#rkPl .prow.win{background:#2a4a35!important;border-color:#3f7a52!important}
+
+/* Til menyusi — Epic kabi */
+.pfhero{position:relative}
+.lgdd{position:absolute;right:12px;top:52px;z-index:30;min-width:190px;background:rgba(58,54,72,.97);border:1px solid #ffffff1a;border-radius:16px;padding:10px;display:none;box-shadow:0 14px 34px #000a;backdrop-filter:blur(8px)}
+.lgdd.on{display:block}
+.lgdd small{display:block;font-weight:700;font-size:13px;color:#fff;padding:2px 8px 8px}
+.lgdd button{display:flex;justify-content:space-between;align-items:center;width:100%;padding:11px 10px;border-radius:10px;background:none;border:0;color:#e4e4e7;font-weight:600;font-size:14px;text-align:left}
+.lgdd button.on{background:#ffffff14}
+.lgdd button i{font-style:normal;color:#34d399;opacity:0}
+.lgdd button.on i{opacity:1}

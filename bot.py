@@ -159,7 +159,7 @@ def check_init_data(init_data: str) -> dict | None:
 # ================================================================ SOZLAMALAR (admin paneldan o'zgaradi)
 RTP_DEF = {"mines": 97, "dice": 98, "upgrade": 95, "cases": 92, "plinko": 100, "spins": 100}
 RK_PEPE_MIN0 = float(os.getenv("RK_PEPE_MIN", "10000"))   # Rocket: shu tikishdan Pepe beriladi
-DEF_CFG = {"rk_pepe_min": RK_PEPE_MIN0, "ch_id": "", "ch_url": "", "dep_addr": "", "tix_per_ton": 5000.0, "ref_tix": 5.0, "ref_tix_day": 50.0, "ton_rate": TON_RATE, "stars_rate": STARS_RATE, "bot_max": 1000.0, "rk_min": 3, "rk_max": 4,
+DEF_CFG = {"rk_pepe_min": RK_PEPE_MIN0, "ch_id": "", "ch_url": "", "dep_addr": "", "tix_per_ton": 5000.0, "ref_tix": 5.0, "ref_tix_day": 50.0, "ref_pct": 10.0, "ton_rate": TON_RATE, "stars_rate": STARS_RATE, "bot_max": 1000.0, "rk_min": 3, "rk_max": 4,
            "off": [], "maint": False, "rtp": RTP_DEF, "post_on": bool(CHANNEL_ID), "post_min": 1000.0,
            "ab_on": False, "ab_hours": 1.0, "ab_amount": 1000.0, "ab_uses": 500.0,      # avto bonus link
            "ds_on": False, "ds_hour": 21.0,                                                  # kunlik natijalar posti (Toshkent vaqti)
@@ -692,7 +692,9 @@ async def h_ping(request: web.Request) -> web.Response:
         store.save()
     miss = await sub_missing(uid, fresh=request.query.get("sub") == "1")
     return ok({"ok": True, "admin": is_admin(user), "id": user.get("id"), "subs": subs_public(miss), "wallet": wallet_out(uid),
-               "legacyInv": not (W.user(int(uid)) or {}).get("legacy"), **client_state(uid)})
+               "legacyInv": not (W.user(int(uid)) or {}).get("legacy"),
+               "ref": {"pct": float(cfg("ref_pct")), "tix": float(cfg("ref_tix")), "day": float(cfg("ref_tix_day")),
+                       "earn": store.d["users"].get(uid, {}).get("ref_earn", 0)}, **client_state(uid)})
 
 
 async def h_stats(request: web.Request) -> web.Response:
@@ -1125,6 +1127,12 @@ async def credit_deposit(uid: str, amount: float, src: str, note: str = "") -> N
         u["dep"] = round(u.get("dep", 0) + amount, 2)
         store.d.setdefault("deposits", []).insert(0, {"uid": int(uid), "amount": amount, "src": src, "note": note, "t": int(time.time())})
         del store.d["deposits"][5000:]
+        ref, pct = u.get("ref_by"), float(cfg("ref_pct") or 0)      # taklif qilgan do'stga depozitdan % (admin paneldan)
+        bonus = round(amount * pct / 100, 2) if ref and pct > 0 and str(ref) != uid else 0
+        if bonus > 0:
+            push_reward(str(ref), {"kind": "gram", "p": bonus, "from": f"Referral {pct:g}%", "src": "ref"})
+            r = store.d["users"].setdefault(str(ref), {"points": 0, "pvp": 0})
+            r["ref_earn"] = round(r.get("ref_earn", 0) + bonus, 2)
         store.save()
     log.info("DEPOZIT %s: +%s TON (%s %s)", uid, amount, src, note)
     bot = bot_ref.get("bot")
@@ -1952,18 +1960,84 @@ def app_url(start_param: str = "") -> str:
     return webapp_url(start_param)
 
 
-def main_kb(start_param: str = "") -> InlineKeyboardMarkup:
-    rows = [[InlineKeyboardButton(text=f"🚀 Open {BRAND}", web_app=WebAppInfo(url=app_url(start_param)))]]
+# ---- o'yinchi tili: English / O'zbekcha (botdagi xabarlar + ilova ?lang=)
+UTXT = {
+    "hi": {"en": "👋 Hi, <b>{name}</b>!\n\n🎁 <b>{brand}</b> — Telegram NFT gift games:\nRocket, PvP, TvT, Roulette, Upgrade, Mines, Spins, Plinko, Dice, Crafts and boxes.\n\nTap the button below 👇",
+           "uz": "👋 Salom, <b>{name}</b>!\n\n🎁 <b>{brand}</b> — Telegram NFT sovg'a o'yinlari:\nRocket, PvP, TvT, Roulette, Upgrade, Mines, Spins, Plinko, Dice, Crafts va qutilar.\n\nPastdagi tugmani bosing 👇"},
+    "open": {"en": "🚀 Open {brand}", "uz": "🚀 {brand} ni ochish"},
+    "channel": {"en": "📢 Channel", "uz": "📢 Kanal"},
+    "lang": {"en": "🌐 Language: English", "uz": "🌐 Til: O'zbekcha"},
+    "lang_pick": {"en": "🌐 Choose your language:", "uz": "🌐 Tilni tanlang:"},
+    "lang_ok": {"en": "✅ Language: English", "uz": "✅ Til: O'zbekcha"},
+    "help": {"en": "<b>Commands</b>\n/start — start\n/app — open the app\n/ref — your referral link\n/lang — language\n/help — help",
+             "uz": "<b>Buyruqlar</b>\n/start — boshlash\n/app — ilovani ochish\n/ref — referal havolangiz\n/lang — til\n/help — yordam"},
+    "ref": {"en": "🔗 Your referral link:\n<code>{link}</code>\n\nYou get <b>{pct}%</b> of your friends' deposits.",
+            "uz": "🔗 Referal havolangiz:\n<code>{link}</code>\n\nDo'stlaringiz depozitidan <b>{pct}%</b> sizga tushadi."},
+    "blocked": {"en": "🚫 Your account has been blocked. Contact support if you think this is a mistake.",
+                "uz": "🚫 Hisobingiz bloklangan. Xato deb o'ylasangiz, yordamga yozing."},
+}
+
+
+def ulang(user) -> str:
+    """Saqlangan til; bo'lmasa Telegram tilidan (uz → O'zbekcha, qolganlari English)."""
+    if not user:
+        return "en"
+    v = store.d.get("ulang", {}).get(str(user.id))
+    if v in ("en", "uz"):
+        return v
+    return "uz" if (getattr(user, "language_code", "") or "").startswith("uz") else "en"
+
+
+def ut(key: str, lang: str, **kw) -> str:
+    d = UTXT[key]
+    return (d.get(lang) or d["en"]).format(brand=BRAND, **kw)
+
+
+def main_kb(start_param: str = "", lang: str = "en") -> InlineKeyboardMarkup:
+    url = app_url(start_param)
+    url += ("&" if "?" in url else "?") + "lang=" + lang
+    rows = [[InlineKeyboardButton(text=ut("open", lang), web_app=WebAppInfo(url=url))]]
     if ch_url():
-        rows.append([InlineKeyboardButton(text="📢 Channel", url=ch_url())])
+        rows.append([InlineKeyboardButton(text=ut("channel", lang), url=ch_url())])
+    rows.append([InlineKeyboardButton(text=ut("lang", lang), callback_data="ulang")])
     return InlineKeyboardMarkup(inline_keyboard=rows)
+
+
+@dp.message(Command("lang"))
+async def cmd_lang(message: Message) -> None:
+    lg = ulang(message.from_user)
+    await message.answer(ut("lang_pick", lg), reply_markup=InlineKeyboardMarkup(inline_keyboard=[[
+        InlineKeyboardButton(text="🇬🇧 English", callback_data="ulang:en"), InlineKeyboardButton(text="🇺🇿 O'zbekcha", callback_data="ulang:uz")]]))
+
+
+@dp.callback_query(F.data.startswith("ulang"))
+async def on_ulang(cq: CallbackQuery) -> None:
+    if cq.data == "ulang":
+        lg = ulang(cq.from_user)
+        await cq.message.answer(ut("lang_pick", lg), reply_markup=InlineKeyboardMarkup(inline_keyboard=[[
+            InlineKeyboardButton(text="🇬🇧 English", callback_data="ulang:en"), InlineKeyboardButton(text="🇺🇿 O'zbekcha", callback_data="ulang:uz")]]))
+        await cq.answer()
+        return
+    lg = cq.data.split(":", 1)[1]
+    if lg not in ("en", "uz"):
+        await cq.answer()
+        return
+    async with store.lock:
+        store.d.setdefault("ulang", {})[str(cq.from_user.id)] = lg
+        store.save()
+    await cq.answer(ut("lang_ok", lg))
+    name = cq.from_user.first_name or ""
+    try:
+        await cq.message.edit_text(ut("hi", lg, name=name), reply_markup=main_kb("", lg))
+    except Exception:
+        await cq.message.answer(ut("hi", lg, name=name), reply_markup=main_kb("", lg))
 
 
 @dp.message(CommandStart())
 async def cmd_start(message: Message, command: CommandObject) -> None:
     param = (command.args or "").strip()
     if message.from_user and store.d["users"].get(str(message.from_user.id), {}).get("banned"):
-        await message.answer("🚫 Your account has been blocked. Contact support if you think this is a mistake.")
+        await message.answer(ut("blocked", ulang(message.from_user)))
         return
     if message.from_user:
         miss = await sub_missing(message.from_user.id, fresh=True)
@@ -1981,12 +2055,8 @@ async def start_flow(message: Message, user, param: str) -> None:
             W.set_lang(user.id, "ru" if (user.language_code or "").startswith(("ru", "uk", "be", "kk")) else "uz")
         except Exception as e:  # noqa: BLE001
             log.warning("start user: %s", e)
-    text = (
-        f"👋 Hi, <b>{name}</b>!\n\n"
-        f"🎁 <b>{BRAND}</b> — Telegram NFT gift games:\n"
-        "Rocket, PvP, TvT, Roulette, Upgrade, Mines, Spins, Plinko, Dice, Crafts and boxes.\n\n"
-        "Tap the button below 👇"
-    )
+    lg = ulang(user)
+    text = ut("hi", lg, name=name)
     if param.startswith("bonus_") and user:
         await redeem_bonus(message, param[6:], user)
         return
@@ -2004,7 +2074,7 @@ async def start_flow(message: Message, user, param: str) -> None:
                 store.d["rewards"].setdefault(ref_id, []).append({"id": uuid.uuid4().hex[:10], "kind": "ref", "n": "ref", "p": 0, "tix": give, "from": name, "srv": 1})
                 store.save()
                 log.info("referal: %s -> %s", ref_id, me_id)
-    await message.answer(text, reply_markup=main_kb(param))
+    await message.answer(text, reply_markup=main_kb(param, lg))
 
 
 @dp.callback_query(F.data.startswith("subchk"))
@@ -2028,19 +2098,20 @@ async def on_subchk(cq: CallbackQuery) -> None:
 
 @dp.message(Command("app"))
 async def cmd_app(message: Message) -> None:
-    await message.answer("🚀 Open the app:", reply_markup=main_kb())
+    lg = ulang(message.from_user)
+    await message.answer("🚀 " + ("Ilovani oching:" if lg == "uz" else "Open the app:"), reply_markup=main_kb("", lg))
 
 
 @dp.message(Command("help"))
 async def cmd_help(message: Message) -> None:
-    await message.answer("<b>Commands</b>\n/start — start\n/app — open the app\n/ref — your referral link\n/help — help")
+    await message.answer(ut("help", ulang(message.from_user)))
 
 
 @dp.message(Command("ref"))
 async def cmd_ref(message: Message, bot: Bot) -> None:
     me = await bot.get_me()
     uid = message.from_user.id if message.from_user else 0
-    await message.answer(f"🔗 Your referral link:\n<code>https://t.me/{me.username}?start=ref_{uid}</code>")
+    await message.answer(ut("ref", ulang(message.from_user), link=f"https://t.me/{me.username}?start=ref_{uid}", pct=f"{cfg('ref_pct'):g}"))
 
 
 ADMIN_WAIT: dict[int, str] = {}   # admin_id -> kutilayotgan amal (add/sub/bonus/bc/find)
@@ -2376,6 +2447,8 @@ def set_kb() -> InlineKeyboardMarkup:
     rows = [[B(text=f"💱 1 TON = {cfg('ton_rate'):g}", callback_data="ad:sv:ton_rate"), B(text=f"⭐ 1 Star = {cfg('stars_rate'):g}", callback_data="ad:sv:stars_rate")],
             [B(text=f"🤖 Bot max bet: {cfg('bot_max'):g}", callback_data="ad:sv:bot_max"), B(text=f"🚀 Rocket bots: {cfg('rk_min')}–{cfg('rk_max')}", callback_data="ad:sv:rk")],
             [B(text=(f"🐸 Rocket Pepe from {cfg('rk_pepe_min'):g} TON" if cfg("rk_pepe_min") else "🐸 Rocket Pepe: OFF (TON)"), callback_data="ad:sv:rk_pepe_min")],
+            [B(text=f"🤝 Referral: {cfg('ref_pct'):g}% of deposits", callback_data="ad:sv:ref_pct")],
+            [B(text=f"🎟 Ref tickets: {cfg('ref_tix'):g}", callback_data="ad:sv:ref_tix"), B(text=f"📅 Max/day: {cfg('ref_tix_day'):g}", callback_data="ad:sv:ref_tix_day")],
             [B(text=f"👥 PvP/TvT/Roulette bots: {int(cfg('live_bots'))}", callback_data="ad:sv:live_bots"),
              B(text=("🟢 Bots always play" if cfg("bots_always") else "⚪ Bots only with players"), callback_data="ad:botal")],
             [B(text=("🔴 Maintenance ON — tap to turn off" if cfg("maint") else "🟢 Maintenance OFF — tap to turn on"), callback_data="ad:maint")]]
@@ -2665,7 +2738,9 @@ async def on_admin_cb(cq: CallbackQuery, bot: Bot) -> None:
                 "bot_max": "max bot bet, e.g. <code>1000</code>", "rk": "rocket bots per round as <code>min max</code>, e.g. <code>3 4</code> (0–8)",
                 "post_min": "minimum win to post in the channel, e.g. <code>1000</code>",
                 "ab_hours": "auto bonus interval in hours, e.g. <code>1</code> or <code>0.5</code>", "ab_amount": "TON per player, e.g. <code>1000</code>",
-                "ab_uses": "how many people, e.g. <code>500</code>", "rk_pepe_min": "Rocket: from this bet the win is given as a Plush Pepe gift, e.g. <code>10000</code>. <code>0</code> = off (always TON)", "ds_hour": "hour 0–23 (Tashkent), e.g. <code>21</code>",
+                "ab_uses": "how many people, e.g. <code>500</code>",
+                "ref_pct": "referral reward in % of each deposit made by invited friends, e.g. <code>10</code> (0–50). <code>0</code> = off",
+                "ref_tix": "tickets per invited friend, e.g. <code>5</code>", "ref_tix_day": "max referral tickets per day, e.g. <code>50</code>", "rk_pepe_min": "Rocket: from this bet the win is given as a Plush Pepe gift, e.g. <code>10000</code>. <code>0</code> = off (always TON)", "ds_hour": "hour 0–23 (Tashkent), e.g. <code>21</code>",
                 "top_hour": "hour 0–23 (Tashkent), e.g. <code>21</code>",
                 "top_dow": "<code>1</code>–<code>7</code> (1 = Du/Пн … 7 = Ya/Вс)",
                 "poll_dow": "<code>1</code>–<code>7</code> + hour 0–23 (Tashkent), e.g. <code>3 19</code>"}.get(k, f"{k[4:].capitalize()} RTP in %, e.g. <code>95</code> (50–100)")
@@ -2951,6 +3026,11 @@ async def on_admin_input(message: Message, bot: Bot) -> None:
                 if not (1 <= v <= 7 and 0 <= h <= 23):
                     raise ValueError
                 upd = {"poll_dow": float(v - 1), "poll_hour": float(h)}
+            elif k in ("ref_pct", "ref_tix", "ref_tix_day"):
+                v = parse_amount(parts[0]) if parts else None
+                if v is None or v < 0 or (k == "ref_pct" and v > 50):
+                    raise ValueError
+                upd = {k: float(v)}
             elif k == "rk_pepe_min":
                 v = parse_amount(parts[0]) if parts else None
                 if v is None or v < 0:
@@ -3083,7 +3163,8 @@ async def on_webapp_data(message: Message) -> None:
 
 @dp.message(F.chat.type == "private")
 async def fallback(message: Message) -> None:
-    await message.answer("Tap the button to open the app 👇", reply_markup=main_kb())
+    lg = ulang(message.from_user)
+    await message.answer("Ilovani ochish uchun tugmani bosing 👇" if lg == "uz" else "Tap the button to open the app 👇", reply_markup=main_kb("", lg))
 
 
 async def on_startup(bot: Bot) -> None:
@@ -3091,6 +3172,7 @@ async def on_startup(bot: Bot) -> None:
         BotCommand(command="start", description="Start"),
         BotCommand(command="app", description="Open the app"),
         BotCommand(command="ref", description="Referral link"),
+        BotCommand(command="lang", description="Language / Til"),
         BotCommand(command="help", description="Help"),
     ])
     for a in ADMIN_IDS:

@@ -13,6 +13,7 @@ const IC = {
   wifi: svgI('<path d="M2 9a15 15 0 0 1 20 0M5 12.5a10 10 0 0 1 14 0M8.5 16a5 5 0 0 1 7 0"/><circle cx="12" cy="19.5" r="1"/>'),
   gear: svgI('<circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.8l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.8-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.8.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.8 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.8l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.8.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.8-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.8V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z"/>'),
   back: svgI('<path d="M19 12H5M11 6l-6 6 6 6"/>'),
+  globe: svgI('<circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9s1.3-6.3 3.8-9z"/>'),
   box: svgI('<path d="M12 2.5 3.5 7v10l8.5 4.5 8.5-4.5V7z"/><path d="M3.5 7 12 11.5 20.5 7M12 11.5v10"/>'),
   wallet: svgI('<rect x="3" y="5" width="18" height="14" rx="3"/><path d="M16 12h2M3 9h13"/>'),
   coin: svgI('<circle cx="12" cy="12" r="8"/><path d="M9 9h5a2 2 0 0 1 0 4H9v-4zm0 4h6M10 7v10"/>'),
@@ -573,7 +574,7 @@ function boxCard(bx) {
 // HOME: Rocket / PvP Hub / Play Hub bannerlari index.html da.
 // Ulardan keyin Epic kabi: Free24 + Free kartalari, so'ng barcha qutilar bitta 2 ustunli gridda.
 const homeRoot = $('#home');
-const freeCards = `<button class="bx f24" data-go="daily"><div class="art cover"><img src="assets/box/free24.png" alt="Free 24h" decoding="async" draggable="false"></div><div class="ft"><b>Free 24h</b><em class="fy">${IC.cal}FREE</em></div></button>
+const freeCards = `<button class="bx f24" data-go="daily"><div class="art cover"><img src="assets/box/free24.png" alt="Free 24h" decoding="async" draggable="false"><div class="cdov" id="f24cd"><i>${IC.clock}</i><span></span></div></div><div class="ft"><b>Free 24h</b><em class="fy">${IC.cal}FREE</em></div></button>
   <button class="bx fre" data-box="free"><div class="art cover"><img src="assets/box/free.png" alt="Free" decoding="async" draggable="false"></div><div class="ft"><b>Free</b><em>${IC.gift}FREE</em></div></button>`;
 if (homeRoot && !$id('boxGrid')) {
   const anchor = homeRoot.querySelector('.epic-home-banners') || homeRoot.lastElementChild;
@@ -586,6 +587,9 @@ document.addEventListener('click', e => {
 
 const FREEBOX = { id: 'free', n: 'Free', p: 0, c: '#8b5cf6', art: ['Hypno Lollipop', 'Neko Helmet', 'Desk Calendar'] };
 const BX = { cur: null, boost: 1, busy: false };
+// Free24: olingandan keyin Epic kabi xira rasm + soat + qolgan vaqt
+function f24Tick() { const o = $id('f24cd'); if (!o) return; const left = S.daily + 864e5 - Date.now(); o.classList.toggle('on', left > 0); if (left > 0) { const h = Math.floor(left / 36e5), m = Math.floor(left % 36e5 / 6e4); o.querySelector('span').textContent = `${h}h ${m}m` } }
+f24Tick(); setInterval(f24Tick, 20000);
 sec('boxp');
 function openBox(id) { BX.cur = id === 'free' ? FREEBOX : BOXES.find(b => b.id === id); BX.boost = 1; go('boxp') }
 function reelTile(o) { if (o.bal) return `<div class="tl bal">${GEM}</div>`; return `<div class="tl ${o.v > 100 ? 'rare' : 'gf'}">${GI(o.g)}</div>` }
@@ -723,7 +727,7 @@ ENTER.backpack = bpRender;
 //  INVITE
 // =====================================================================
 ENTER.invite = () => {
-  $id('invite').innerHTML = `<div class="ivc"><i>${IC.users}</i><div><h3>Earn up to <em>10%</em><br>by inviting friends</h3><small>from their deposits</small><div class="al">Also by ${tk(5)} for each</div><small>but no more than 50 per day</small></div><button class="q">${IC.help}</button></div>
+  $id('invite').innerHTML = `<div class="ivc"><i>${IC.users}</i><div><h3>${T('Earn up to')} <em>${(NET.ref ? NET.ref.pct : 10).toString().replace(/\.0+$/, '')}%</em><br>${T('by inviting friends')}</h3><small>${T('from their deposits')}</small><div class="al">${T('Also by')} ${tk(NET.ref ? NET.ref.tix : 5)} ${T('for each')}</div><small>${T('but no more than')} ${NET.ref ? NET.ref.day : 50} ${T('per day')}</small></div><button class="q">${IC.help}</button></div>
   <div class="ivb"><button class="btn-p" id="ivInv">${IC.share}Invite Friends</button><button class="btn-d" id="ivCp">${IC.copy}Copy Link</button></div>
   <div class="ivs"><div>Total earned<b>${fmt(S.invEarn).replace(/(\.\d\d)$/, '$10')}${GEM}</b></div><div>Earned today<b>${Math.min(50, S.ref * 5)} / 50 <span class="tkic"></span></b></div></div>
   <div class="ivm"><b>My Invites <em>${S.ref}</em></b><div class="ne"><i>${IC.users}</i>No invites yet</div></div>`;
@@ -882,6 +886,7 @@ const myPvp = () => Math.round((S.pvpScore || 0) * 100);
 let statT = 0;
 // ---- server boshqaruvi: reset epoxalari, blok, texnik ishlar, o'chirilgan o'yinlar
 function srvState(d) {
+  if (d && d.ref) NET.ref = d.ref;
   if (d && d.wallet && typeof wApplyBal === 'function') { NET.wallet = Object.assign(NET.wallet || {}, d.wallet); wApplyBal(d.wallet.bal) }
   if (!d || !d.ep) return;
   NET.cfg = { off: d.off || [], maint: !!d.maint }; if (d.ch && d.ch !== CFG.CHANNEL_URL) { CFG.CHANNEL_URL = d.ch; try { const tk = TASKS.find(x => x.id === 'chan'); if (tk) tk.link = d.ch } catch (e) {} } if (d.rtp) CFG.RTP = d.rtp; if (d.tonRate) CFG.TON_RATE = d.tonRate; if (d.starsRate) CFG.STARS_RATE = d.starsRate;
@@ -1001,7 +1006,7 @@ ENTER.leader = async () => {
   const draw = () => {
     const d = lbData('points');
     $id('leader').innerHTML = `<div class="lbc"><div class="bgg">${GI(byName('Heart Locket'))}</div><div class="t"><i>${IC.trophy}</i>Leaderboard<button id="lbQ">${IC.help}</button></div><div class="r"><div><small>Ends in</small><div class="ends" id="lbE">${IC.clock}${dur((NET.lbEnd || LBEND) - Date.now())}</div></div><div class="pw"><small>Prizes &amp; Winners</small><b>${IC.users.replace('class="ic"', 'class="ic" style="width:16px;height:16px"')}${Math.max(d.l.length, 1)}</b></div></div><p>Compete with others and win amazing prizes!</p></div>
-    <div class="tph">${IC.trophy}Top Players <button class="rf" id="lbR">${IC.refresh}</button><span><em style="font-style:normal">Prize</em><em style="font-style:normal">Balance</em></span></div>
+    <div class="tph">${IC.trophy}Top Players <button class="rf" id="lbR">${IC.refresh}</button><span><em style="font-style:normal">Prize</em><em style="font-style:normal">Wealth</em></span></div>
     <div id="lbRows">${NET.on && !NET.lbTs ? `<div class="lbload"><span class="spin"></span>Loading leaderboard...</div>` : NET.lbErr && !NET.lb.length ? `<div class="empty">Couldn't load the leaderboard. Pull to refresh.</div>` : lbRows(d, 250)}</div>
     <div class="lbme"><span class="r9">${d.rank ? d.rank : '999+'}</span>${avP(pubName(), pubPhoto())}<span class="you">YOU</span><span class="x">✕</span><span class="lpt">${fmtK(d.mine || 0)}</span></div>`;
     $id('lbR').onclick = async () => { await pullLb(true); draw(); toast('Updated') };
@@ -1272,21 +1277,23 @@ document.body.insertAdjacentHTML('beforeend', `<div class="modal" id="vipHM"><di
   <h4>PLAYBONUS</h4><p>Part of your bets comes back to you as a bonus. See the PLAYBONUS section for details.</p>
   <div class="vhf">VIP levels are based on your total turnover and do not reset. Some bonuses may be granted individually depending on your activity.</div></div></div>`);
 const VIPS = [['Iron', 1000, '#9ca3af'], ['Bronze', 5000, '#d97706'], ['Silver', 10000, '#cbd5e1'], ['Gold', 25000, '#fbbf24'], ['Platinum', 50000, '#a5f3fc'], ['Diamond', 250000, '#c084fc'], ['Obsidian', 1000000, '#334155']];
-const dmd = c => `<svg class="dm" viewBox="0 0 48 48"><defs><linearGradient id="dg${c.slice(1)}" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".9"/><stop offset=".45" stop-color="${c}"/><stop offset="1" stop-color="#111" stop-opacity=".6"/></linearGradient></defs><path d="M12 8h24l8 12-20 22L4 20z" fill="url(#dg${c.slice(1)})" stroke="${c}" stroke-width="1.5"/><path d="M4 20h40M12 8l6 12 6-12 6 12 6-12M18 20l6 22 6-22" stroke="#ffffff55" fill="none"/></svg>`;
+const dmd = c => { const v = VIPS.find(x => x[2] === c); return `<img class="dm" src="assets/epic2/vip_${v ? v[0].toLowerCase() : 'iron'}.png" alt="" draggable="false">` };   // Epic VIP olmoslari
 sec('profile');
 ENTER.profile = () => {
   const t = Math.max(S.wag, wOn() && NET.wallet ? NET.wallet.turnover || 0 : 0), lvl = VIPS.filter(v => t >= v[1]).pop(), nx = VIPS.find(v => t < v[1]) || VIPS[VIPS.length - 1];
   const pbTot = Math.floor((wOn() && NET.wallet ? NET.wallet.turnover || 0 : t) * .0005 * 100) / 100, pbGot = wOn() && NET.wallet ? NET.wallet.pb || 0 : (S.pbClaimed || 0);
   const pb = Math.max(0, r2(pbTot - pbGot)), silver = t >= 10000;   // ko'rsatiladi: hali olinmagan qism (Claim'dan keyin 0)
-  sec('profile', `<div class="pfhero"><button class="pfc l" id="pfAnon">${ANONI}${S.anon ? 'ON' : 'OFF'}</button><button class="pfc r" id="pfLang">${IC.globe || '🌐'}EN</button><div class="av-wrap">${avP(pubName(), pubPhoto())}</div><b>${esc(pubName())}</b></div>
-  <div class="vipc"><div class="hd">${dmd(lvl ? lvl[2] : '#6b7280')}<div><small>VIP-STATUS</small><b>${lvl ? lvl[0] : 'No status'}</b></div><button id="vipQ">${IC.info}</button></div>
-  <div class="pr"><b>${fmt(t)} / ${nx[1].toLocaleString('ru-RU')} ${CUR}</b><span>To ${dmd(nx[2]).replace('class="dm"', 'style="width:15px;height:15px"')} ${nx[0]} Level</span></div><div class="bar"><b style="width:${Math.min(100, t / nx[1] * 100)}%"></b></div><div class="ft"><span>Turnover</span><span>${fmt(Math.max(0, nx[1] - t))} ${CUR} left</span></div></div>
+  sec('profile', `<div class="pfhero"><button class="pfc l" id="pfAnon">${ANONI}${S.anon ? 'ON' : 'OFF'}</button><button class="pfc r" id="pfLang">${IC.globe || '🌐'}${LANG() === 'uz' ? 'UZ' : 'EN'}</button><div class="lgdd" id="lgDd"><small>Language</small><button data-l="en" class="${LANG() === 'en' ? 'on' : ''}">English<i>✓</i></button><button data-l="uz" class="${LANG() === 'uz' ? 'on' : ''}">O'zbekcha<i>✓</i></button></div><div class="av-wrap">${avP(pubName(), pubPhoto())}</div><b>${esc(pubName())}</b></div>
+  <div class="vipc"><div class="hd">${lvl ? dmd(lvl[2]) : dmd('').replace('class="dm"', 'class="dm lock"')}<div><small>VIP-STATUS</small><b>${lvl ? lvl[0] : 'No status'}</b></div><button id="vipQ">${IC.info}</button></div>
+  <div class="pr"><b>${fmt(t)} / ${nx[1].toLocaleString('ru-RU')} ${CUR}</b><span>To ${dmd(nx[2]).replace('class="dm"', 'class="dm" style="width:16px;height:16px;vertical-align:-3px"')} ${nx[0]} Level</span></div><div class="bar"><b style="width:${Math.min(100, t / nx[1] * 100)}%"></b></div><div class="ft"><span>Turnover</span><span>${fmt(Math.max(0, nx[1] - t))} ${CUR} left</span></div></div>
   <div class="trbtns"><button class="btn-p" id="pfTrG">💎 Send ${CUR}</button><button class="btn-d" id="pfTrF">🎁 Send Gift</button></div>
   <div class="pbc"><div class="hd"><span>${IC.gift}PLAYBONUS</span>${IC.info}</div><div class="v">${fmt(pb)}${GEM}</div><button class="${silver ? 'btn-p' : 'btn-d'}" id="pbC">${silver ? 'Claim' : IC.lock + 'Reach Silver to claim'}</button><p>PLAYBONUS accumulates automatically and can be claimed after reaching Silver level.</p></div>
   <div class="vipl"><div class="hd">VIP Levels<small>${CUR} Turnover</small></div>${VIPS.map(v => `<div class="vl ${t >= v[1] ? 'got' : ''}">${dmd(v[2])}<div><b>${v[0]} ${t >= v[1] ? '✓' : IC.lock}</b><small>${GEM}${v[1].toLocaleString('ru-RU')} ${CUR}</small></div><span class="ch">${IC.down}</span><div class="bd2">${(VIP_PERKS[v[0]] || []).map(x => `<div class="pk">${CHK}${x}</div>`).join('')}</div></div>`).join('')}</div>`);
   $$('#profile .vl').forEach(e => e.onclick = () => e.classList.toggle('open'));
   $id('pfTrG').onclick = () => trOpen('gram'); $id('pfTrF').onclick = () => trOpen('gift');
-  $id('pfAnon').onclick = anonOpen; $id('pfLang').onclick = () => toast('Language: English');
+  $id('pfAnon').onclick = anonOpen; $id('pfLang').onclick = e => { e.stopPropagation(); $id('lgDd').classList.toggle('on') };
+  $id('lgDd').onclick = e => { const b = e.target.closest('[data-l]'); if (b && b.dataset.l !== LANG()) setLang(b.dataset.l); else $id('lgDd').classList.remove('on') };
+  document.addEventListener('click', ev => { const d = $id('lgDd'); if (d && !ev.target.closest('#lgDd,#pfLang')) d.classList.remove('on') });
   $id('vipQ').onclick = () => openM('vipHM');
   $id('pbC').onclick = () => { if (!silver) return; const c = pb; if (c <= 0) { toast('No bonus yet'); return } S.pbClaimed = pbTot; wWith({ game: 'pb', why: 'pb' }, () => setBal(c)); if (NET.wallet) NET.wallet.pb = r2((NET.wallet.pb || 0) + c); balModal(c); ENTER.profile && ENTER.profile() };
 };
