@@ -29,7 +29,7 @@
 #erk{position:absolute;inset:0}
 #erk canvas{position:absolute;inset:0;width:100%;height:100%}
 /* NFT sovg'a (iz uchida) */
-#erkG{position:absolute;left:0;top:0;width:104px;height:104px;will-change:transform;pointer-events:none}
+#erkG{position:absolute;left:0;top:0;width:112px;height:112px;will-change:transform;pointer-events:none}
 #erkG .gi-wrap,#erkG img{width:100%;height:100%;object-fit:contain;display:block}
 #erkG.off{opacity:0}
 /* sanoq halqasi: d=122.5, markaz (201,151) */
@@ -103,3 +103,17 @@ body.e-rk #rkStage{height:302px}
 #rkPl .er .gt .gi-wrap,#rkPl .er .gt img{width:30px;height:30px;object-fit:contain}
 #rocket.on,#rocket .rkstage,#rkStage{background:var(--rk-bg)!important;background-image:none!important}
 #rkStage::before,#rkStage::after{display:none!important}
+/* ===== 409.mp4 o'lchovlari (390 px): sanoq halqasi d 141.3, chiziq 6, iz rangi #403630; markaz ekranda (194.7, 235.4) → sahnada (194.7, 179.4) */
+#erkC{left:194.7px!important;top:179.4px!important;width:141.3px!important;height:141.3px!important;margin:-70.65px 0 0 -70.65px!important;
+  background:radial-gradient(circle,color-mix(in srgb,var(--cc) 30%,transparent) 0,transparent 68%)!important;transition:transform .17s ease-out}
+#erkC b{font-size:62px!important;font-weight:800!important}
+#erkC.pop{transform:scale(1.08)}
+/* crash raqami: balandlik 43 px, ekranda y 213.6–256.7 → sahnada 157.6; o'rtasi x 198 */
+#erkT{top:150px!important;font-size:60px!important;font-weight:800!important;letter-spacing:-1px!important}
+/* raqam almashishi — 409.mp4 635.59→635.83: yangi raqam katta va xira → 170 ms da normal; tashqi halqa 250 ms da kengayib so'nadi */
+#erkC.pop{transform:none}
+#erkC.pop b{animation:rkDig .17s ease-out}
+#erkC .halo{position:absolute;inset:-6px;border-radius:50%;border:1.5px solid var(--cc);opacity:0;pointer-events:none}
+#erkC.pop .halo{animation:rkHalo .25s ease-out}
+@keyframes rkDig{0%{transform:scale(1.35);opacity:.35}100%{transform:none;opacity:1}}
+@keyframes rkHalo{0%{transform:scale(1);opacity:.55}100%{transform:scale(1.22);opacity:0}}

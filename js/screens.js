@@ -1615,7 +1615,7 @@ function lvRkTick(now) {
     if (RK.phase !== 'fly') { RK.phase = 'fly'; $('#rkStage').classList.add('fly') }
     // ko'rsatkich serverdan biroz orqada yuradi (so'rov oralig'i + aloqa kechikishi): portlash qiymatidan oshib, keyin orqaga qaytmaydi
     const lag = Math.min(1200, Math.max(300, 220 + (LV.rtt || 300)));
-    RK.t0 = now - (sNow - d.t0) + lag; const m = Math.floor(Math.exp(0.085 * Math.max(0, (now - RK.t0) / 1000)) * 100) / 100;
+    RK.t0 = now - (sNow - d.t0) + lag; const m = rkMult(Math.max(0, (now - RK.t0) / 1000));
     RK.m = Math.max(1, Math.max(RK.m || 1, m));
   }
   else if (d.phase === 'crash' && RK.phase !== 'crash') {

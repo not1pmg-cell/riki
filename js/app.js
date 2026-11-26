@@ -363,6 +363,11 @@ function feedTick() {
 // =====================================================================
 const RK = { phase: 'wait', t0: 0, waitEnd: 0, crash: 1, m: 1, bets: [], my: null, next: null, hist: [], round: 10231 };
 function rkCrashPoint() { const r = Math.random(); if (r < 0.03) return 1; return Math.min(1000, Math.max(1, Math.floor(0.97 / (1 - r) * 100) / 100)) }
+const RK_CURVE = [[0, 1.00], [0.55, 1.00], [1.07, 1.01], [1.54, 1.04], [2.54, 1.20], [3.06, 1.33], [3.56, 1.44], [4.04, 1.57], [4.56, 1.74], [5.05, 1.91], [5.54, 2.06], [6.07, 2.27], [6.57, 2.50], [7.07, 2.71], [7.57, 2.97], [8.04, 3.23], [8.57, 3.49], [9.05, 3.75]];   // 408.mp4 5:37–5:46 (bot.py bilan bir xil)
+function rkMult(t) { t = Math.min(Math.max(0, t), 400); let m; const L = RK_CURVE[RK_CURVE.length - 1];
+  if (t >= L[0]) m = Math.exp(Math.log(L[1]) + 0.164 * (t - L[0]));
+  else { let j = 1; while (RK_CURVE[j][0] <= t) j++; const [t0, m0] = RK_CURVE[j - 1], [t1, m1] = RK_CURVE[j]; m = Math.exp(Math.log(m0) + (Math.log(m1) - Math.log(m0)) * (t - t0) / (t1 - t0)) }
+  return Math.floor(Math.min(m, 1e9) * 100 + 1e-9) / 100 }
 function rkNew() {
   RK.phase = 'wait'; RK.waitEnd = performance.now() + 5000; RK.m = 1; RK.round++;
   RK.crash = rkCrashPoint(); RK.bets = []; RK.my = null;
@@ -381,7 +386,7 @@ function rkTick(now) {
     if (now >= RK.waitEnd) { RK.phase = 'fly'; RK.t0 = now; $('#rkStage').classList.add('fly') }
   } else if (RK.phase === 'fly') {
     const t = (now - RK.t0) / 1000;
-    RK.m = Math.floor(Math.exp(0.085 * t) * 100) / 100;
+    RK.m = rkMult(t);
     RK.bets.forEach(b => {
       if (!b.out && b.auto && RK.m >= b.auto && b.auto <= RK.crash) rkCash(b, b.auto);
       else if (!b.out && !b.me && !b.auto && Math.random() < .004) rkCash(b, RK.m);

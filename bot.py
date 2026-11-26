@@ -1535,9 +1535,20 @@ LIVE_HIST: dict = {"roulette": [], "pvp": [], "tvt": [], "rocket": []}
 live_lock = asyncio.Lock()
 
 
+# Epic videosidan o'lchangan ko'paytiruvchi egri chizig'i (408.mp4 5:37–5:46, jonli chip har 0.5 s):
+# t (s) → m. 9.05 s dan keyin: ln m = ln 3.75 + 0.164·(t − 9.05)
+RK_CURVE = [[0, 1.00], [0.55, 1.00], [1.07, 1.01], [1.54, 1.04], [2.54, 1.20], [3.06, 1.33], [3.56, 1.44], [4.04, 1.57], [4.56, 1.74], [5.05, 1.91], [5.54, 2.06], [6.07, 2.27], [6.57, 2.50], [7.07, 2.71], [7.57, 2.97], [8.04, 3.23], [8.57, 3.49], [9.05, 3.75]]
+
+
 def rk_mult(t: float) -> float:
-    # t chegaralanadi: kompyuter uxlab qolsa/bot to'xtab qolsa t juda katta bo'lib exp() toshib ketardi (math range error)
-    return int(math.exp(0.085 * min(max(0.0, t), 400.0)) * 100) / 100
+    t = min(max(0.0, t), 400.0)
+    if t >= RK_CURVE[-1][0]:
+        m = math.exp(math.log(RK_CURVE[-1][1]) + 0.164 * (t - RK_CURVE[-1][0]))
+    else:
+        j = next(k for k in range(1, len(RK_CURVE)) if RK_CURVE[k][0] > t)
+        (t0, m0), (t1, m1) = RK_CURVE[j - 1], RK_CURVE[j]
+        m = math.exp(math.log(m0) + (math.log(m1) - math.log(m0)) * (t - t0) / (t1 - t0))
+    return int(min(m, 1e9) * 100 + 1e-9) / 100
 
 
 def pinfo(user: dict, body: dict) -> dict:

@@ -9,9 +9,16 @@
 // =====================================================================
 (function () {
 'use strict';
-const T = { cnt: 5000, boom: [170, 330, 830], txtOn: 1100, txtOff: 2650 };
-const COUNT_COL = { 5: '#65a5f4', 4: '#41e49b', 3: '#ecc32e', 2: '#eb6c1b', 1: '#de3243' };
-const TRAIL_FLY = '#ded147', TRAIL_CRASH = '#c93346';
+const T = { cnt: 5000, boom: [170, 330, 830], txtOn: 996, txtOff: 99999 };   // 409.mp4: raqam portlashdan 996 ms keyin, keyingi raundgacha turadi
+// portlash — 17 ta PNG kadr (409.mp4 643.548 s dan), har biri shu ms da almashadi
+const BOOM_T = [0, 55, 96, 139, 179, 217, 242, 280, 305, 345, 384, 425, 465, 493, 536, 575, 646], BOOM_END = 690;
+const BOOM_IMG = BOOM_T.map((_, k) => { const im = new Image(); im.src = `assets/rocket/boom_${String(k).padStart(2, '0')}.png`; return im });
+const COUNT_COL = { 5: '#5fa3f6', 4: '#32d196', 3: '#f9bd23', 2: '#f77115', 1: '#ec4345' };   // 409.mp4 635.5–638.5 s
+const TRAIL_FLY = '#ded147', TRAIL_CRASH = '#d44242';   // crash: 408.mp4 353.3 s
+const Y0 = 312.7 - 56;   // iz y (ekranda 312.7 px; sahna ekran tepasidan 56 px pastda)
+// iz rangi — ko'paytiruvchiga qarab silliq (409.mp4 641.1–643.5 s; 408.mp4 346–352 s)
+const TC = [[1, [0x2d, 0x84, 0x63]], [1.3, [0x28, 0x93, 0x7b]], [1.5, [0x2d, 0x8f, 0xa2]], [1.86, [0x31, 0x86, 0xc5]], [4, [0x60, 0x67, 0xe5]], [5.2, [0x7e, 0x56, 0xdf]], [6.2, [0x94, 0x61, 0xa8]], [7.7, [0xa7, 0x6c, 0x68]]];
+function trailCol(m) { let j = 1; while (j < TC.length - 1 && TC[j][0] < m) j++; const [m0, c0] = TC[j - 1], [m1, c1] = TC[j], k = Math.max(0, Math.min(1, (m - m0) / (m1 - m0))); return '#' + c0.map((v, i) => Math.round(v + (c1[i] - v) * k).toString(16).padStart(2, '0')).join('') }
 const TRAIL_COL = { red: '#c93346', grn: '#2fbf71', blu: '#4874e6', pur: '#9b5de5', yel: '#ded147' };   // grn/blu: 409.mp4 10:55/10:59; yel: desktop 80x; pur: chip rangidan (UNCLEAR)
 const W = 390, H = 300;
 const P0 = [0, 218], PC = [230, 210], P2 = [W, 125];          // iz egri chizig'i (31, 36 kadrlar)
@@ -23,7 +30,7 @@ const chipTxt = m => (m >= 10 ? m.toFixed(1) : m.toFixed(2)) + 'x';   // "11.3x"
 const stage = document.getElementById('rkStage');
 if (!stage) return;
 stage.insertAdjacentHTML('beforeend', `<div id="erk"><canvas id="erkCv"></canvas><div id="erkG" class="off"></div>
-  <div id="erkC"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="46" fill="none" stroke="#2b2b2b" stroke-width="5"/><circle id="erkA" cx="50" cy="50" r="46" fill="none" stroke-width="5" stroke-linecap="round" stroke-dasharray="289" stroke-dashoffset="0"/></svg><b id="erkN">5</b></div>
+  <div id="erkC"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="47.9" fill="none" stroke="#403630" stroke-width="4.25"/><circle id="erkA" cx="50" cy="50" r="47.9" fill="none" stroke-width="4.25" stroke-linecap="round" stroke-dasharray="301" stroke-dashoffset="0"/></svg><b id="erkN">5</b><i class="halo"></i></div>
   <div id="erkT"></div><div id="erkH"></div></div>`);
 const cv = document.getElementById('erkCv'), cx = cv.getContext('2d');
 const G = document.getElementById('erkG'), C = document.getElementById('erkC'), A = document.getElementById('erkA'), N = document.getElementById('erkN'), TX = document.getElementById('erkT'), HI = document.getElementById('erkH');
@@ -50,55 +57,49 @@ function draw(now) {
   cx.globalAlpha = 1;
   // sanoq
   if (ph === 'wait') {
-    const left = Math.max(0, (RK.waitEnd - now) / 1000), n = Math.min(5, Math.max(1, Math.ceil(left))), col = COUNT_COL[n];
-    C.classList.add('on'); C.style.setProperty('--cc', col); A.style.stroke = col; A.style.strokeDashoffset = 289 * (1 - Math.min(1, left / 5)); N.textContent = n;
+    const left = Math.max(0, (RK.waitEnd - now) / 1000), n = Math.min(5, Math.max(1, Math.ceil(left))), col = COUNT_COL[n];   // 409.mp4 634.61/635.67/636.61/637.67 → 638.61: har raqam 1000 ms
+    if (N.textContent != n) { C.classList.remove('pop'); void C.offsetWidth; C.classList.add('pop') } C.classList.add('on'); C.style.setProperty('--cc', col); A.style.stroke = col; A.style.strokeDashoffset = 301 * (1 - Math.max(0, left - (n - 1))); N.textContent = n;   // yoy har raqamda to'ladi va 1 s da soat yo'nalishida bo'shaydi
     G.classList.add('off'); TX.classList.remove('on');
     return;
   }
   C.classList.remove('on');
-  // iz — 409.mp4 10:55/10:59: chap chetdan, deyarli gorizontal, y≈227, uchi oq nuqta (r 5), rang = ko'paytiruvchi toifasi
+  // iz — o'lchangan: chapdan y=313, uchi x = 21.6 + 18.3·(t−1.38)^1.06; x>60 dan keyin y = 312.8 − 4.61e-9·(x−60)^4.55 (408.mp4 7.95x kadri)
   const crashed = ph === 'crash';
   const m = crashed ? RK.crash : RK.m;
-  const col = crashed ? TRAIL_CRASH : TRAIL_COL[chipCls(m)];
-  const tx = Math.min(W - 10, 45 + 121 * (Math.log(Math.max(1, m)) - 0.231));
-  const yAt = x => 227 - 200 * Math.pow(Math.max(0, x) / W, 4);
-  cx.lineCap = 'round'; cx.strokeStyle = col; cx.lineWidth = 6; cx.shadowColor = col; cx.shadowBlur = 10;
-  cx.beginPath(); cx.moveTo(0, yAt(0)); for (let x = 4; x <= tx; x += 4) cx.lineTo(x, yAt(x)); cx.lineTo(tx, yAt(tx)); cx.stroke();
-  cx.shadowColor = '#fff'; cx.shadowBlur = 12; cx.fillStyle = '#fff'; cx.beginPath(); cx.arc(tx, yAt(tx), 5, 0, 7); cx.fill(); cx.shadowBlur = 0;
-  tipX = 195; tipY = 149;
+  const col = crashed ? TRAIL_CRASH : trailCol(m);
+  const tf = Math.max(0, ((crashed ? RK.crashAt : now) - RK.t0) / 1000);
+  const tx = Math.min(W - 6, 21.6 + 18.3 * Math.pow(Math.max(0, tf - 1.38), 1.06));   // 408.mp4 5:37–5:47 + 409.mp4 10:39–10:43, xato ≈1.7 px
+  const yAt = x => Y0 - 4.61e-9 * Math.pow(Math.max(0, x - 60), 4.55);
+  cx.lineCap = 'round'; cx.strokeStyle = col; cx.lineWidth = 7.3; cx.shadowColor = col; cx.shadowBlur = 9;
+  cx.beginPath(); cx.moveTo(17, yAt(17)); for (let x = 20; x <= tx; x += 3) cx.lineTo(x, yAt(x)); cx.lineTo(tx, yAt(tx)); cx.stroke();
+  if (!crashed) { cx.shadowColor = '#fff'; cx.shadowBlur = 12; cx.fillStyle = '#fff'; cx.beginPath(); cx.arc(tx, yAt(tx), 5, 0, 7); cx.fill() }
+  cx.shadowBlur = 0;
+  tipX = 196; tipY = 179;   // sovg'a markazi: ekranda (196, 236) — 409.mp4 643.4 s
   if (!crashed) {
     const g = RK.my && !RK.my.out && typeof giftFor === 'function' ? (giftFor(RK.my.amt * RK.m) || {}).g || roundGift : roundGift;
     setGift(g); G.classList.remove('off');
     const bob = Math.sin(now / 230) * 3;
-    G.style.transform = `translate(${tipX - 52}px,${tipY - 52 + bob}px)`;
+    G.style.transform = `translate(${tipX - 56}px,${tipY - 56 + bob}px)`;
     TX.classList.remove('on');
   } else {
     G.classList.add('off');
     const e = now - boomAt;
-    if (e < T.boom[2]) boom(e, tipX, tipY);
+    boom(e, tipX, tipY);
     TX.classList.toggle('on', e >= T.txtOn && e < T.txtOff);
     TX.textContent = RK.crash.toFixed(2) + 'x'; TX.style.color = txtCol(RK.crash);
   }
 }
-function star(x, y, rO, rI, n, fill) { cx.beginPath(); for (let i = 0; i < n * 2; i++) { const r = i % 2 ? rI : rO, a = i * Math.PI / n - Math.PI / 2; cx.lineTo(x + Math.cos(a) * r, y + Math.sin(a) * r) } cx.closePath(); cx.fillStyle = fill; cx.fill() }
 function boom(e, x, y) {
-  if (e < T.boom[0]) {                                   // 1) olov yulduz
-    const k = e / T.boom[0], r = 22 + 14 * k;
-    star(x, y, r, r * .45, 10, '#f0452e'); star(x, y, r * .7, r * .3, 10, '#f99a1c'); star(x, y, r * .35, r * .15, 8, '#ffe36a');
-  } else if (e < T.boom[1]) {                            // 2) oq-oltin yulduz
-    const r = 28; star(x, y, r, r * .35, 12, '#f4c34a'); star(x, y, r * .62, r * .25, 12, '#fff6d6');
-  } else {                                               // 3) oltin halqa, d 61 → 94, so'nadi
-    const k = (e - T.boom[1]) / (T.boom[2] - T.boom[1]), r = (61 + 33 * k) / 2;
-    cx.globalAlpha = 1 - k; cx.strokeStyle = '#f5c84c'; cx.lineWidth = 2.5; cx.beginPath(); cx.arc(x, y, r, 0, 7); cx.stroke();
-    for (let i = 0; i < 12; i++) { const a = i * Math.PI / 6; cx.beginPath(); cx.moveTo(x + Math.cos(a) * (r + 2), y + Math.sin(a) * (r + 2)); cx.lineTo(x + Math.cos(a) * (r + 7), y + Math.sin(a) * (r + 7)); cx.stroke() }
-    cx.globalAlpha = 1;
-  }
+  if (e >= BOOM_END) return; let k = 0; while (k < BOOM_T.length - 1 && BOOM_T[k + 1] <= e) k++;
+  const im = BOOM_IMG[k]; if (!im.complete) return;
+  // sprite 210×210 px kadr (588 px video) → 139 px (390 px); markaz = sovg'a markazi
+  cx.drawImage(im, x - 70, y - 70, 139.3, 139.3);
 }
 // ro'yxat, chiplar, tugma
 let listAt = 0;
 function ui(now) {
   if (now - listAt < 200) return; listAt = now;
-  const first = RK.phase === 'fly' ? `<span class="${chipCls(RK.m)} live">${chipTxt(RK.m)}</span>` : RK.phase === 'wait' ? `<span class="bet">BET</span>` : '';   // 409.mp4 10:26 "BET", 408.mp4 4:56 jonli chip
+  const first = RK.phase === 'crash' ? '' : RK.phase === 'fly' ? `<span class="${chipCls(RK.m)} live">${chipTxt(RK.m)}</span>` : RK.phase === 'wait' ? `<span class="bet">BET</span>` : '';   // 409.mp4 10:26 "BET", 408.mp4 4:56 jonli chip
   HI.innerHTML = first + (RK.hist || []).slice(0, 12).map(m => `<span class="${chipCls(m)}">${chipTxt(m)}</span>`).join('');
   const L = document.getElementById('rkPl');
   const bets = [...RK.bets].sort((a, b) => (b.me ? 1 : 0) - (a.me ? 1 : 0) || b.amt - a.amt);
