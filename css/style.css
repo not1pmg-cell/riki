@@ -2585,3 +2585,23 @@ body:not([data-cur="home"]):not([data-cur="backpack"]):not([data-cur="invite"]):
 #mines.on #m2Go{margin-top:auto!important}
 #mines.on .bb3{margin-bottom:10px!important}
 #dice.on .dc3-b{margin-top:auto!important;margin-bottom:10px!important}
+/* Farm Box — 408.mp4 0:36–0:46 */
+.reel2 .tl.none{padding:0;overflow:hidden;background:none!important}
+.reel2 .tl.none img{width:100%;height:100%;object-fit:cover;display:block}
+#boxp .btn-skip,#daily .btn-skip{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:59.7px;border:0;border-radius:12px;background:linear-gradient(90deg,#e1900c,#cf9f04);color:#fff;font-size:17px;font-weight:700}
+#boxp .btn-skip .uic,#daily .btn-skip .uic{width:13px;height:19px}
+/* Not This Time oynasi: fon #191920, sarlavha #f27070, Try Again #0eb77f→#16a149 (51 px), Maybe Later #2c2b32 (48 px) */
+.lsm .mbox{position:relative;background:#191920!important;border-radius:22px 22px 0 0!important;padding:10px 16px 28px!important;text-align:center}
+.lsm .grab{display:block;width:30px;height:4px;border-radius:2px;background:#3b3a41;margin:0 auto 14px}
+.lsm .mx{position:absolute;right:16px;top:18px;width:36px;height:36px;border-radius:50%;background:#2c2b32;border:0;color:#fff;font-size:15px}
+.lsm h3{margin:16px 0 8px;font-size:25px;font-weight:800;color:#f27070}
+.lsm p{margin:0 18px;font-size:14px;line-height:1.4;color:#a09fa6}
+.lsm .shr{display:block;width:126px;height:133px;margin:10px auto 4px;object-fit:contain}
+.lsm>.mbox>b{display:block;margin-bottom:24px;font-size:17px;font-weight:800;color:#fff}
+.lsm .ta{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;height:51px;border:0;border-radius:12px;background:linear-gradient(90deg,#0eb77f,#16a149);color:#fff;font-size:17px;font-weight:700}
+.lsm .ta .gem{width:15px;height:15px}
+.lsm .ml{width:100%;height:47.8px;margin-top:9px;border:0;border-radius:12px;background:#2c2b32;color:#fff;font-size:16px;font-weight:700}
+/* Quti "Open for X TON ◆": Farm yashil #0db77f→#1fc25d (408.mp4 0:36), boshqalar #8266d9 (frames/23); h 60 */
+#boxp .bxopen{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;height:60.4px;border:0;border-radius:12px;background:#8266d9;color:#fff;font-size:17px;font-weight:700}
+#boxp .bxopen.g{background:linear-gradient(90deg,#0db77f,#1fc25d)}
+#boxp .bxopen .gem{width:15px;height:15px}

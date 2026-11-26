@@ -551,6 +551,15 @@ class Games:
             raise WalletError("bad", "Boost is only available for the 0.1 box")
         cost = p * boost
         outs = [{"sh": g["sh"], "v": g["p"]} for g in self.box_pool(art, p)]
+        if 0 < p <= 0.1:
+            # Farm (BOOST): sovg'a yoki hech narsa — Epic videosi 408.mp4 0:36–0:46 ("Not This Time")
+            w = [1 / o["v"] for o in outs]; s = sum(w)
+            evv = sum(o["v"] * w[j] / s for j, o in enumerate(outs))
+            q = min(1.0, cost * self.rtp("cases") / evv)
+            for j, o in enumerate(outs):
+                o["w"] = q * w[j] / s
+            outs.append({"none": True, "v": 0, "w": 1 - q})
+            return outs
         for k in (.15, .35, .6, .9, 1.4, 2.5):
             outs.append({"bal": True, "v": max(.01, round(cost * k, 2))})
         target = cost * self.rtp("cases")
@@ -582,6 +591,8 @@ class Games:
         return outs
 
     def _box_pay(self, uid: int, o: dict, f: float, game: str) -> tuple[list, float]:
+        if o.get("none"):
+            return [], 0.0
         if o.get("bal"):
             self.W._apply(uid, to_u(o["v"]), "win", f"{game} win", game, "game")
             return [], o["v"]

@@ -549,6 +549,11 @@ function boxPool(bx) {
 // natijalar: sovg'alar + balans; EV = 0.92 × narx (power-law og'irliklar, bisection)
 function boxOdds(bx, boost) {
   const cost = bx.p * (boost || 1); const pool = boxPool(bx);
+  if (bx.p > 0 && bx.p <= 0.1) {   // Farm (BOOST): sovg'a yoki hech narsa — 408.mp4 0:36–0:46 ("⊘" plitkalar, "Not This Time")
+    const g = pool.map(x => ({ g: x, v: x.p })), w = g.map(o => Math.pow(o.v, -1)), sw = w.reduce((x, y) => x + y);
+    const ev = g.reduce((t, o, j) => t + o.v * w[j] / sw, 0), q = Math.min(1, cost * RTP('cases') / ev);
+    g.forEach((o, j) => o.w = q * w[j] / sw); g.push({ none: true, v: 0, w: 1 - q }); return g;
+  }
   const outs = pool.map(g => ({ g, v: g.p }));
   [.15, .35, .6, .9, 1.4, 2.5].forEach(k => outs.push({ bal: true, v: Math.max(.01, Math.round(cost * k * 100) / 100) }));
   const target = cost * RTP('cases'); let lo = 0, hi = 8, a = 1;
@@ -592,21 +597,21 @@ function f24Tick() { const o = $id('f24cd'); if (!o) return; const left = S.dail
 f24Tick(); setInterval(f24Tick, 20000);
 sec('boxp');
 function openBox(id) { BX.cur = id === 'free' ? FREEBOX : BOXES.find(b => b.id === id); BX.boost = 1; go('boxp') }
-function reelTile(o) { if (o.bal) return `<div class="tl bal">${GEM}</div>`; return `<div class="tl ${o.v > 100 ? 'rare' : 'gf'}">${GI(o.g)}</div>` }
+function reelTile(o) { if (o.none) return `<div class="tl none"><img src="assets/ui/box_tile_nothing.png" alt="" draggable="false"></div>`; if (o.bal) return `<div class="tl bal">${GEM}</div>`; return `<div class="tl ${o.v > 100 ? 'rare' : 'gf'}">${GI(o.g)}</div>` }
 function boxRender() {
   const bx = BX.cur; if (!bx) return; const free = !bx.p;
   const canBoost = !free && bx.p <= 0.1, bst = canBoost ? BX.boost : 1; // BOOST faqat 0.1 TON'lik kasede
   const outs = free ? dailyOdds() : boxOdds(bx, bst);
   const cost = bx.p * bst;
-  const gifts = outs.filter(o => !o.bal).sort((a, b) => b.v - a.v);
+  const gifts = outs.filter(o => !o.bal && !o.none).sort((a, b) => b.v - a.v);
   const bi = BOOSTS.indexOf(BX.boost);
   sec('boxp', `<div class="bxh">${esc(bx.n)} Box</div>
   <div class="reel2"><div class="tr" id="bxTr">${Array.from({ length: 14 }, () => reelTile(rollOut(outs))).join('')}</div><div class="dim"></div><div class="ln"></div></div>
   ${!canBoost ? '' : `<div class="boost"><small>BOOST</small><div class="row"><button id="bsM">−</button><div class="bar">${BOOSTS.map(() => '<i></i>').join('')}<b style="width:${(bi + 1) / BOOSTS.length * 100}%"></b></div><button id="bsP">+</button></div><div class="lb">${BOOSTS.map(b => `<span class="${b === BX.boost ? 'on' : ''}">x${b}</span>`).join('')}</div><p>Higher boost — better drops</p></div>`}
-  <div style="margin-top:12px">${free ? (BX.promo ? `<div class="pcok">${IC.gift}Code <b>${esc(BX.promo)}</b> activated</div><button class="btn-y" id="bxGo">${IC.gift}Open Free Box</button>` : `<div class="pc2"><div class="pch"><i>${IC.gift}</i><div><b>Free Box</b><small>Enter a promo code to open this box</small></div></div><div class="pcr"><input id="pcIn" placeholder="Promo code" autocomplete="off" maxlength="32"><button id="pcGo">Activate</button></div><small class="pcn">Promo codes are posted in our channel and giveaways.</small></div>`) : cost > S.bal ? `<button class="btn-o" id="bxTop">${IC.wallet}Top Up Balance</button>` : `<button class="btn-p" id="bxGo" style="padding:16px;font-size:16px">${IC.spark}Open for ${gem(cost)}</button>`}</div>
-  <div class="boxsec">${IC.box}${free ? 'Possible Outcomes' : 'Collections in this Box'}</div>
+  <div style="margin-top:12px">${free ? (BX.promo ? `<div class="pcok">${IC.gift}Code <b>${esc(BX.promo)}</b> activated</div><button class="btn-y" id="bxGo">${IC.gift}Open Free Box</button>` : `<div class="pc2"><div class="pch"><i>${IC.gift}</i><div><b>Free Box</b><small>Enter a promo code to open this box</small></div></div><div class="pcr"><input id="pcIn" placeholder="Promo code" autocomplete="off" maxlength="32"><button id="pcGo">Activate</button></div><small class="pcn">Promo codes are posted in our channel and giveaways.</small></div>`) : cost > S.bal ? `<button class="btn-o" id="bxTop">${IC.wallet}Top Up Balance</button>` : `<button class="bxopen ${canBoost ? 'g' : ''}" id="bxGo">Open for ${+cost.toFixed(2)} ${CUR} ${GEM}</button>`}</div>
+  <div class="boxsec">${IC.box}${free || canBoost ? 'Possible Outcomes' : 'Collections in this Box'}</div>
   <div class="oc">${gifts.map(o => `<div class="ocx"><div class="im">${GI(o.g)}<em>${fmt(o.v)}${GEM}</em></div><b>${esc(o.g.n)}</b><span>${o.g.n === 'Plush Pepe' && bx.id === 'onyx' ? '<i></i>Onyx Black' : 'Random'}</span><small>${(o.w * 100 < .01 ? '<0.01' : (o.w * 100).toFixed(o.w < .01 ? 3 : 2))}%</small></div>`).join('')}
-  <div class="ocx bl"><div class="im">${GEM.replace('class="gem"', 'class="gem" style="width:60%;height:60%"')}<em>${fmt(outs.filter(o => o.bal)[0].v)}+</em></div><b>${CUR} Balance</b><span>${(outs.filter(o => o.bal).reduce((s, o) => s + o.w, 0) * 100).toFixed(1)}%</span></div></div>`);
+  ${outs.some(o => o.bal) ? `<div class="ocx bl"><div class="im">${GEM.replace('class="gem"', 'class="gem" style="width:60%;height:60%"')}<em>${fmt(outs.filter(o => o.bal)[0].v)}+</em></div><b>${CUR} Balance</b><span>${(outs.filter(o => o.bal).reduce((s, o) => s + o.w, 0) * 100).toFixed(1)}%</span></div>` : ''}</div>`);
   const m = $id('bsM'), p = $id('bsP');
   if (m) { m.onclick = () => { BX.boost = BOOSTS[Math.max(0, bi - 1)]; boxRender() }; p.onclick = () => { BX.boost = BOOSTS[Math.min(BOOSTS.length - 1, bi + 1)]; boxRender() } }
   const tp = $id('bxTop'); if (tp) tp.onclick = () => go('topup');
@@ -625,7 +630,7 @@ async function boxOpen(outs, cost, free) {
   BX.busy = true; const win = rollOut(outs);
   const items = Array.from({ length: 46 }, () => rollOut(outs)); items[38] = win;
   const tr = $id('bxTr'); tr.innerHTML = items.map(reelTile).join(''); tr.style.transition = 'none'; tr.style.transform = 'translateX(0)';
-  const gbtn = $id('bxGo'); if (gbtn) { gbtn.innerHTML = `${IC.spark}Skip Animation`; gbtn.onclick = () => { tr.style.transition = 'transform .25s ease-out' } }
+  const gbtn = $id('bxGo'); if (gbtn) { gbtn.className = 'btn-skip'; gbtn.innerHTML = `<img class="uic" src="assets/ui/ic_bolt.png" alt="">Skip`; gbtn.onclick = () => { tr.style.transition = 'transform .25s ease-out' } }
   await sleep(40);
   const mid = tr.parentElement.clientWidth / 2; tr.style.transition = 'transform 4.6s cubic-bezier(.12,.7,.16,1)'; const c38 = tr.children[38]; tr.style.transform = `translateX(${-(c38.offsetLeft + c38.offsetWidth / 2 - mid) + rnd(-c38.offsetWidth * .35, c38.offsetWidth * .35)}px)`;
   hap('medium');
@@ -634,6 +639,7 @@ async function boxOpen(outs, cost, free) {
   BX.busy = false; boxRender(); save();
 }
 function boxPay(win, game, cost) {
+  if (win.none) { logGame(game, cost, 0, ''); loseSheet(cost); S.cnt.box = (S.cnt.box || 0) + 1; return }
   if (win.bal) { setBal(win.v); logGame(game, cost, win.v, CUR); balModal(win.v) }
   else {
     const g = win.g; const mods = g.mods.filter(m => m[2] <= g.p * 1.6); const md = mods.length && Math.random() < .7 ? pick(mods) : null;
@@ -643,6 +649,9 @@ function boxPay(win, game, cost) {
   S.cnt.box = (S.cnt.box || 0) + 1;
 }
 ENTER.boxp = boxRender;
+// "Not This Time" — 408.mp4 0:44 (frames2/05)
+document.body.insertAdjacentHTML('beforeend', `<div class="modal lsm" id="lsM"><div class="mbox"><span class="grab"></span><button class="mx" data-close>✕</button><h3>Not This Time</h3><p>Don't give up! Try again for a chance to hit the jackpot!</p><img class="shr" src="assets/ui/lose_shrug.png" alt="" draggable="false"><b>Better Luck Next Time!</b><button class="ta" id="lsTry"></button><button class="ml" data-close>Maybe Later</button></div></div>`);
+function loseSheet(cost) { $id('lsTry').innerHTML = `Try Again for ${+cost.toFixed(2)} ${GEM}`; $id('lsTry').onclick = () => { closeM('lsM'); const b = $id('bxGo'); if (b) b.click() }; openM('lsM'); hapN('error') }
 
 // =====================================================================
 //  DAILY BOX (FREE24)
@@ -675,7 +684,7 @@ async function dailyOpen(outs) {
   if (DB.busy || S.daily + 864e5 > Date.now()) return; DB.busy = true; S.daily = Date.now(); save();
   const win = rollOut(outs); const items = Array.from({ length: 46 }, () => dShow(outs)); items[38] = win;
   const tr = $id('dbTr'); tr.innerHTML = items.map(reelTile).join(''); tr.style.transition = 'none'; tr.style.transform = 'translateX(0)';
-  const b = $id('dbGo'); let skip = false; b.innerHTML = `${IC.spark}Skip Animation`; b.onclick = () => { skip = true; tr.style.transition = 'transform .25s ease-out' };
+  const b = $id('dbGo'); let skip = false; b.className = 'btn-skip'; b.innerHTML = `<img class="uic" src="assets/ui/ic_bolt.png" alt="">Skip`; b.onclick = () => { skip = true; tr.style.transition = 'transform .25s ease-out' };
   await sleep(40); const mid = tr.parentElement.clientWidth / 2;
   tr.style.transition = 'transform 4.6s cubic-bezier(.12,.7,.16,1)'; const c38 = tr.children[38]; tr.style.transform = `translateX(${-(c38.offsetLeft + c38.offsetWidth / 2 - mid) + rnd(-c38.offsetWidth * .35, c38.offsetWidth * .35)}px)`;
   for (let t = 0; t < 47 && !skip; t++) await sleep(100); await sleep(300);
@@ -2036,6 +2045,7 @@ $id('bfGo').onclick = () => {
 //  QUTI OCHISH — rarity, sekinlashuv, "tik" va g'olib kartochka
 // =====================================================================
 reelTile = function (o) {
+  if (o.none) return `<div class="tl none"><img src="assets/ui/box_tile_nothing.png" alt="" draggable="false"></div>`;
   if (o.bal) return `<div class="tl bal" style="--rc:#38bdf8">${GEM}<em>${fmt(o.v)}</em></div>`;
   return `<div class="tl" style="--rc:${rarC(o.v)}">${GI(o.g)}<em>${fmt(o.v)}</em></div>`;
 };
@@ -2060,7 +2070,7 @@ boxOpen = async function (outs, cost, free) {
   BX.busy = true; const win = rollOut(outs);
   const items = Array.from({ length: 52 }, () => rollOut(outs)); items[44] = win;
   const tr = $id('bxTr'); tr.innerHTML = items.map(reelTile).join(''); tr.style.transition = 'none'; tr.style.transform = 'translateX(0)';
-  const skip = { skip: false }, gb = $id('bxGo'); if (gb) { gb.innerHTML = `${IC.spark}Skip Animation`; gb.onclick = () => skip.skip = true }
+  const skip = { skip: false }, gb = $id('bxGo'); if (gb) { gb.className = 'btn-skip'; gb.innerHTML = `<img class="uic" src="assets/ui/ic_bolt.png" alt="">Skip`; gb.onclick = () => skip.skip = true }
   await sleep(40); hap('medium'); await reelRun(tr, 44, 5200, skip);
   boxPay(win, (free ? 'Free' : bx.n) + ' Box', cost); BX.busy = false; boxRender(); save();
 };
@@ -2068,7 +2078,7 @@ dailyOpen = async function (outs) {
   if (DB.busy || S.daily + 864e5 > Date.now()) return; DB.busy = true; S.daily = Date.now(); save();
   const win = rollOut(outs), items = Array.from({ length: 52 }, () => dShow(outs)); items[44] = win;
   const tr = $id('dbTr'); tr.innerHTML = items.map(reelTile).join(''); tr.style.transition = 'none'; tr.style.transform = 'translateX(0)';
-  const skip = { skip: false }, b = $id('dbGo'); b.innerHTML = `${IC.spark}Skip Animation`; b.onclick = () => skip.skip = true;
+  const skip = { skip: false }, b = $id('dbGo'); b.className = 'btn-skip'; b.innerHTML = `<img class="uic" src="assets/ui/ic_bolt.png" alt="">Skip`; b.onclick = () => skip.skip = true;
   await sleep(40); await reelRun(tr, 44, 5200, skip);
   boxPay(win, 'Daily Box', 0); DB.busy = false; dailyRender();
 };
@@ -2618,7 +2628,7 @@ $id('c2Go').onclick = async () => {
 };
 
 // ---------------------------------------------------------------- QUTILAR va DAILY BOX (yutuq — serverdan)
-const srvOut = o => o.bal ? { bal: true, v: o.v } : { g: GBS[o.sh] || BYPRICE[0], v: o.v };
+const srvOut = o => o.none ? { none: true, v: 0 } : o.bal ? { bal: true, v: o.v } : { g: GBS[o.sh] || BYPRICE[0], v: o.v };
 const _boxOpen = boxOpen;
 boxOpen = async function (outs, cost, free) {
   if (!wOn()) return _boxOpen(outs, cost, free); if (BX.busy) return; const bx = BX.cur;
@@ -2628,11 +2638,11 @@ boxOpen = async function (outs, cost, free) {
   if (free) BX.promo = null; gStake(r);
   const win = srvOut(r.o), items = Array.from({ length: 52 }, () => rollOut(outs)); items[44] = win;
   const tr = $id('bxTr'); tr.innerHTML = items.map(reelTile).join(''); tr.style.transition = 'none'; tr.style.transform = 'translateX(0)';
-  const skip = { skip: false }, gb = $id('bxGo'); if (gb) { gb.innerHTML = `${IC.spark}Skip Animation`; gb.onclick = () => skip.skip = true }
+  const skip = { skip: false }, gb = $id('bxGo'); if (gb) { gb.className = 'btn-skip'; gb.innerHTML = `<img class="uic" src="assets/ui/ic_bolt.png" alt="">Skip`; gb.onclick = () => skip.skip = true }
   await sleep(40); hap('medium'); await reelRun(tr, 44, 5200, skip);
   const its = gFinish(r, 'Box', true);
-  if (win.bal) balModal(win.v); else winFx((free ? 'Free' : bx.n) + ' Box', 0, its);
-  logGame((free ? 'Free' : bx.n) + ' Box', cost, win.v, win.bal ? CUR : win.g.n); S.cnt.box = (S.cnt.box || 0) + 1;
+  if (win.none) loseSheet(cost); else if (win.bal) balModal(win.v); else winFx((free ? 'Free' : bx.n) + ' Box', 0, its);
+  logGame((free ? 'Free' : bx.n) + ' Box', cost, win.v, win.none ? '' : win.bal ? CUR : win.g.n); S.cnt.box = (S.cnt.box || 0) + 1;
   BX.busy = false; boxRender(); save();
 };
 const _dailyOpen = dailyOpen;
@@ -2642,7 +2652,7 @@ dailyOpen = async function (outs) {
   S.daily = r.next - 864e5; save();
   const win = srvOut(r.o), items = Array.from({ length: 52 }, () => dShow(outs)); items[44] = win;
   const tr = $id('dbTr'); tr.innerHTML = items.map(reelTile).join(''); tr.style.transition = 'none'; tr.style.transform = 'translateX(0)';
-  const skip = { skip: false }, b = $id('dbGo'); b.innerHTML = `${IC.spark}Skip Animation`; b.onclick = () => skip.skip = true;
+  const skip = { skip: false }, b = $id('dbGo'); b.className = 'btn-skip'; b.innerHTML = `<img class="uic" src="assets/ui/ic_bolt.png" alt="">Skip`; b.onclick = () => skip.skip = true;
   await sleep(40); await reelRun(tr, 44, 5200, skip);
   const its = gFinish(r, 'Daily', true);
   if (win.bal) balModal(win.v); else winFx('Daily Box', 0, its);
