@@ -160,3 +160,45 @@ Hali o'lchanmaganlar (keyingi navbat — har kadr, 30 fps): Box reel, Upgrade st
 8. **NFT sovg'a rasmlari** — kadrdan qirqilmaydi (sizning qoidangiz). Telegram'ning ochiq manbasidan olinadi (hozir ham shunday).
 9. **Box rasmlari, banner rasmlari** (ROCKET / PVP HUB / PLAY HUB) — ularda Epic nomi yo'q. Sizning qoidangiz: faqat nom va logo RIKI ga almashtiriladi, qolgani 1:1 qoladi. Shundaymi?
 10. **"EPIC GIFT"** yozuvi (PvP g'ildiragidagi bo'sh kartalarda) → **"RIKI GIFT"**. Bot nomi "Ebic Gift" → "RIKI"?
+
+---
+
+## ISTISNO: TON transfer va Gift transfer (ishlashi saqlanadi)
+
+Hozirgi dizayn (profildagi "💎 Send TON / 🎁 Send Gift" tugmalari va `trM` oynasi) **o'chiriladi**.
+Backend saqlanadi: `bot.py` → `POST /api/transfer` (`kind: gram | gift`, `to: @username yoki ID`).
+
+### 1-qoida bo'yicha: originaldagi joylar (kadrlarda bor)
+
+| Joy | Kadr | Nima uchun |
+|---|---|---|
+| **Gift transfer** → Backpack'dagi har bir sovg'a kartasidagi **"↗ Withdraw"** tugmasi | `85_backpack_items` (B 243.5 s) | Originalda sovg'ani ryukzakdan chiqaradigan yagona tugma |
+| **TON transfer** → yuqori balans pilli ichidagi **"+"** tugmasi (o'yin ekranlari) va asosiy headerdagi **"Deposit"** tugmasi | `33_rocket_bet_sheet_ton` (B 2.0 s, "+" yuqori o'ngda); `42_home` (B 24.5 s, Deposit) | Originalda balans bilan ishlaydigan yagona tugmalar |
+
+Kadrlarda bor, lekin transfer uchun ishlatilmaydi (ma'nosi boshqa): Backpack'dagi "Send" (sovg'ani botga *kiritish*, `85`), Earn'dagi "Make Deposit → Deposit" (`16_earn_deposit_tasks`, A 65.5 s).
+
+### 2-qoida bo'yicha: oynaning ichi (Deposit oynasining ichi videoda yo'q)
+
+Faqat videodagi mavjud komponentlardan yig'iladi:
+
+| Qism | Qaysi komponentdan nusxa | Kadr |
+|---|---|---|
+| Pastdan chiqadigan oyna (sarlavha chapda, o'ngda dumaloq ✕) | "Place bet" oynasi | `32` B 1.5 s, `33` B 2.0 s, `27` A 99.5 s |
+| Tepadagi tutqich (kulrang chiziq) | "Select Your Gifts" oynasi | `46` B 27.5 s |
+| **Gifts \| TON** tablari (faol: binafsha) | "Place bet" tablari | `33` B 2.0 s |
+| "Available balance  499…  💎" qatori | "Place bet" (TON) | `33` B 2.0 s |
+| TON summasi maydoni (o'rtada raqam, o'ngda 💎) | "Bet amount" maydoni | `33` B 2.0 s |
+| Qabul qiluvchi maydoni (@username yoki ID) | "Search by name" maydoni (lupa ikonkasi bilan) | `46` B 27.5 s |
+| Sovg'a tanlash panjarasi (narx belgisi, tanlanganda yashil hoshiya) | "Select Your Gifts" kartalari | `46` B 27.5 s; tanlangan holat B 28.5 s |
+| Pastki qator "Select gifts … 💎 0.00" | "Select Your Gifts" pastki qatori | `46` B 27.5 s |
+| TON yuborish tugmasi (ko'k gradient) | "Place 10.00 TON Bet" tugmasi | `33` B 2.0 s |
+| Gift yuborish tugmasi (yashil gradient, "(1) - 11.83" formatida) | "Confirm (1) - 11.83" tugmasi | B 28.5 s (upgrade) |
+| Muvaffaqiyat xabari | "Gift added to your backpack!" toast | `25` A 95.6 s |
+| Ochilish/yopilish animatsiyasi | "Place bet" oynasining ochilishi | B 1.0–1.6 s — **qurishdan oldin 30 fps da o'lchanadi** |
+
+Yangi rang, shrift, radius, soya yoki animatsiya yo'q — hammasi spec'dagi HEX va o'lchamlardan.
+
+### Tasdiq uchun savollar
+- **T1.** "Withdraw" hozir nima qiladi (o'zingizning Telegram'ingizga chiqarish)? Bu funksiya ham kerakmi? Kerak bo'lsa: Withdraw oynasida qabul qiluvchi maydoni bo'ladi; bo'sh qoldirilsa — o'zingizga, username yozilsa — o'sha o'yinchiga.
+- **T2.** Yangi yozuvlar (matn, uslub emas): "Send", "Recipient", "Username or ID", "Send 10.00 TON", "Send (1) - 11.83". Shu yozuvlar ma'qulmi (EN + UZ)?
+- **T3.** Asosiy headerdagi "Deposit" bosilganda: bitta oynada **Deposit | Transfer** bo'ladimi, yoki Deposit alohida va TON transfer faqat "+" tugmasidan ochiladimi?
