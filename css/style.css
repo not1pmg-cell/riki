@@ -2566,3 +2566,16 @@ img.dm{object-fit:contain;flex:none}
 .offlv .csp{width:24px;height:24px;border-radius:50%;border:2.5px solid transparent;border-top-color:#635588;border-right-color:#635588;animation:cspR .8s linear infinite;margin-top:120px}
 .offlv small{font-size:12px;color:#9fa0a4}
 @keyframes cspR{to{transform:rotate(360deg)}}
+/* Home Free24 / Free / quti kartalari — frames/17 (A 67.0 s): panel 77 px (Free), 59 px (qutilar); FREE tugmasi 81×32, r16 */
+#home .bx.f24 .ft,#home .bx.fre .ft{height:77px}
+#home .bx .ft b{font-size:15px;font-weight:600;line-height:1.45}
+#home .bx.f24 .ft em,#home .bx.fre .ft em{height:32px;padding:0 13px;border-radius:16px;font-size:13px;font-weight:800;gap:6px}
+#home .bx.f24 .ft em{background:linear-gradient(90deg,#f2cc1a,#eca111)}
+#home .bx.fre .ft em{background:linear-gradient(90deg,#8366d9,#795dcf)}
+#home .bx:not(.f24):not(.fre) .ft{height:59px}
+#home .bx:not(.f24):not(.fre) .ft em{height:32px;border-radius:10px;padding:0 11px;background:linear-gradient(90deg,#8366d9,#795dcf)}
+#home .bx.farm .ft em{background:#22c55e}
+#home .bx .ft{background:#2b2b2b}
+/* Pastki menyu "Home": Home ekranida to'q (#242424, hoshiya #2e2e2e) — frames/17; o'yin/hub ekranlarida binafsha #7d60d2 — frames/07, 44 */
+nav button[data-go="home"],nav button[data-go="home"].on{background:#242424!important;border:1px solid #2e2e2e!important;color:#fff!important;box-shadow:none!important}
+body:not([data-cur="home"]):not([data-cur="backpack"]):not([data-cur="invite"]):not([data-cur="leader"]):not([data-cur="earn"]):not([data-cur="profile"]) nav button[data-go="home"]{background:#7d60d2!important;border-color:#826bcc!important}

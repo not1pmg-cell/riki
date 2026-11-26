@@ -574,7 +574,7 @@ function boxCard(bx) {
 // HOME: Rocket / PvP Hub / Play Hub bannerlari index.html da.
 // Ulardan keyin Epic kabi: Free24 + Free kartalari, so'ng barcha qutilar bitta 2 ustunli gridda.
 const homeRoot = $('#home');
-const freeCards = `<button class="bx f24" data-go="daily"><div class="art cover"><img src="assets/box/free24.png" alt="Free 24h" decoding="async" draggable="false"><div class="cdov" id="f24cd"><i>${IC.clock}</i><span></span></div></div><div class="ft"><b>Free 24h</b><em class="fy">${IC.cal}FREE</em></div></button>
+const freeCards = `<button class="bx f24" data-go="daily"><div class="art cover"><img src="assets/box/free24.png" alt="Free 24h" decoding="async" draggable="false"><div class="cdov" id="f24cd"><i>${IC.clock}</i><span></span></div></div><div class="ft"><b>Free<br>24h</b><em class="fy">${IC.cal}FREE</em></div></button>
   <button class="bx fre" data-box="free"><div class="art cover"><img src="assets/box/free.png" alt="Free" decoding="async" draggable="false"></div><div class="ft"><b>Free</b><em>${IC.gift}FREE</em></div></button>`;
 if (homeRoot && !$id('boxGrid')) {
   const anchor = homeRoot.querySelector('.epic-home-banners') || homeRoot.lastElementChild;
@@ -830,7 +830,6 @@ function earnRender() {
     return `<div class="tk">${kind === 'lim' ? `<span class="tm">${IC.clock}${hms(LIMEND - Date.now()).replace(/ \d+s$/, '')}</span>` : ''}<div class="hd"><i>${ic}</i><b>${t.n}</b></div><div class="rw"><span>${tk(t.r)}</span>${btn}</div>${s.need ? `<div class="pg"><b style="width:${s.prog / s.need * 100}%"></b></div><div class="pl"><span>Progress: ${s.prog}/${s.need}</span><span>${s.need - s.prog} remaining</span></div>` : ''}</div>`;
   };
   $id('earn').innerHTML = tabs + `<div class="tix"><i><span class="tkic"></span></i><div><small>Your Tickets</small><b>${S.tix}<em>available</em></b></div><button id="tixQ">${IC.info}</button></div>
-  <div class="tkc"><small>${IC.clock.replace('class="ic"', 'class="ic" style="width:12px;height:12px"')}LIMITED TASKS</small>${T5.lim.map(t => tkRow(t, 'lim', IC.plinko)).join('')}</div>
   <div class="tkc"><small>${IC.cal}DAILY TASKS</small>${T5.day.map(t => tkRow(t, 'day', t.act === 'share' ? IC.share : t.act === 'story' ? IC.refresh : IC.cal)).join('')}</div>
   <div class="tkc"><small>${IC.spark}EXTRA TASKS</small>${T5.extra.map(t => tkRow(t, 'extra', IC.wallet)).join('')}</div>
   <div class="tkc"><small>◎ ONE-TIME TASKS</small>${T5.one.map(t => tkRow(t, 'one', t.act === 'vip' ? IC.star : IC.clock)).join('')}</div>`;

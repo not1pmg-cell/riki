@@ -15,3 +15,6 @@
 #pvp .dock{position:static!important;margin-top:auto!important;margin-bottom:10px!important}
 /* "YOU" belgisi — frames/19 (A 72 s): fon #433572, matn #8069c7 */
 .youb{display:inline-block;margin-left:6px;padding:1px 6px;border-radius:5px;background:#433572;color:#8069c7;font-size:10px;font-weight:800;vertical-align:1px}
+/* TvT: pastki panel ekran pastida — frames/07 (A 30 s) */
+#tvt.on{display:flex!important;flex-direction:column;min-height:calc(100vh - 54px - 71px)}
+#tvt .dock{position:static!important;margin-top:auto!important;margin-bottom:10px!important}

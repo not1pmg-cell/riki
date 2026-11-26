@@ -120,5 +120,6 @@ function ui(now) {
 (function loop(now) { if (cur === 'rocket') { draw(now); ui(now) } requestAnimationFrame(loop) })(performance.now());
 // sarlavha: Rocket ekranida body.e-rk
 const _go = window.go;
-window.go = go = function (id, np) { _go(id, np); document.body.classList.toggle('e-rk', id === 'rocket') };
+window.go = go = function (id, np) { _go(id, np); document.body.classList.toggle('e-rk', id === 'rocket'); document.body.dataset.cur = id };
+document.body.dataset.cur = typeof cur !== 'undefined' ? cur : 'home';
 })();
