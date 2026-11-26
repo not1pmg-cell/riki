@@ -1,0 +1,24 @@
+/* UPGRADE — frames/45 (B 26.5 s), 47, 49 (B 36.0 s), 50, 51. 390 px. */
+#upgrade.on{display:flex!important;flex-direction:column;background:#101010;padding:0 15.1px 20px!important}
+#upgrade>*{order:5}
+#upgrade #u2Wheel{order:1;margin:20px auto 0!important}
+#upgrade .up3-top{order:2;margin-top:16px!important;display:grid!important;grid-template-columns:1fr 1fr;gap:14.2px;position:relative}
+#upgrade .up3-lb{display:none!important}
+#upgrade .up2-c{height:133.4px!important;border-radius:17px!important;background:#242424!important}
+#upgrade .up2-c b{font-size:13px;font-weight:700}
+#upgrade .up2-c small{font-size:10px;color:#8a8a8a}
+#upgrade .up2-arr{position:absolute!important;left:50%;top:50%;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%;background:#3e865e!important;z-index:3}
+#upgrade .up2-q{order:3;margin-top:11px!important;display:grid!important;grid-template-columns:repeat(6,1fr);gap:5.8px}
+#upgrade .up2-q button{height:27.4px;border-radius:4.1px;background:#1c1c1c!important;border:0!important;font-size:12px;font-weight:700;color:#8a8a8a}
+#upgrade #u2Go{order:4;margin-top:11px!important;height:50.6px!important;border-radius:9.6px!important;background:#282828!important;color:#8a8a8a!important;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px}
+#upgrade #u2Go.grn{background:linear-gradient(90deg,#2dea6d,#aaff82)!important;color:#282929!important}
+#upgrade #u2Go .ic{width:18px;height:18px}
+/* markaz: bo'sh holatda yashil sovg'a + "SELECT GIFTS TO UPGRADE" (#10d379); tayyor: "49.8%" #eba838 */
+#upgrade #u2Ch{color:#eba838!important;font-size:34px;font-weight:900}
+#upgrade #u2Ch small{font-size:18px}
+#upgrade .e-idle #u2Ch{color:#10d379!important}
+#upgrade .e-idle #u2Ch .ic{width:30px;height:30px}
+#upgrade #u2Lv{font-size:9px;font-weight:900;color:#8a8a8a;letter-spacing:.3px;max-width:90px;text-align:center;line-height:1.2}
+#upgrade .e-idle #u2Lv{color:#10d379}
+.csp2{display:inline-block;width:14px;height:14px;border-radius:50%;border:2px solid transparent;border-top-color:currentColor;border-right-color:currentColor;animation:cspR .8s linear infinite}
+#upgrade .howc,#upgrade .how{display:none!important}   /* videoda yo'q (frames/45–51) */

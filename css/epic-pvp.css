@@ -11,7 +11,7 @@
 /* g'ildirak plitkalari: Epic ~76 px, qadam ~30–33° */
 #pvp .atile{left:-38px!important;top:-38px!important;width:76px!important;height:76px!important;border-radius:20px!important;transform-origin:38px 38px!important}
 /* pastki panel ekran pastida (Epic: tugma pastki menyudan ~10 px yuqorida) */
-#pvp{display:flex!important;flex-direction:column;min-height:calc(100vh - 54px - 71px)}
+#pvp.on{display:flex!important;flex-direction:column;min-height:calc(100vh - 54px - 71px)}
 #pvp .dock{position:static!important;margin-top:auto!important;margin-bottom:10px!important}
 /* "YOU" belgisi — frames/19 (A 72 s): fon #433572, matn #8069c7 */
 .youb{display:inline-block;margin-left:6px;padding:1px 6px;border-radius:5px;background:#433572;color:#8069c7;font-size:10px;font-weight:800;vertical-align:1px}

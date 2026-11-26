@@ -126,7 +126,7 @@ const HOWS = {
   dice: ['How Dice works', [['Pick a target', 'Drag the slider or type a multiplier or chance.'], ['Higher or Lower', 'Swap the direction with the arrows button.'], ['Roll', 'A number from 0 to 100 is rolled. Land in the green zone to win.']]],
   spins: ['How Spins works', [['Spin the board', '25 gifts drop on the board.'], ['Match gifts', '8 or more of the same gift pay out. 12+ pays the most.'], ['Features', 'Double Chance adds 25% to the bet and boosts win chance. Buy Features gives 10 free spins with x10 wins.']]],
   upgrade: ['How Upgrades Work', [['Select Your Gift', 'Choose a gift from your backpack to upgrade'], ['Choose Target', 'Pick the gift you want to upgrade to from the available pool'], ['Spin the Wheel', 'Press the upgrade button and watch as your gift is upgraded to a higher value or lost in the attempt']]],
-  crafts: ['How Crafts Work', [['Add Gifts', 'Select 2 to 10 gifts from your inventory to start a craft'], ['Choose Risk Level', 'Pick SAFE, NORMAL, or RISKY mode based on your risk tolerance'], ['Execute Craft', 'Confirm and execute your craft to combine the gifts'], ['Receive Reward', 'Get a new gift based on the craft outcome']]]
+  crafts: ['How it works', [['Add Gifts', 'Select 2 to 10 gifts from your inventory to start a craft'], ['Choose Risk Level', 'Pick SAFE, NORMAL, or RISKY mode based on your risk tolerance'], ['Execute Craft', 'Confirm and execute your craft to combine the gifts'], ['Receive Reward', 'Get a new gift based on the craft outcome']]]
 };
 
 // =====================================================================
@@ -714,7 +714,7 @@ ENTER.topup = tuRender;
 //  BACKPACK
 // =====================================================================
 const _bpRender = bpRender;
-function bpEmpty() { return `<div class="bph">Your Gifts</div><div class="bpe"><div class="gi0">${GEM}</div><h3>Your backpack is empty</h3><p>Send gifts to <a class="lnk" href="https://t.me/${GBOT}">@${GBOT}</a> to quick-sell them for balance, or use them for upgrades, crafts, or in PvP and Rocket games.</p><button class="btn-p" id="bpSend">${IC.ext}Send gift</button><div class="nt">Gifts sent to the bot will appear here automatically.</div><div class="orsep">OR</div><p>Open some boxes to get awesome gifts and be able to quick-sell them for balance, or use them for upgrades, crafts, or in PvP and Rocket games.</p><button class="btn-p" id="bpBuy">Buy Gifts</button></div>` }
+function bpEmpty() { return `<div class="bph">Backpack</div><div class="bpe"><div class="gi0">${GEM}</div><h3>Your backpack is empty</h3><p>Send your Telegram gifts to <a class="lnk" href="https://t.me/${GBOT}">our bot</a> and they will appear here.</p><button class="btn-p" id="bpSend">${IC.ext}Send a gift</button><div class="nt">Your gifts will appear here within a minute</div><div class="orsep">OR</div><p>Open boxes and win gifts right in the app.</p><button class="btn-p" id="bpBuy">Buy gifts</button></div>` }   // frames/14 (A 59.5 s)
 const bpOrig = $id('backpack').innerHTML;
 bpRender = function () {
   if (!S.inv.length) { $id('backpack').innerHTML = bpEmpty(); $id('bpSend').onclick = () => openLink(`https://t.me/${GBOT}`); $id('bpBuy').onclick = () => { go('home'); setTimeout(() => $id('boxGrid').scrollIntoView({ behavior: 'smooth' }), 120) }; return }
@@ -727,9 +727,9 @@ ENTER.backpack = bpRender;
 //  INVITE
 // =====================================================================
 ENTER.invite = () => {
-  $id('invite').innerHTML = `<div class="ivc"><i>${IC.users}</i><div><h3>${T('Earn up to')} <em>${(NET.ref ? NET.ref.pct : 10).toString().replace(/\.0+$/, '')}%</em><br>${T('by inviting friends')}</h3><small>${T('from their deposits')}</small><div class="al">${T('Also by')} ${tk(NET.ref ? NET.ref.tix : 5)} ${T('for each')}</div><small>${T('but no more than')} ${NET.ref ? NET.ref.day : 50} ${T('per day')}</small></div><button class="q">${IC.help}</button></div>
+  $id('invite').innerHTML = `<div class="ivc"><i>${IC.users}</i><div><h3>${T('Earn up to')} <em>${(NET.ref ? NET.ref.pct : 10).toString().replace(/\.0+$/, '')}%</em><br>${T('by inviting friends')}</h3><small>${T('from their deposits')}</small></div><button class="q">${IC.help}</button></div>
   <div class="ivb"><button class="btn-p" id="ivInv">${IC.share}Invite Friends</button><button class="btn-d" id="ivCp">${IC.copy}Copy Link</button></div>
-  <div class="ivs"><div>Total earned<b>${fmt(S.invEarn).replace(/(\.\d\d)$/, '$10')}${GEM}</b></div><div>Earned today<b>${Math.min(50, S.ref * 5)} / 50 <span class="tkic"></span></b></div></div>
+  <div class="ivs"><div>Total earned<b>${fmt(S.invEarn).replace(/(\.\d\d)$/, '$10')}${GEM}</b></div></div>
   <div class="ivm"><b>My Invites <em>${S.ref}</em></b><div class="ne"><i>${IC.users}</i>No invites yet</div></div>`;
   $id('ivInv').onclick = () => openLink(`https://t.me/share/url?url=${encodeURIComponent(refLink())}&text=${encodeURIComponent('🎁 ' + BRAND + ' — NFT gifts! Join:')}`);
   $id('ivCp').onclick = () => copyTxt(refLink());
@@ -1914,16 +1914,17 @@ const u2From = () => UP.mode === 'gift' ? (invGet(UP.from) ? invGet(UP.from).v :
 const u2Chance = () => { const f = u2From(); return f && UP.to != null ? clamp(f / GIFTS[UP.to].p * RTP('upgrade') * 100, .5, 90) : 0 };
 function u2Render() {
   const it = UP.mode === 'gift' ? (invGet(UP.from) || (UP.spinning ? U2.lockIt : null)) : null, fv = UP.spinning && U2.lockIt ? U2.lockIt.v : u2From();
-  $id('u2From').innerHTML = it ? `<span class="rb" style="--rc:${rarC(it.v)}"></span>${GII(it)}<b>${esc(GIFTS[it.g].n)}</b><em>${GEM}${fmt(it.v)}</em>` : UP.mode === 'ton' && fv ? `<span class="rb" style="--rc:#38bdf8"></span><span class="bigg">${GEM}</span><b>${CUR}</b><em>${GEM}${fmt(fv)}</em>` : `<span class="pl2">＋</span><b>Select Gift</b><small>Choose a gift to upgrade</small>`;
+  $id('u2From').innerHTML = it ? `<span class="rb" style="--rc:${rarC(it.v)}"></span>${GII(it)}<b>${esc(GIFTS[it.g].n)}</b><em>${GEM}${fmt(it.v)}</em>` : UP.mode === 'ton' && fv ? `<span class="rb" style="--rc:#38bdf8"></span><span class="bigg">${GEM}</span><b>${CUR}</b><em>${GEM}${fmt(fv)}</em>` : `<span class="pl2">＋</span><b>Select Gifts</b><small>From your backpack</small>`;
   const tg_ = UP.to != null ? GIFTS[UP.to] : null;
-  $id('u2To').innerHTML = tg_ ? `<span class="rb" style="--rc:${rarC(tg_.p)}"></span>${GI(tg_)}<b>${esc(tg_.n)}</b><em>${GEM}${fmt(tg_.p)}</em>` : `<span class="pl2">＋</span><b>${fv ? 'Select Target' : 'Select a gift first'}</b><small>${fv ? 'Choose a gift to win' : 'Select a gift to continue'}</small>`;
+  $id('u2To').innerHTML = tg_ ? `<span class="rb" style="--rc:${rarC(tg_.p)}"></span>${GI(tg_)}<b>${esc(tg_.n)}</b><em>${GEM}${fmt(tg_.p)}</em>` : `<span class="pl2">＋</span><b>Choose Target</b><small>Or use a preset below</small>`;
   const ch = UP.spinning && U2.lock ? U2.lock : u2Chance(), shown = ch || 100;
   $id('u2Disc').style.setProperty('--p', shown * 3.6 + 'deg');
-  $id('u2Ch').textContent = shown.toFixed(1) + '%';
-  $id('u2Lv').textContent = upLvl(shown);
+  $id('u2Ch').innerHTML = ch ? `${shown.toFixed(1).replace(/\.(\d)$/, '.<small>$1%</small>')}` : `${IC.gift}`;   // frames/45,47,49
+  $id('u2Lv').textContent = ch ? upLvl(shown) : fv ? 'SELECT TARGET TO UPGRADE' : 'SELECT GIFTS TO UPGRADE';
+  $id('u2Wheel').classList.toggle('e-idle', !ch);
   $id('u2Ch').style.color = shown >= 25 ? '#34d399' : shown >= 10 ? '#fbbf24' : '#f87171';
   $$('.up2-tog button').forEach(b => b.classList.toggle('on', b.dataset.m === UP.mode)); $id('u2TonW').style.display = UP.mode === 'ton' ? '' : 'none';
-  const g = $id('u2Go'); g.className = 'go3 up3-go' + (ch && !UP.spinning ? ' grn' : ''); g.innerHTML = UP.spinning ? 'Upgrading…' : ch ? `${IC.trend}Upgrade · ${ch.toFixed(1)}%` : `${IC.trend}Select both gifts to upgrade`;
+  const g = $id('u2Go'); g.className = 'go3 up3-go' + (ch && !UP.spinning ? ' grn' : ''); g.innerHTML = UP.spinning ? `<span class="csp2"></span>Upgrading...` : ch ? `<svg class="ic" viewBox="0 0 24 24"><path d="M7 11l5-5 5 5M7 17l5-5 5 5"/></svg>Upgrade` : fv ? 'Select target to upgrade' : 'Select gifts to upgrade';
 }
 $id('u2From').onclick = () => { if (UP.spinning || UP.mode !== 'gift') return; pickGifts({ multi: false, title: 'Select your gift', done: id => { UP.from = id; if (UP.to != null && GIFTS[UP.to].p <= u2From()) UP.to = null; u2Render() } }) };
 $id('u2To').onclick = () => { if (UP.spinning) return; const fv = u2From(); if (!fv) { toast('Select your gift first'); return } pickGifts({ source: 'cat', title: 'Select target gift', filter: g => g.p > fv * 1.05 && g.p <= fv * 200, done: gi => { UP.to = gi; u2Render() } }) };
@@ -1975,7 +1976,6 @@ sec('crafts', `<div class="cf3-mode"><div class="cf3-h"><i>${IC.shuffle}</i><div
   <div class="cf3-sl" id="c2Forge"><div class="cf3-sh"><b>Craft Slots</b><span id="c2Cnt">0/10</span><em id="c2Val"></em></div><div class="cf3-grid" id="c2Slots"></div><div class="cf3-fx"><i></i></div></div>
   <div class="cf2-tgt cf3-tgt" id="c2Tgt"></div>
   <button class="go3 cf3-go" id="c2Go"></button>
-  <div class="cf3-clr"><button id="c2Add">＋ Add gifts</button><button id="c2Clr">Clear</button></div>
   ${howBlock('crafts', true)}`);
 const SPARK = '<svg viewBox="0 0 24 24" width="22" height="22"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8zM19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8zM5 2l.6 1.4L7 4l-1.4.6L5 6l-.6-1.4L3 4l1.4-.6z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>';
 function c2Target() { const tot = crTotal(), t = tot * CR_M[CR.mode].x; let best = null; for (const g of BYPRICE) { if (g.p <= t && g.p > tot) best = g } return best || BYPRICE.find(g => g.p > tot) || BYPRICE[BYPRICE.length - 1] }
@@ -1997,8 +1997,6 @@ function c2Render() {
 $id('c2Modes').onclick = e => { const b = e.target.closest('[data-m]'); if (!b || CR.busy) return; CR.mode = b.dataset.m; hap(); c2Render() };
 const c2Pick = () => pickGifts({ multi: true, max: 10, title: 'Gifts to craft', sel: CR.slots, done: ids => { CR.slots = ids.slice(0, 10); c2Render() } });
 $id('c2Slots').onclick = e => { if (CR.busy) return; const s = e.target.closest('.cs3'); if (!s) return; const i = +s.dataset.i; if (CR.slots[i]) { CR.slots.splice(i, 1); c2Render() } else c2Pick() };
-$id('c2Add').onclick = () => { if (!CR.busy) c2Pick() };
-$id('c2Clr').onclick = () => { if (!CR.busy) { CR.slots = []; c2Render() } };
 $id('c2Go').onclick = async () => {
   const tot = crTotal(), m = CR_M[CR.mode]; if (CR.busy || CR.slots.length < 2 || tot < m.min) { if (CR.slots.length < 2 && !CR.busy) c2Pick(); return }
   const t = c2Target(), ids = [...CR.slots]; CR.busy = true; c2Render();

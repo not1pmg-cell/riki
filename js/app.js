@@ -241,7 +241,7 @@ for (const k in HERO) if (typeof HERO[k] === 'string') HERO[k] = liftDefs(HERO[k
 // =====================================================================
 //  NAVIGATSIYA
 // =====================================================================
-const MAIN_HDR = ['home', 'playhub', 'backpack', 'invite', 'leader', 'earn', 'crafts', 'upgrade'];
+const MAIN_HDR = ['home', 'playhub', 'backpack', 'invite', 'leader', 'earn'];
 const NAV_TABS = ['backpack', 'invite', 'home', 'leader', 'earn'];
 const ENTER = {};
 let cur = 'home', stack = [];
