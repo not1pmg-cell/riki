@@ -1,0 +1,63 @@
+/* TOP UP BALANCE — 409.mp4 6:16–6:52 (frames2/62–68). Kenglik 390 px; o'lchamlar kadrdan (588 px → ×0.6633).
+   Fon Telegram mavzusidan: telefon videosida #242424 (themeParams.bg_color). */
+:root{--t2-bg:var(--tg-theme-bg-color,#242424);--t2-surf:#353535;--t2-acc:#8773e1;--t2-dis:#544a81;--t2-dis-tx:#918da2;--t2-lbl:#a4a4a4;--t2-ph:#9da0a8;
+  --t2-foot:#6d6d6d;--t2-ok:#2dbb62;--t2-okb:#255737;--t2-wallet:#0097e8;--t2-gpanel:#16171c;--t2-gbtn:#4c417b;--t2-m:15.9px;--t2-r-card:9.9px;--t2-r-in:6px;--t2-r-btn:9.9px}
+#topup.on{background:var(--t2-bg);padding:0 var(--t2-m) 24px!important}
+#topup>*:not(.t2h):not(.t2t):not(.t2bal):not(.t2l):not(.t2i):not(.t2who):not(.t2q):not(.t2b):not(.t2f):not(.t2c):not(.t2p):not(.t2sel):not(.t2g):not(.t2rate){display:none!important}
+.uic{display:inline-block;object-fit:contain;pointer-events:none;user-select:none}
+.t2h{display:flex;align-items:center;gap:14px;margin:14px 0 13px}
+.t2h button{width:41.1px;height:41.8px;border-radius:11.3px;background:#313131;border:0;display:grid;place-items:center;padding:0}
+.t2h button .uic{width:15px;height:14px}
+.t2h b{font-size:23px;font-weight:700;color:#f8f8f8}
+.t2t{position:relative;display:grid;grid-template-columns:repeat(4,1fr);gap:4px;background:var(--t2-surf);border-radius:var(--t2-r-card);padding:4px;height:80.9px;box-sizing:border-box}
+.t2t button{position:relative;border:0;border-radius:7px;background:transparent;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;color:#aeaeae;font-size:13px;font-weight:600}
+.t2t button.on{background:var(--t2-acc);color:#fff}
+.t2t button .uic{width:18px;height:18px}
+.t2t button.on .uic{filter:brightness(1.6)}
+.t2t .hot{position:absolute;top:-9px;left:58%;width:34.5px;height:14.6px}
+.t2bal{position:relative;margin-top:25px;height:94.2px;background:var(--t2-surf);border-radius:var(--t2-r-card);padding:16px 16px 0;box-sizing:border-box}
+.t2bal small{display:block;font-size:14px;color:#acacac}
+.t2bal b{display:flex;align-items:center;gap:8px;margin-top:10px;font-size:23px;font-weight:700;color:#fff}
+.t2bal b .gem{width:18px;height:18px}
+.t2bal>.uic{position:absolute;right:16px;top:20px;width:13px;height:14px}
+.t2l{margin:24px 0 10px;font-size:14px;color:var(--t2-lbl)}
+.t2bal+.t2l{margin-top:25px}
+.t2i{position:relative;height:51.1px;background:var(--t2-surf);border-radius:var(--t2-r-in);border:1px solid transparent;box-sizing:border-box}
+.t2i.ok{border-color:var(--t2-okb)}
+.t2i input{width:100%;height:100%;background:none;border:0;outline:0;color:#fff;font-size:16px;padding:0 40px 0 13px;box-sizing:border-box}
+.t2i input::placeholder{color:var(--t2-ph)}
+.t2i .gem{position:absolute;right:14px;top:50%;width:15px;height:15px;margin-top:-7.5px}
+.t2i input::-webkit-outer-spin-button,.t2i input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.t2who{display:flex;align-items:center;gap:7px;min-height:0;margin-top:8px;font-size:13px;color:var(--t2-ok)}
+.t2who:empty{margin-top:0}
+.t2who .uic{width:13px;height:10px}
+.t2who .no{color:#e5484d}
+.t2q{display:grid;grid-template-columns:repeat(4,1fr);gap:7.9px;margin-top:15.6px}
+.t2q.c5{grid-template-columns:repeat(5,1fr);gap:6px}
+.t2q button{height:37.1px;border:0;border-radius:var(--t2-r-in);background:var(--t2-surf);color:#fff;font-size:14px;font-weight:600}
+.t2b{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;height:58.4px;margin-top:15.9px;border:0;border-radius:var(--t2-r-btn);background:var(--t2-dis);color:var(--t2-dis-tx);font-size:16px;font-weight:600}
+.t2b.on{background:var(--t2-acc);color:#fff}
+.t2b .uic{width:20px;height:18px}.t2b .uic.st{width:16px;height:16px}
+.t2f{margin-top:22px;text-align:center;font-size:12.5px;color:var(--t2-foot)}
+.t2rate{margin-top:14px;text-align:center;font-size:12.5px;color:var(--t2-foot)}
+.t2c{display:flex;align-items:center;justify-content:center;gap:10px;width:100%;height:39.4px;margin-top:20px;border:0;border-radius:9.3px;background:var(--t2-wallet);color:#fff;font-size:16px;font-weight:600}
+.t2c .uic{width:18px;height:17px}
+.t2p{margin:24px 0 0;font-size:13px;line-height:1.45;color:#a4a4a4}
+.t2p+.t2l{margin-top:22px}
+.t2sel{margin-top:16px;background:var(--t2-gpanel);border-radius:14px;padding:14px 14px 13px}
+.t2sel .r{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:#d4d4d8;font-weight:600}
+.t2sel .r b{display:flex;align-items:center;gap:5px;color:#fff;font-size:15px}.t2sel .r .gem{width:13px;height:13px}
+.t2sel .t2b{height:39.4px;margin-top:12px;background:var(--t2-gbtn);color:#d6d1ea}
+.t2sel .t2b.on{background:var(--t2-acc);color:#fff}
+.t2g{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:16px}
+.t2g button{position:relative;aspect-ratio:1/1.05;border:2px solid transparent;border-radius:18px;background:#333;padding:16px 8px 6px;overflow:hidden}
+.t2g button.on{border-color:var(--t2-acc)}
+.t2g button em{position:absolute;top:6px;right:6px;z-index:2;display:flex;align-items:center;gap:3px;padding:3px 7px;border-radius:8px;background:#1c1c1c;font-style:normal;font-size:11px;font-weight:700;color:#fff}
+.t2g button em .gem{width:11px;height:11px}
+.t2g button .gi-wrap,.t2g button img:not(.gem){width:100%;height:100%;object-fit:contain}
+/* qora xabar — 409.mp4 6:48 */
+.sentt{background:#000!important;border-radius:10px!important;color:#fff!important}
+/* Stars "Top Up 500 ⭐" — 409.mp4 6:20: fon #5c5192, matn #a5a3b1, balandlik 43 px (faol holati videoda yo'q) */
+#topup .t2rate+.t2b{height:43px;background:#5c5192;color:#a5a3b1}
+#topup .t2b .uic.st{width:16.6px;height:14.6px}
+#topup .t2sel .t2b{height:43px;color:#9b97b5}

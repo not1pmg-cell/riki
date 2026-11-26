@@ -2805,8 +2805,8 @@ function dtSync() {
 }
 function dtRender() {
   const wd = !!DT.wd;
-  $id('dtT').textContent = wd ? 'Withdraw' : DT.tab === 'dep' ? 'Deposit' : 'Transfer';
-  let h = wd ? '' : `<div class="dt"><button data-t="dep" class="${DT.tab === 'dep' ? 'on' : ''}">Deposit</button><button data-t="tr" class="${DT.tab === 'tr' ? 'on' : ''}">Transfer</button></div>`;
+  $id('dtT').textContent = wd ? 'Withdraw' : DT.after === 'topup' ? (DT.sub === 'gift' ? 'Send gifts' : 'Transfer') : DT.tab === 'dep' ? 'Deposit' : 'Transfer';
+  let h = wd || DT.after === 'topup' ? '' : `<div class="dt"><button data-t="dep" class="${DT.tab === 'dep' ? 'on' : ''}">Deposit</button><button data-t="tr" class="${DT.tab === 'tr' ? 'on' : ''}">Transfer</button></div>`;
   if (DT.step === 'confirm') {
     const what = DT.wd ? (DT.to ? `<b>${esc(GIFTS[invGet(DT.sel[0]).g].n)}</b> → <b>${esc(DT.to.name)}</b>` : `<b>${esc(GIFTS[invGet(DT.sel[0]).g].n)}</b> → Telegram`)
       : DT.sub === 'ton' ? `<b>${fmt(DT.amt)} ${CUR}</b> → <b>${esc(DT.to.name)}</b>` : `<b>${DT.sel.length}</b> gift(s) · <b>${fmt(dtTotal())} ${CUR}</b> → <b>${esc(DT.to.name)}</b>`;
@@ -2858,9 +2858,80 @@ async function dtSend() {
     try { wPull(true) } catch (e) {} save(); closeM('dtM'); if (cur === 'backpack') bpRender();
   } catch (e) { dtMsg(/balance/i.test(e.message) ? 'Insufficient balance' : /not found/i.test(e.message) ? 'User not found' : e.message); b.disabled = false; DT.step = 'form'; dtRender() }
 }
-openDeposit = () => dtOpen('dep'); window.openDeposit = openDeposit;
 trOpen = (kind, item) => item ? dtOpen('tr', { wd: true, sel: [item.id] }) : dtOpen('tr', { sub: kind === 'gift' ? 'gift' : 'ton' });
-document.addEventListener('click', e => { const p = e.target.closest('#hPill .plus, #hMain .depbtn, [data-dep]'); if (!p) return; e.stopImmediatePropagation(); e.preventDefault(); dtOpen('dep') }, true);
 // Backpack "Withdraw" → Withdraw oynasi (qabul qiluvchi bo'sh = o'zimga)
 document.addEventListener('click', e => { const a = e.target.closest('#backpack [data-a="wd"]'); if (!a) return; e.stopImmediatePropagation(); const c = a.closest('.bpc'); const it = c && invGet(c.dataset.id); if (it) dtOpen('tr', { wd: true, sel: [it.id] }) }, true);
+// =====================================================================
+//  TOP UP BALANCE — 409.mp4 6:16–6:52 (frames2/62–68) asosida 1:1.
+//  Tablar: TON · Stars (HOT) · Transfer · Send gift. Sarlavha tabga qarab: "Top Up Balance" / "Transfer" / "Send gifts".
+//  Ikonkalar — kadrdan qirqilgan PNG (assets/ui/). Yuborishdan oldin tasdiqlash (foydalanuvchi talabi) — dtM "Confirm".
+// =====================================================================
+const UI = n => `<img class="uic" src="assets/ui/${n}.png" alt="" draggable="false">`;
+const TU2 = { to: null, look: 0 };
+function tuBlackToast(title, sub) { const e = $id('sentT'); e.innerHTML = `<b>✓ ${esc(title)}</b><span>${esc(sub)}</span>`; e.classList.add('on'); clearTimeout(e._t); e._t = setTimeout(() => e.classList.remove('on'), 2600) }
+function tuRcp() { return `<div class="t2l">Recipient ID</div><div class="t2i" id="t2RcpB"><input id="t2Rcp" placeholder="123456789 / @username" autocomplete="off"></div><div class="t2who" id="t2Who"></div>` }
+async function tuLook() {
+  const q = $id('t2Rcp').value.trim(), W = $id('t2Who'), B = $id('t2RcpB'); TU2.to = null; B.classList.remove('ok'); W.innerHTML = ''; tuSync();
+  if (q.length < 2 || !NET.on) return;
+  try { const u = await api('/api/user?q=' + encodeURIComponent(q)); if (String(u.id) === String(TGU.id)) throw new Error("You can't send to yourself"); TU2.to = u; B.classList.add('ok'); W.innerHTML = `${UI('ic_check_green')}<span>${esc(u.name)} · ${u.id}</span>` }
+  catch (e) { W.innerHTML = `<span class="no">${esc(/not found/i.test(e.message) ? 'User not found' : e.message)}</span>` }
+  tuSync();
+}
+function tuSync() {
+  const t = TU.t, b = $id('t2Go'); if (!b) return;
+  if (t === 'transfer') { const v = numIn('t2A'); const ok = TU2.to && v >= .1; b.classList.toggle('on', !!ok); b.textContent = v >= .1 ? `Send ${fmt2(v)} ${CUR}` : 'Send' }
+  else if (t === 'stars') { const v = numIn('t2A'); b.innerHTML = `Top Up ${v || 0} <img class="uic st" src="assets/ui/ic_star_gold.png" alt="">`; b.classList.toggle('on', v >= 15 && v <= 1000); const r = $id('t2Rate'); if (r) r.textContent = `≈ ${fmt(v * starRate())} ${CUR}` }
+  else if (t === 'gift') { const v = sumV(TU.sel.map(id => (invGet(id) || {}).v || 0)); $id('t2SelN').textContent = `${TU.sel.length} selected`; $id('t2SelV').innerHTML = `${fmt2(v)} ${GEM}`; b.classList.toggle('on', !!(TU.sel.length && TU2.to)) }
+}
+const fmt2 = v => (Math.round(v * 100) / 100).toFixed(2);
+tuRender = function () {
+  if (TU.t === 'crypto' || TU.t === 'gifts') TU.t = 'ton';
+  const t = TU.t, title = t === 'transfer' ? 'Transfer' : t === 'gift' ? 'Send gifts' : 'Top Up Balance';
+  const tabs = [['ton', 'ic_tab_ton', 'TON'], ['stars', 'ic_tab_stars', 'Stars', 1], ['transfer', 'ic_tab_transfer', 'Transfer'], ['gift', 'ic_tab_gift', 'Send gift']];
+  let body = '';
+  if (t === 'ton') body = DEP.addr
+    ? `<div class="t2l">Amount (minimum 0.10 TON)</div><div class="t2i"><input id="t2A" type="number" inputmode="decimal" placeholder="Enter amount">${GEM}</div><div class="t2q">${[1, 5, 10, 50].map(a => `<button data-a="${a}">+${a}</button>`).join('')}</div><button class="t2b on" id="t2Ton">Top Up</button>`   // UNCLEAR: hamyon ulangandan keyingi holat videoda yo'q
+    : `<button class="t2c" id="t2Conn">${UI('ic_wallet')}Connect wallet</button>`;
+  else if (t === 'stars') body = `<div class="t2l">Amount in Stars (15 – 1000)</div><div class="t2i"><input id="t2A" type="number" inputmode="numeric" value="500"></div><div class="t2q c5">${[15, 25, 50, 100, 500].map(a => `<button data-a="${a}">+${a}</button>`).join('')}</div><div class="t2rate" id="t2Rate"></div><button class="t2b" id="t2Go"></button>`;
+  else if (t === 'transfer') body = `<div class="t2bal"><small>Your balance</small><b><span class="balv"></span> ${GEM}</b>${UI('ic_swap')}</div>${tuRcp()}<div class="t2l">Amount (minimum 0.10 TON)</div><div class="t2i"><input id="t2A" type="number" inputmode="decimal" placeholder="Enter amount">${GEM}</div><div class="t2q">${[1, 5, 10, 50].map(a => `<button data-a="${a}">+${a}</button>`).join('')}</div><button class="t2b" id="t2Go">Send</button><div class="t2f">Instant • no fees • minimum 0.10 TON</div>`;
+  else { TU.sel = TU.sel.filter(id => invGet(id));
+    body = `<p class="t2p">Pick gifts from your backpack and send them to a friend — they arrive instantly.</p>${tuRcp()}<div class="t2sel"><div class="r"><span id="t2SelN"></span><b id="t2SelV"></b></div><button class="t2b g" id="t2Go">${UI('ic_send')}Send</button></div><div class="t2g">${S.inv.map(it => `<button data-id="${it.id}" class="${TU.sel.includes(it.id) ? 'on' : ''}"><em>${fmt(it.v)} ${GEM}</em>${GII(it)}</button>`).join('')}</div>` }
+  sec('topup', `<div class="t2h"><button id="t2Bk">${UI('ic_back_arrow')}</button><b>${title}</b></div><div class="t2t">${tabs.map(x => `<button data-t="${x[0]}" class="${x[0] === t ? 'on' : ''}">${x[3] ? `<img class="hot" src="assets/ui/badge_hot.png" alt="HOT">` : ''}${UI(x[1])}<span>${x[2]}</span></button>`).join('')}</div>${body}`);
+  renderBal();
+  $id('t2Bk').onclick = back;
+  $$('#topup .t2t button').forEach(b => b.onclick = () => { TU.t = b.dataset.t; TU2.to = null; tuRender() });
+  const A = $id('t2A'); if (A) { A.oninput = tuSync; $$('#topup .t2q button').forEach(b => b.onclick = () => { A.value = fmt2((parseFloat(A.value) || 0) + +b.dataset.a).replace(/\.00$/, ''); tuSync() }) }
+  const R = $id('t2Rcp'); if (R) R.oninput = () => { clearTimeout(TU2.look); TU2.look = setTimeout(tuLook, 450) };
+  const c = $id('t2Conn'); if (c) c.onclick = async () => { if (!NET.on) return offSync(); try { const tc = await tcInit(); if (!tc.wallet) tc.openModal() } catch (e) { tuBlackToast('Error', e.message) } };
+  const tt = $id('t2Ton'); if (tt) tt.onclick = () => { const v = numIn('t2A'); if (v >= .1) tonPay(v) };
+  const G = $('#topup .t2g'); if (G) G.onclick = e => { const b = e.target.closest('[data-id]'); if (!b) return; const id = b.dataset.id; TU.sel = TU.sel.includes(id) ? TU.sel.filter(x => x !== id) : [...TU.sel, id]; b.classList.toggle('on'); hap(); tuSync() };
+  const go_ = $id('t2Go'); if (go_) go_.onclick = () => {
+    if (t === 'stars') { const v = Math.round(numIn('t2A')); if (v >= 15 && v <= 1000) starsPay(v); return }
+    if (!NET.on) return offSync();
+    if (!TU2.to) { if ($id('t2Rcp').value.trim()) tuBlackToast('Error', 'User not found'); return }
+    if (t === 'transfer') { const v = Math.floor(numIn('t2A') * 100) / 100; if (!(v >= .1)) return; if (v > S.bal + 1e-9) { tuBlackToast('Error', 'Insufficient balance'); return }
+      Object.assign(DT, { tab: 'tr', sub: 'ton', to: TU2.to, amt: v, wd: null, sel: [], step: 'confirm', after: 'topup' }) }
+    else { if (!TU.sel.length) return; Object.assign(DT, { tab: 'tr', sub: 'gift', to: TU2.to, wd: null, sel: TU.sel.slice(), step: 'confirm', after: 'topup' }) }
+    dtRender(); openM('dtM');
+  };
+  tuSync();
+  if (NET.on && !DEP.info) depInfo().catch(() => {});
+};
+ENTER.topup = tuRender;
+openDeposit = () => { TU.t = 'ton'; go('topup') }; window.openDeposit = openDeposit;
+// tasdiqlangandan keyin: videodagi qora xabar ("✓ Transferred / Sent 22.68 TON to Дима · 5685929121")
+const _dtSend0 = dtSend;
+dtSend = async function () {
+  if (DT.after !== 'topup') return _dtSend0();
+  const b = $id('dtOk'); if (b.disabled) return; b.disabled = true;
+  try {
+    if (DT.sub === 'ton') { await api('/api/transfer', { method: 'POST', body: { to: String(DT.to.id), kind: 'gram', amount: DT.amt } }); wSkip(() => setBal(-DT.amt)); tuBlackToast('Transferred', `Sent ${fmt2(DT.amt)} TON to ${DT.to.name} · ${DT.to.id}`) }
+    else { let n = 0; for (const id of DT.sel) { const it = invGet(id); if (!it) continue; await api('/api/transfer', { method: 'POST', body: { to: String(DT.to.id), kind: 'gift', gift: { id: it.id, sh: GIFTS[it.g].sh, n: GIFTS[it.g].n, p: it.v, m: it.m, ms: it.ms } } }); wSkip(() => invDel([it.id])); n++ } TU.sel = []; tuBlackToast('Transferred', `Sent ${n} gift(s) to ${DT.to.name} · ${DT.to.id}`) }
+    try { wPull(true) } catch (e) {} save(); closeM('dtM'); DT.after = null; tuRender();
+  } catch (e) { b.disabled = false; closeM('dtM'); tuBlackToast('Error', /balance/i.test(e.message) ? 'Insufficient balance' : /not found/i.test(e.message) ? 'User not found' : e.message) }
+};
+$id('dtOk') || 0;
+document.addEventListener('click', e => { const o = e.target.closest('#dtOk'); if (o && DT.after === 'topup') { e.stopImmediatePropagation(); dtSend() } }, true);
+// header "+" va "Deposit" — Top Up Balance, TON tabi
+document.addEventListener('click', e => { const p = e.target.closest('#hPill .plus, #hMain .depbtn, [data-dep]'); if (!p) return; e.stopImmediatePropagation(); e.preventDefault(); openDeposit() }, true);
 })()
