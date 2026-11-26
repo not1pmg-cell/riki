@@ -181,7 +181,6 @@
     <div class="spopt"><div><small>Speed</small><div class="speeds" id="spSpeed"><button data-s="1" class="on"></button><button data-s="2"></button><button data-s="3"></button></div></div>
       <div style="text-align:right"><small>Auto Bet</small><label class="sw"><input type="checkbox" id="spAuto"><i></i></label></div></div>
     <button class="spinbtn" id="spBtn" data-icon="refresh"></button>
-    <div class="bigwin" id="spWin"><b>BIG WIN</b><span id="spWinV"></span></div>
   </div>
   <div class="spfeat"><button class="bf" id="spBuy"><span data-icon="gift"></span><div>Buy Features<em><span class="gm"></span><span id="spBuyV">20.00</span></em></div></button>
     <button class="dc" id="spDC"><span data-icon="bolt"></span><div>Double Chance<em><span class="gm"></span><span id="spDCV">0.05</span></em></div></button></div>
@@ -227,22 +226,9 @@
     <div class="howb" id="howB">Put at least 2 gifts into the craft slots and choose a mode. <b>Safe</b> multiplies the value by 2, <b>Normal</b> by 8, <b>Risky</b> by 100. The higher the multiplier, the lower the chance. On success you get a new, more valuable gift, otherwise the gifts in the slots are lost.</div></div>
 </section>
 
-<!-- CASES -->
-<section class="screen" id="cases">
-  <div class="cases" id="caseList"></div>
-  <div class="reel" id="reel"><div class="track" id="track"></div></div>
-  <button class="bigbtn p" id="caseBtn">Open</button>
-  <h4>What's inside</h4><div class="grid" id="caseDrops"></div>
-</section>
 
-<!-- MARKET -->
-<section class="screen" id="market">
-  <div class="mkhead"><div><b>Market</b><small><span id="mkCnt">0</span> listings · prices: <span id="mkTs"></span></small></div><button class="ib" id="mkRef" data-icon="refresh"></button></div>
-  <input class="gpsearch" id="mkQ" placeholder="Search: Plush Pepe, Durov's Cap...">
-  <div class="mkchips" id="mkChips"></div>
-  <div class="mksort"><div class="seg" id="mkSort" style="margin:0"><button data-s="lo" class="on">Cheapest</button><button data-s="hi">Expensive</button><button data-s="rare">Rarest</button></div></div>
-  <div class="mkgrid" id="mkGrid"></div>
-</section>
+
+
 
 <!-- BACKPACK -->
 <section class="screen" id="backpack">
@@ -301,18 +287,9 @@
   <div class="mbody">
     <div class="tabs" id="depTabs"><button data-t="ton" class="on">💎 TON</button><button data-t="stars">⭐ Stars</button><button data-t="gift">🎁 Gift</button></div>
     <div id="depBody"></div>
-    <button class="ghost" id="resetBtn">Reset everything</button>
   </div>
 </div></div>
-<div class="modal" id="welM"><div class="mbox" style="text-align:center">
-  <div class="mbody" style="padding:21px 15px">
-    <div style="width:89px;height:89px;margin:0 auto" data-g="Loot Bag"></div>
-    <div style="font-size:19px;font-weight:900;margin:10px 0 4px">Welcome to RIKI!</div>
-    <div style="font-size:13px;color:#cfcfd6">Your welcome gift</div>
-    <div style="font-size:30px;font-weight:900;margin:7px 0;display:flex;align-items:center;justify-content:center;gap:6px"><span class="gm"></span><span id="welV">1000</span></div>
-    <div class="note" style="margin:0">This is a demo balance for playing.</div>
-    <button class="bigbtn ok" data-close>Start</button>
-  </div></div></div>
+</div>
 <div class="modal" id="nftM"><div class="mbox nftbox">
   <div class="nfthero" id="nftHero"><button class="mx" data-close style="position:absolute;right:9px;top:9px;z-index:3;background:#0006">✕</button><div class="nftart" id="nftArt"></div><div class="nftname" id="nftName"></div><div class="nftsn" id="nftSn"></div></div>
   <div class="mbody"><div class="nfttab" id="nftTab"></div><div class="nftbtns" id="nftBtns"></div></div>

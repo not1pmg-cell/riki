@@ -613,7 +613,7 @@ function boxRender() {
   const gb = $id('bxGo'); if (gb) gb.onclick = () => boxOpen(outs, cost, free);
   const pg = $id('pcGo'); if (pg) pg.onclick = async () => {
     const code = ($id('pcIn').value || '').trim(); if (!code) { toast('Enter a promo code'); return }
-    if (!NET.on) { toast('Server is not connected'); return }
+    if (!NET.on) { offSync(); return }
     pg.disabled = true;
     try { await api('/api/promo', { method: 'POST', body: { code } }); BX.promo = code; hapN('success'); boxRender() } catch (e) { toast(esc(e.message)); hapN('error') }
     pg.disabled = false;
@@ -1218,15 +1218,13 @@ $id('trGo').onclick = async () => {
   } catch (e) { toast('Error: ' + esc(e.message)) }
   btn.disabled = false;
 };
-const LIVE_G = ['roulette', 'pvp', 'tvt', 'rocket'];
-document.body.insertAdjacentHTML('beforeend', `<div class="offlv" id="offLv"><div class="ob"><span class="spin"></span><b id="offT">Connecting to server…</b><small id="offS">Live games are played together with all players. Please wait.</small><button class="btn-p" id="offR">Retry</button></div></div>`);
+const LIVE_G = ['pvp', 'tvt', 'rocket'];
+document.body.insertAdjacentHTML('beforeend', `<div class="offlv" id="offLv"><span class="csp"></span><small>Checking system status...</small></div>`);   // video: B 25.0 / 58.5 / 104.5 s
 function offSync() {
   const show = LIVE_G.includes(cur) && !NET.on;
   $id('offLv').classList.toggle('on', show);
   if (!show) return;
-  $id('offT').textContent = API ? 'Connecting to server…' : 'Server is not connected';
-  $id('offS').textContent = API ? 'Live games are played together with all players. Please wait.' : 'Live games need the game server. Open the app from the bot button.';
-  $id('offLv').querySelector('.spin').style.display = API ? '' : 'none';
+
 }
 let netTry = 0;
 setInterval(() => { if (API && !NET.on && Date.now() - netTry > 5000) netInit() }, 1000);
@@ -1236,7 +1234,7 @@ async function netInit() {
   if (!API) return;
   try { const d = await api('/api/ping'); NET.on = true; NET.pinged = true; NET.banned = false; offSync(); srvState(d); NET.admin = !!d.admin; subSync(d.subs); wInit(d); gCatalog(); gSyncState(); pushStats(true); pullFeed(); pullRewards(); pullGa(true) } catch (e) { srvErr(e); if (NET.banned || (NET.cfg && NET.cfg.maint)) { NET.pinged = true; return } NET.on = false; NET.pinged = true; feedDraw(); offSync(); console.warn('API offline:', e.message) }
 }
-setInterval(() => { if (!NET.on) return; pushStats(true); if (cur === 'roulette') pullLb(true); pullFeed(); pullRewards(); if (cur === 'earn' && E5.tab === 'ga') pullGa().then(() => earnRender()) }, 20000);
+setInterval(() => { if (!NET.on) return; pushStats(true); pullFeed(); pullRewards(); if (cur === 'earn' && E5.tab === 'ga') pullGa().then(() => earnRender()) }, 20000);
 
 ENTER.earn = () => { earnRender(); if (E5.tab === 'ga') pullGa(true).then(() => { if (cur === 'earn') earnRender() }); else if (NET.on) etPull(true).then(() => { if (cur === 'earn' && E5.tab === 'earn') earnRender() }) };
 renderTasks = function () { const n = [...T5.lim, ...T5.day].filter(t => { const s = tState(t, T5.day.includes(t) ? 'day' : 'lim'); return !s.done && s.ready && !t.go }).length; const b = $id('earnBadge'); if (b) { b.style.display = n ? '' : 'none'; b.textContent = n } if (cur === 'earn' && E5.tab === 'earn') earnRender() };
@@ -1286,11 +1284,10 @@ ENTER.profile = () => {
   sec('profile', `<div class="pfhero"><button class="pfc l" id="pfAnon">${ANONI}${S.anon ? 'ON' : 'OFF'}</button><button class="pfc r" id="pfLang">${IC.globe || '🌐'}${LANG() === 'uz' ? 'UZ' : 'EN'}</button><div class="lgdd" id="lgDd"><small>Language</small><button data-l="en" class="${LANG() === 'en' ? 'on' : ''}">English<i>✓</i></button><button data-l="uz" class="${LANG() === 'uz' ? 'on' : ''}">O'zbekcha<i>✓</i></button></div><div class="av-wrap">${avP(pubName(), pubPhoto())}</div><b>${esc(pubName())}</b></div>
   <div class="vipc"><div class="hd">${lvl ? dmd(lvl[2]) : dmd('').replace('class="dm"', 'class="dm lock"')}<div><small>VIP-STATUS</small><b>${lvl ? lvl[0] : 'No status'}</b></div><button id="vipQ">${IC.info}</button></div>
   <div class="pr"><b>${fmt(t)} / ${nx[1].toLocaleString('ru-RU')} ${CUR}</b><span>To ${dmd(nx[2]).replace('class="dm"', 'class="dm" style="width:16px;height:16px;vertical-align:-3px"')} ${nx[0]} Level</span></div><div class="bar"><b style="width:${Math.min(100, t / nx[1] * 100)}%"></b></div><div class="ft"><span>Turnover</span><span>${fmt(Math.max(0, nx[1] - t))} ${CUR} left</span></div></div>
-  <div class="trbtns"><button class="btn-p" id="pfTrG">💎 Send ${CUR}</button><button class="btn-d" id="pfTrF">🎁 Send Gift</button></div>
   <div class="pbc"><div class="hd"><span>${IC.gift}PLAYBONUS</span>${IC.info}</div><div class="v">${fmt(pb)}${GEM}</div><button class="${silver ? 'btn-p' : 'btn-d'}" id="pbC">${silver ? 'Claim' : IC.lock + 'Reach Silver to claim'}</button><p>PLAYBONUS accumulates automatically and can be claimed after reaching Silver level.</p></div>
   <div class="vipl"><div class="hd">VIP Levels<small>${CUR} Turnover</small></div>${VIPS.map(v => `<div class="vl ${t >= v[1] ? 'got' : ''}">${dmd(v[2])}<div><b>${v[0]} ${t >= v[1] ? '✓' : IC.lock}</b><small>${GEM}${v[1].toLocaleString('ru-RU')} ${CUR}</small></div><span class="ch">${IC.down}</span><div class="bd2">${(VIP_PERKS[v[0]] || []).map(x => `<div class="pk">${CHK}${x}</div>`).join('')}</div></div>`).join('')}</div>`);
   $$('#profile .vl').forEach(e => e.onclick = () => e.classList.toggle('open'));
-  $id('pfTrG').onclick = () => trOpen('gram'); $id('pfTrF').onclick = () => trOpen('gift');
+  
   $id('pfAnon').onclick = anonOpen; $id('pfLang').onclick = e => { e.stopPropagation(); $id('lgDd').classList.toggle('on') };
   $id('lgDd').onclick = e => { const b = e.target.closest('[data-l]'); if (b && b.dataset.l !== LANG()) setLang(b.dataset.l); else $id('lgDd').classList.remove('on') };
   document.addEventListener('click', ev => { const d = $id('lgDd'); if (d && !ev.target.closest('#lgDd,#pfLang')) d.classList.remove('on') });
@@ -1384,135 +1381,8 @@ $id('pvJoin').onclick = () => {
   incOpen({ title: mine ? 'Increase' : 'Place bet', btn: mine ? 'Increase' : 'Join the Battle', current: mine ? mine.amt : 0, done: r => { pvAdd(ME, r2(r.ton + sumV(r.gifts.map(x => x.v))), true); PV.pl.find(p => p.me).gifts = (PV.pl.find(p => p.me).gifts || []).concat(r.gifts); hap('medium'); pvRender(true) } });
 };
 
-// ---------------------------------------------------------------- ROULETTE
-const GEMW = '<svg class="gw2" viewBox="0 0 24 24"><path d="M7.3 3.2h9.4a2.4 2.4 0 0 1 2 1.1l2.7 4.3a1.6 1.6 0 0 1-.1 1.9l-8.1 9.9a1.6 1.6 0 0 1-2.4 0L2.7 10.5a1.6 1.6 0 0 1-.1-1.9l2.7-4.3a2.4 2.4 0 0 1 2-1.1z" fill="currentColor"/></svg>';
-const RL = { phase: 'wait', pl: [], end: 0, roll: 707990 + ri(9000), rot: 0, spinEnd: 0, winner: null, doneAt: 0, mode: 'ton', auto: false, lastBet: null, hash: rndHex(20) };
-S.rlQuick = S.rlQuick || [1, 5, 10];
-sec('roulette', `<div class="rlbg"></div>
-  <div class="rlon"><i></i><span id="rlOnl">1</span> Online</div>
-  <div class="rltop"><span class="rlme" id="rlMe"></span><div class="pill3"><span class="gm">${GEM}</span><b class="balv">0</b><button data-dep>＋</button></div></div>
-  <button class="rltour" data-go="leader"><span class="ti">${['Plush Pepe', 'Scared Cat', 'Kissed Frog'].map(n => GI(byName(n))).join('')}</span><b>Weekly Tournament</b><em>›</em></button>
-  <div class="rlstats"><div id="rlLast"></div><div id="rlTop"></div></div>
-  <div class="rlmid"><button class="rlib" id="rlHist">${IC.refresh}</button><div class="rltot2" id="rlTot">TOTAL <b>0 ${CUR}</b></div><button class="rlib" id="rlHow">${IC.help}</button></div>
-  <div class="rlw2"><svg class="rlptr2" viewBox="0 0 60 44"><path d="M6 6 H54 L30 40 Z" fill="#14072e" stroke="#fff" stroke-width="5" stroke-linejoin="round"/></svg><div class="rlring"></div><div class="rlwheel" id="rlWheel"></div><div class="rlav" id="rlAv"></div><div class="rlc2" id="rlC">Waiting</div></div>
-  <div class="rlctl"><button class="rlmode" id="rlMode"></button><button class="rlib" id="rlGear">${IC.gear}</button></div>
-  <div class="rlq" id="rlQ"></div>
-  <div class="rlgifts" id="rlGifts"></div>
-  <div class="rlbtn2"><button id="rlCust"><svg viewBox="0 0 24 24" width="18" height="18"><path d="M4 20l4-1 11-11-3-3L5 16zM14 6l3 3" fill="currentColor"/></svg>Customize</button><button id="rlAuto">＋ Autoplay</button></div>
-  <div class="rlpanel"><div class="rlh"><b id="rlN">0 Players</b><span id="rlRoll">Roll #0</span></div><div id="rlPl"></div><div class="rlhash" id="rlHash"></div></div>`);
-$id('roulette').classList.add('rlscr');
-const rlTot = () => sumV(RL.pl.map(p => p.amt));
-function rlAdd(name, ton, gifts, me, isBot) {
-  let p = RL.pl.find(x => x.name === name && !!x.me === !!me);
-  if (!p) { p = { name, me, bot: !!isBot, ton: 0, gifts: [], amt: 0, c: RL_COL[RL.pl.length % RL_COL.length], photo: me ? TGU.photo_url : '' }; RL.pl.push(p) }
-  p.ton = r2(p.ton + ton); p.gifts = p.gifts.concat(gifts || []); p.amt = r2(p.ton + sumV(p.gifts.map(x => x.v)));
-  if (RL.pl.length >= 2 && !RL.end) RL.end = Date.now() + 25000;
-  rlRender(true);
-}
-function rlTick() {
-  if (NET.on) { lvRlTick(); if (cur === 'roulette') rlRender(); if (cur === 'pvphub') rlHub(); return }
-  if (RL.phase === 'wait') {
-    const b = RL.pl.find(x => x.bot), humans = RL.pl.some(x => !x.bot);
-    if (!b && (humans ? Math.random() < .03 : Math.random() < .004)) {
-      const useGift = Math.random() < .4, g = pick(GIFTS.filter(x => x.p <= 80));
-      rlAdd('Roulette', useGift ? 0 : botAmt(), useGift ? [{ g: g.i, v: g.p, n: 1 + ri(900) }] : [], false, true);
-    } else if (b && b.amt < 1000 && Math.random() < .002) rlAdd('Roulette', botAmt(1000 - b.amt), [], false, true);
-    if (RL.auto && RL.lastBet && !RL.pl.find(p => p.me)) { if (RL.lastBet <= S.bal) { setBal(-RL.lastBet); rlAdd(ME, RL.lastBet, [], true) } else { RL.auto = false; toast('Autoplay stopped: insufficient balance'); rlRender(true) } }
-    if (RL.end && Date.now() >= RL.end) rlSpin();
-  } else if (RL.phase === 'spin' && Date.now() >= RL.spinEnd) {
-    RL.phase = 'done'; RL.doneAt = Date.now(); const w = RL.winner, tot = rlTot(), mine = RL.pl.find(p => p.me);
-    const rec = { n: w.name, ch: Math.round(w.amt / (tot || 1) * 100), win: r2(tot - w.amt), photo: w.photo, d: new Date().toDateString() };
-    S.rlLast = rec; if (!S.rlTop || S.rlTop.d !== rec.d || rec.win > S.rlTop.win) S.rlTop = rec;
-    S.rlHist = [{ roll: RL.roll, n: w.name, tot, ch: rec.ch, me: !!mine, won: !!w.me, t: Date.now() }].concat(S.rlHist || []).slice(0, 50);
-    if (mine) {
-      if (w.me) {
-        const ton = sumV(RL.pl.map(p => p.ton)); if (ton) setBal(ton);
-        RL.pl.forEach(p => p.gifts.forEach(x => addItem(GIFTS[x.g], x.v, x.n, x.m, x.ms, true)));
-        logGame('Roulette', mine.amt, tot, 'Win'); S.pvpScore = (S.pvpScore || 0) + tot;
-        if (cur === 'roulette') showRes(true, null, 'You won! 🏆', `+${g$(tot)}`);
-      } else { logGame('Roulette', mine.amt, 0, 'Winner: ' + w.name); if (cur === 'roulette') toast(`Winner: <b>${esc(w.name)}</b>`) }
-    }
-    save(); rlRender(true);
-  } else if (RL.phase === 'done' && Date.now() - RL.doneAt > 4500) {
-    RL.phase = 'wait'; RL.pl = []; RL.end = 0; RL.winner = null; RL.roll++; RL.hash = rndHex(20); rlRender(true);
-  }
-  if (cur === 'roulette') rlRender(); if (cur === 'pvphub') rlHub();
-}
-function rlSegs() { const t = rlTot() || 1; let a = 0; return RL.pl.map(p => { const s = { p, a0: a, a1: a + p.amt / t * 360 }; a = s.a1; return s }) }
-function rlSpin(forced) {
-  const segs = rlSegs(), tot = rlTot(); let r = Math.random() * tot, w = segs[0];
-  for (const s of segs) { if (r < s.p.amt) { w = s; break } r -= s.p.amt }
-  if (forced != null) { const f = segs.find(s => s.p.uid === forced); if (f) w = f }
-  RL.winner = w.p; RL.phase = 'spin';
-  const target = w.a0 + (w.a1 - w.a0) * rnd(.15, .85);
-  const base = RL.rot - (RL.rot % 360);
-  RL.rot = base + 360 * 6 + (360 - target);
-  [$id('rlWheel'), $id('rlAv')].forEach(e => { e.style.transition = 'transform 5.5s cubic-bezier(.12,.67,.12,1)'; e.style.transform = `rotate(${RL.rot}deg)` });
-  $id('rlAv').style.setProperty('--cr', -RL.rot + 'deg');
-  RL.spinEnd = Date.now() + 5800; hap('medium');
-}
-const rlAvH = p => p.photo ? `<span class="av" style="background:#393939 url('${esc(p.photo)}') center/cover"></span>` : avHTML(p.name);
-function rlStat(x, lb, gold) { return x ? `<small><span>${lb}</span><span>CHANCE ${x.ch}%</span></small><b><span class="nm2">${x.photo ? `<i style="background:url('${esc(x.photo)}') center/cover"></i>` : `<i>${esc((x.n[0] || '?').toUpperCase())}</i>`}@${esc(x.n)}</span><em class="${gold ? 'g' : ''}">+${fmt(x.win)} ${CUR}</em></b>` : `<small><span>${lb}</span><span></span></small><b><span class="nm2" style="color:#8a7fb0">—</span></b>` }
-let rlLast = 0;
-function rlRender(force) {
-  const now = Date.now(), tot = rlTot();
-  $id('rlTot').innerHTML = `TOTAL <b>${fmt(tot).replace(/\.00$/, '')} ${CUR}</b>`;
-  const c = $id('rlC');
-  if (RL.phase === 'wait') c.innerHTML = RL.end ? `<b class="t">${Math.max(0, Math.ceil((RL.end - now) / 1000))}</b>` : `<b>Waiting</b>`;
-  else if (RL.phase === 'spin') c.innerHTML = '<b class="l">Rolling</b>';
-  else c.innerHTML = `<b class="l">Winner</b><small>@${esc(RL.winner.name)}</small>`;
-  if (!force && now - rlLast < 400) return; rlLast = now;
-  $id('rlMe').innerHTML = TGU.photo_url ? `<span class="av" style="background:#393939 url('${esc(TGU.photo_url)}') center/cover"></span>` : avHTML(ME);
-  $id('rlOnl').textContent = Math.max(1, NET.online || 0);
-  $id('rlLast').innerHTML = rlStat(S.rlLast, 'LAST GAME'); $id('rlTop').innerHTML = rlStat(S.rlTop && S.rlTop.d === new Date().toDateString() ? S.rlTop : null, 'TOP GAME', 1);
-  const segs = rlSegs();
-  $id('rlWheel').style.background = segs.length ? `conic-gradient(${segs.map(s => `${s.p.c} ${s.a0}deg ${s.a1}deg`).join(',')})` : '#3df2ff';
-  const RR = Math.round(($id('rlWheel').clientWidth || 300) * .36);
-  $id('rlAv').innerHTML = segs.map(s => { const m = (s.a0 + s.a1) / 2; return `<span class="rla" style="transform:rotate(${m}deg) translateY(-${RR}px) rotate(${-m}deg)">${rlAvH(s.p)}</span>` }).join('');
-  if (RL.phase === 'wait' && !segs.length) { $id('rlWheel').style.transition = 'none'; $id('rlAv').style.transition = 'none' }
-  // rejim: TON yoki Gift
-  $id('rlMode').innerHTML = RL.mode === 'ton' ? `${GEM}<span>›</span>` : `${IC.gift}<span>›</span>`;
-  $id('rlQ').style.display = RL.mode === 'ton' ? '' : 'none'; $id('rlGifts').style.display = RL.mode === 'gift' ? '' : 'none';
-  const dis = RL.phase !== 'wait' ? 'disabled' : '';
-  $id('rlQ').innerHTML = S.rlQuick.map(v => `<button data-v="${v}" ${dis}>${GEMW}${v}</button>`).join('') + `<button class="all" data-v="all" ${dis}>All In</button>`;
-  $id('rlGifts').innerHTML = S.inv.length ? [...S.inv].sort((a, b) => b.v - a.v).map(it => `<button class="rlgf" data-id="${it.id}" ${dis}>${GII(it)}<b>${fmt(it.v)}</b></button>`).join('') : `<div class="rlge">No gifts — <a data-go="home">open boxes</a> or <a data-dep>deposit gifts</a></div>`;
-  $id('rlAuto').innerHTML = RL.auto ? '■ Stop Autoplay' : '＋ Autoplay'; $id('rlAuto').classList.toggle('on', RL.auto);
-  $id('rlN').textContent = `${RL.pl.length} Player${RL.pl.length === 1 ? '' : 's'}`; $id('rlRoll').textContent = `Roll #${RL.roll}`;
-  $id('rlHash').innerHTML = `Hash ${RL.hash.slice(0, 5)}...${RL.hash.slice(-5)} ${IC.copy}`;
-  $id('rlPl').innerHTML = [...RL.pl].sort((a, b) => b.amt - a.amt).map(p => {
-    const chips = (p.ton ? `<span class="rch" style="background:${p.c}">${GEMW}${fmt(p.ton).replace(/\.00$/, '')}</span>` : '') + p.gifts.map(x => `<span class="rch" style="background:${p.c}">${GI(GIFTS[x.g])}${fmt(x.v)}</span>`).join('');
-    return `<div class="rlp2 ${RL.phase === 'done' && RL.winner === p ? 'win' : ''}" style="--c:${p.c}"><div class="top">${rlAvH(p)}<div class="nm"><b>${esc(p.name)}${p.me ? ' <span class="you2">YOU</span>' : ''}${p.bot ? ' <span class="bt">BOT</span>' : ''}</b><small style="color:${p.c}">${Math.round(p.amt / (tot || 1) * 1000) / 10}%</small></div><span class="am">${GEM}${fmt(p.amt).replace(/\.00$/, '')}</span></div><div class="chs"><div class="scr">${chips}</div><span class="ar">›</span></div></div>`;
-  }).join('') || `<div class="rlempty">No players yet — place a bet to start</div>`;
-}
-function rlBetTon(v) {
-  if (RL.phase !== 'wait') { toast('Round in progress'); return }
-  v = r2(v); if (v < .1) { toast(`Minimum bet ${GEM}0.10`); return } if (v > S.bal) { toast('Insufficient balance'); go('topup'); return }
-  setBal(-v); RL.lastBet = v; rlAdd(ME, v, [], true); hap('medium');
-}
-$id('rlQ').onclick = e => { const b = e.target.closest('[data-v]'); if (!b) return; rlBetTon(b.dataset.v === 'all' ? Math.floor(S.bal * 100) / 100 : +b.dataset.v) };
-$id('rlGifts').onclick = e => { const b = e.target.closest('.rlgf'); if (!b) return; if (RL.phase !== 'wait') { toast('Round in progress'); return } const it = invGet(b.dataset.id); if (!it) return; invDel([it.id]); rlAdd(ME, 0, [{ g: it.g, v: it.v, n: it.n, m: it.m, ms: it.ms }], true); hap('medium'); rlRender(true) };
-$id('rlMode').onclick = () => { RL.mode = RL.mode === 'ton' ? 'gift' : 'ton'; hap(); rlRender(true) };
-$id('rlCust').onclick = () => { const v = prompt('Quick bet amounts (3 numbers, comma separated)', S.rlQuick.join(', ')); if (!v) return; const a = v.split(/[ ,;]+/).map(Number).filter(x => x >= .1).slice(0, 3); if (a.length === 3) { S.rlQuick = a; save(); rlRender(true) } else toast('Enter 3 amounts, e.g. 1, 5, 10') };
-$id('rlAuto').onclick = () => { if (!RL.auto && !RL.lastBet) { toast('Place a TON bet first — Autoplay repeats it every round'); return } RL.auto = !RL.auto; toastG(RL.auto ? `Autoplay on: ${fmt(RL.lastBet)} ${CUR} every round` : 'Autoplay off'); rlRender(true) };
-$id('rlGear').onclick = () => $id('rlCust').click();
-$id('rlHow').onclick = () => howModal('How Roulette works', [['Place a bet', `Bet ${CUR} with the quick buttons or switch to gifts with the ${CUR} button on the left.`], ['Wait for players', 'When 2+ players join, a 25-second timer starts.'], ['Winner takes all', 'Your chance equals your share of the pot. The winner gets all TON and all gifts.']]);
-$id('rlHist').onclick = () => liveHist('roulette');
-$id('rlHash').onclick = () => copyTxt(RL.hash);
-ENTER.roulette = () => { renderBal(); rlRender(true); pullLb(true).then(() => rlRender(true)) };
-window.RL = RL; window.rlAdd = rlAdd;
-const _goRL = go; go = function (id, np) { _goRL(id, np); document.body.classList.toggle('rl-on', id === 'roulette'); offSync(); blockSync() };
-$id('offR').onclick = () => { netTry = 0; netInit() };
-setInterval(rlTick, 250);
+const _goRL = go; go = function (id, np) { _goRL(id, np); offSync(); blockSync() };
 
-
-// ---------------------------------------------------------------- PvP Hub: 3 bo'lim
-$id('pvphub').querySelector('.tvtcard').insertAdjacentHTML('afterend', `<div class="rlcard" data-go="roulette"><span class="tex"></span><div class="rlct"><b>🎡 Roulette</b><small>Spin the wheel, winner takes all</small><div class="rlcp" id="rhPot">${GEM}0.00</div></div><div class="rlmini" id="rhWheel"><i>LIVE</i></div><span class="rlst" id="rhSt">Waiting for players</span><button class="joinb">Join ›</button></div>`);
-if (0) $id('pvphub').insertAdjacentHTML('afterbegin', `<div class="hubtabs"><button data-go="pvp">⚔️ PvP</button><button data-go="tvt">🛡 TvT</button><button data-go="roulette">🎡 Roulette</button></div>`);
-function rlHub() {
-  const segs = rlSegs(); $id('rhPot').innerHTML = `${GEM}${fmt(rlTot())}`;
-  $id('rhWheel').style.background = segs.length ? `conic-gradient(${segs.map(s => `${s.p.c} ${s.a0}deg ${s.a1}deg`).join(',')})` : '#2f2f2f';
-  $id('rhSt').textContent = RL.phase === 'spin' ? 'LIVE' : RL.phase === 'done' ? '🏆 ' + RL.winner.name : RL.end ? 'Starts in ' + Math.max(0, Math.ceil((RL.end - Date.now()) / 1000)) + 's' : 'Waiting for players';
-}
 
 // ---------------------------------------------------------------- BACKPACK (skrinshotdagidek)
 bpRender = function () {
@@ -1682,32 +1552,9 @@ function liveStake(g, ton, items, extra) {
     logGame(g === 'rocket' ? 'Rocket' : g === 'tvt' ? 'TvT' : g === 'pvp' ? 'PvP' : 'Roulette', r2(ton + sumV(items.map(x => x.v))), 0, 'bet');
   }).catch(e => { if (ton) setBal(ton); items.forEach(it => S.inv.unshift(it)); save(); toast(esc(e.message)) });
 }
-function lvApply(g, d) { try { (g === 'roulette' ? lvRoulette : g === 'pvp' ? lvPvp : g === 'tvt' ? lvTvt : lvRocket)(d) } catch (e) { console.warn('live apply', e) } }
+function lvApply(g, d) { try { (g === 'pvp' ? lvPvp : g === 'tvt' ? lvTvt : lvRocket)(d) } catch (e) { console.warn('live apply', e) } }
 function lvPlayers(list) { return (list || []).map(p => ({ uid: p.uid, name: p.name, me: isMe(p.uid), bot: p.bot, ton: p.ton, gifts: toItems(p.gifts), amt: p.amt, c: p.c, photo: p.photo })) }
 function lvEnd(endAt, now) { return endAt ? Date.now() + (endAt - now) : 0 }
-
-// ---- Roulette
-function lvRoulette(d) {
-  if (d.phase === 'wait') {
-    if (d.id !== RL.roll || RL.phase !== 'wait') { RL.phase = 'wait'; RL.winner = null; RL.roll = d.id; $id('rlWheel').style.transition = 'none'; $id('rlAv').style.transition = 'none' }
-    RL.pl = lvPlayers(d.players); RL.end = lvEnd(d.endAt, d.now); RL.hash = d.hash;
-  } else if (LV.played.roulette !== d.id) {
-    LV.played.roulette = d.id; RL.roll = d.id; RL.pl = lvPlayers(d.players); RL.hash = d.hash;
-    if (RL.pl.length) rlSpin(d.winner);
-  }
-  const h = d.hist || [];
-  if (h[0]) { S.rlLast = { n: h[0].n, ch: Math.round(h[0].ch), win: h[0].win, photo: h[0].photo, d: new Date().toDateString() }; const day = new Date().toDateString(); const top = h.filter(x => new Date(x.t).toDateString() === day).sort((a, b) => b.win - a.win)[0]; if (top) S.rlTop = { n: top.n, ch: Math.round(top.ch), win: top.win, photo: top.photo, d: day } }
-  S.rlHist = h.map(x => ({ id: x.id, roll: x.id, n: x.n, photo: x.photo, tot: x.tot, ch: x.ch, win: x.win, ton: x.ton, wuid: x.wuid, pl: x.pl || [], me: (x.uids || []).some(isMe), won: isMe(x.wuid), t: x.t }));
-  if (cur === 'roulette') rlRender(true); if (cur === 'pvphub') rlHub();
-}
-function lvRlTick() {
-  if (RL.phase === 'spin' && Date.now() >= RL.spinEnd) {
-    RL.phase = 'done'; RL.doneAt = Date.now(); const mine = RL.pl.find(p => p.me);
-    if (mine) { if (RL.winner && RL.winner.me) pullRewards(); else if (cur === 'roulette') toast(`Winner: <b>${esc(RL.winner ? RL.winner.name : '')}</b>`) }
-    rlRender(true);
-  }
-  if (RL.auto && RL.lastBet && RL.phase === 'wait' && !RL.pl.find(p => p.me) && RL.autoRound !== RL.roll) { RL.autoRound = RL.roll; rlBetTon(RL.lastBet) }
-}
 
 // ---- PvP
 function lvPvp(d) {
@@ -1779,7 +1626,7 @@ window.LIVE_HOOK = { on: () => NET.on, rk: lvRkTick, pv: lvPvTick, tv: () => {},
 async function lvLoop() {
   let wait = 1500;
   if (NET.on) {
-    const gs = cur === 'roulette' ? ['roulette'] : cur === 'pvp' ? ['pvp'] : cur === 'tvt' ? ['tvt'] : cur === 'rocket' ? ['rocket'] : cur === 'pvphub' ? ['roulette', 'pvp', 'tvt'] : [];
+    const gs = cur === 'pvp' ? ['pvp'] : cur === 'tvt' ? ['tvt'] : cur === 'rocket' ? ['rocket'] : cur === 'pvphub' ? ['pvp', 'tvt'] : [];
     if ((RK.my || LV.queue) && !gs.includes('rocket')) gs.push('rocket');
     for (const g of gs) { try { lvApply(g, await lvPull(g)) } catch (e) {} }
     wait = gs.includes('rocket') && RK.phase === 'fly' ? 180 : gs.length ? 700 : 1500;
@@ -1789,19 +1636,6 @@ async function lvLoop() {
 setTimeout(lvLoop, 1200);
 
 // ---- foydalanuvchi tikishlari (live rejimda serverga)
-const _rlBetTonL = rlBetTon;
-rlBetTon = function (v) {
-  if (!NET.on) return _rlBetTonL(v);
-  if (RL.phase !== 'wait') { toast('Round in progress'); return }
-  v = r2(v); if (v < .1) { toast(`Minimum bet ${GEM}0.10`); return } if (v > S.bal) { toast('Insufficient balance'); go('topup'); return }
-  setBal(-v); RL.lastBet = v; liveStake('roulette', v, []);
-};
-$id('rlGifts').onclick = e => {
-  const b = e.target.closest('.rlgf'); if (!b) return; if (RL.phase !== 'wait') { toast('Round in progress'); return }
-  const it = invGet(b.dataset.id); if (!it) return; invDel([it.id]);
-  if (NET.on) { liveStake('roulette', 0, [it]); return }
-  rlAdd(ME, 0, [{ g: it.g, v: it.v, n: it.n, m: it.m, ms: it.ms }], true); hap('medium'); rlRender(true);
-};
 // PvP
 $id('pvJoin').onclick = () => {
   if (PV.phase !== 'wait') { toast('Round in progress'); return }
@@ -1857,20 +1691,6 @@ window.RIKI_TR = trOpen;
 // ---------------------------------------------------------------- P2P (nav) + Earn kartasi
 const navE = $('nav [data-go="earn"]');
 if (navE) { navE.innerHTML = `${ICO.coins}Earn<span class="badge" id="earnBadge" style="display:none"></span>` }
-const mh = $('#market .mkhead b'); if (mh) mh.textContent = 'P2P Market';
-$('#market .mkhead').insertAdjacentHTML('afterend', `<button class="btn-p" id="p2pSell" style="margin:10px 0 12px">＋ Sell my gift on P2P</button>`);
-$id('p2pSell').onclick = () => pickGifts({ multi: false, title: 'Gift to sell', done: id => {
-  const it = invGet(id); if (!it) return; const pr = parseFloat(prompt(`Price in ${CUR} (floor ${fmt(GIFTS[it.g].p)})`, fmt(it.v)) || 0); if (!(pr >= .1)) return;
-  invDel([it.id]); S.myList = (S.myList || []).concat([{ id: uid(), g: it.g, n: it.n, price: r2(pr), seller: ME, mine: 1, it }]); save(); mkMerge(); mkRender(); toastG('Listed on P2P');
-} });
-function mkMerge() { MK.list = MK.list.filter(x => !x.mine).concat(S.myList || []) }
-const _mkRender = mkRender;
-mkRender = function () { mkMerge(); _mkRender(); $$('#mkGrid .mkc').forEach(c => { const x = MK.list.find(y => y.id === c.dataset.id); if (x && x.mine) { const b = c.querySelector('.mkb'); b.textContent = 'Cancel'; b.classList.add('mine') } }) };
-$id('mkGrid').addEventListener('click', e => {
-  const b = e.target.closest('.mkb.mine'); if (!b) return; e.stopImmediatePropagation();
-  const x = MK.list.find(y => y.id === b.closest('.mkc').dataset.id); S.myList = (S.myList || []).filter(y => y.id !== x.id); S.inv.unshift(x.it); save(); mkRender(); toast('Listing cancelled');
-}, true);
-
 // ---------------------------------------------------------------- Upgrade: Potential Profit + x2/x5/x10
 $('#upgrade .upcard').insertAdjacentHTML('beforeend', `<div class="upq" id="upQ"><button data-x="1.5">x1.5</button><button data-x="2">x2</button><button data-x="5">x5</button><button data-x="10">x10</button></div><div class="ppro" id="upPP"></div>`);
 $id('upQ').onclick = e => { const b = e.target.closest('[data-x]'); if (!b || UP.spinning) return; const fv = upFromVal(); if (!fv) { toast('Select your gift first'); return } const t = fv * +b.dataset.x; let best = null; for (const g of BYPRICE) { if (g.p > fv * 1.05 && g.p <= t) best = g } best = best || BYPRICE.find(g => g.p > fv * 1.05); if (best) { UP.to = best.i; upRender() } };
@@ -2531,7 +2351,7 @@ rkDraw = function (now) {
 //  Har o'zgarish /api/wallet/op orqali serverga boradi (takror so'rovdan himoyalangan id bilan);
 //  server tekshiradi va haqiqiy balansni qaytaradi. Live o'yinlar, depozit, bonus, transfer — to'liq serverda.
 // =====================================================================
-const LIVE_SCR = { rocket: 1, pvp: 1, tvt: 1, roulette: 1, pvphub: 1 };
+const LIVE_SCR = { rocket: 1, pvp: 1, tvt: 1, pvphub: 1 };
 const GAME_OF = { mines: 'mines', dice: 'dice', plinko: 'plinko', spins: 'spins', upgrade: 'upgrade', crafts: 'crafts', boxp: 'cases', cases: 'cases', market: 'market', backpack: 'backpack' };
 const WQ = { q: [], pend: [], busy: false, ctx: null, hold: 0, n: 0, t: 0 };
 const wOn = () => !!(NET.on && API);

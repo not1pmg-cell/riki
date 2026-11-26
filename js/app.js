@@ -144,7 +144,7 @@ async function loadLivePrices() {
         else { const ng = mkGift([x.full_name.replace(/’/g, "'"), x.short_name, fp, '🎁', []], GIFTS.length); GIFTS.push(ng); GBN[ng.n] = ng; GBS[ng.sh] = ng }
       });
       PRICE_TS = (d.last_updated || Date.now() / 1000) * 1000; PRICE_LIVE = true;
-      BYPRICE = [...GIFTS].sort((a, b) => a.p - b.p); buildNFTS(); CASES.forEach(c => CS.drops[c.id] = caseDrops(c));
+      BYPRICE = [...GIFTS].sort((a, b) => a.p - b.p); buildNFTS();
       if (ENTER[cur]) ENTER[cur]();
       return true;
     } catch (e) {}
@@ -241,7 +241,7 @@ for (const k in HERO) if (typeof HERO[k] === 'string') HERO[k] = liftDefs(HERO[k
 // =====================================================================
 //  NAVIGATSIYA
 // =====================================================================
-const MAIN_HDR = ['home', 'playhub', 'backpack', 'invite', 'leader', 'earn', 'market', 'cases', 'crafts', 'upgrade'];
+const MAIN_HDR = ['home', 'playhub', 'backpack', 'invite', 'leader', 'earn', 'crafts', 'upgrade'];
 const NAV_TABS = ['backpack', 'invite', 'home', 'leader', 'earn'];
 const ENTER = {};
 let cur = 'home', stack = [];
@@ -563,7 +563,7 @@ function pvRender(force) {
     tr.innerHTML = PV.pl.length ? PV.pl.map(p => `<div class="scard" style="--c:${p.c}">${pvAv(p)}<b>${esc(p.name)}</b><em>${(p.amt / tot * 100).toFixed(1)}%</em></div>`).join('') : '';
   }
   $('#pvCnt').textContent = PV.pl.length;
-  $('#pvPl').innerHTML = [...PV.pl].sort((a, b) => b.amt - a.amt).map(p => `<div class="vrow ${PV.winner === p && PV.phase === 'done' ? 'w' : ''}" style="--c:${p.c}">${pvAv(p)}<div><b>${esc(p.name)}${p.bot ? ' <span class="bt">BOT</span>' : ''}${p.me ? ' (you)' : ''}</b><small>${g$(p.amt)}</small></div><span class="pc2">${(p.amt / (tot || 1) * 100).toFixed(1)}%</span></div>`).join('') || '<div class="empty">Be the first to join!</div>';
+  $('#pvPl').innerHTML = [...PV.pl].sort((a, b) => b.amt - a.amt).map(p => `<div class="vrow ${PV.winner === p && PV.phase === 'done' ? 'w' : ''}" style="--c:${p.c}">${pvAv(p)}<div><b>${esc(p.name)}${p.bot ? ' <span class="bt">BOT</span>' : ''}${p.me ? ' <span class="youb">YOU</span>' : ''}</b><small>${g$(p.amt)}</small></div><span class="pc2">${(p.amt / (tot || 1) * 100).toFixed(1)}%</span></div>`).join('') || '<div class="empty">Be the first to join!</div>';
 }
 function pvHub() {
   const tot = pvTotal();
@@ -830,7 +830,7 @@ async function spSpin() {
   const mul = free ? SP.freeMul : 1;
   const win = Math.round(r.w * bet * mul * ((CFG.RTP || {}).spins || 100) / 100 * 100) / 100;
   if (r.wins.length) $$('#sGrid .tok').forEach(t => t.classList.add(r.wins.includes(+t.dataset.k) ? 'win' : 'dimt'));
-  if (win > 0) { window.payWin ? payWin(win, 'Spins') : setBal(win); hapN('success'); if (win >= bet * 10) { $('#spWinV').innerHTML = g$(win); $('#spWin').classList.add('on'); setTimeout(() => $('#spWin').classList.remove('on'), 1800) } else toast(`+${g$(win)}`) }
+  if (win > 0) { window.payWin ? payWin(win, 'Spins') : setBal(win); hapN('success');  }
   logGame('Spins', cost, win, free ? 'free' : '');
   if (free) { SP.free--; if (!SP.free) { toast('🎁 Free spins finished'); SP.freeMul = 1 } }
   spUI(); SP.busy = false; $('#spBtn').classList.remove('busy');
@@ -976,91 +976,6 @@ $('#cBtn').onclick = async () => {
 };
 $('#howT').onclick = () => { const b = $('#howB'); const h = b.style.display === 'none'; b.style.display = h ? '' : 'none'; $('#howT').textContent = h ? 'Hide details ⌃' : 'Show details ⌄' };
 
-// =====================================================================
-//  10) CASES
-// =====================================================================
-const CASES = [
-  { id: 'free', n: 'Free', p: 0, g: 'Hypno Lollipop', lo: 2, hi: 12 },
-  { id: 'start', n: 'Starter', p: 2, g: 'Desk Calendar', lo: 0.4, hi: 25 },
-  { id: 'rare', n: 'Rare', p: 8, g: 'Toy Bear', lo: 2, hi: 90 },
-  { id: 'epic', n: 'Epic', p: 30, g: 'Magic Potion', lo: 5, hi: 400 },
-  { id: 'leg', n: 'Legend', p: 120, g: 'Durov\'s Cap', lo: 20, hi: 1600 },
-  { id: 'pepe', n: 'Pepe', p: 600, g: 'Plush Pepe', lo: 60, hi: 9000 }
-];
-function caseDrops(c) {
-  const list = GIFTS.filter(g => g.p >= c.lo && g.p <= c.hi);
-  if (!c.p) { const w = list.map(g => 1 / Math.pow(g.p, 2)); const s = w.reduce((a, b) => a + b); return list.map((g, i) => ({ g, w: w[i] / s })) }
-  let lo = 0, hi = 5, a = 1;
-  for (let k = 0; k < 40; k++) { a = (lo + hi) / 2; const w = list.map(g => Math.pow(g.p, -a)); const s = w.reduce((x, y) => x + y); const ev = list.reduce((t, g, i) => t + g.p * w[i] / s, 0); if (ev > c.p * .92) lo = a; else hi = a }
-  const w = list.map(g => Math.pow(g.p, -a)); const s = w.reduce((x, y) => x + y);
-  return list.map((g, i) => ({ g, w: w[i] / s })).sort((x, y) => y.g.p - x.g.p);
-}
-const CS = { sel: 'free', busy: false, drops: {} };
-CASES.forEach(c => CS.drops[c.id] = caseDrops(c));
-function caseRoll(id) { let r = Math.random(); for (const d of CS.drops[id]) { if (r < d.w) return d.g; r -= d.w } return CS.drops[id][0].g }
-function freeLeft() { return Math.max(0, S.lastFreeCase + 864e5 - Date.now()) }
-function hm(ms) { const h = Math.floor(ms / 36e5), m = Math.floor(ms % 36e5 / 6e4); return h + 'h ' + m + 'm' }
-function caseRender() {
-  $('#caseList').innerHTML = CASES.map(c => `<button class="case ${c.id === CS.sel ? 'sel' : ''} ${c.p ? '' : 'free'}" data-c="${c.id}">${GI(byName(c.g))}<b>${c.n}</b><small>${c.p ? g$(c.p) : (freeLeft() ? hm(freeLeft()) : 'FREE')}</small></button>`).join('');
-  const c = CASES.find(x => x.id === CS.sel);
-  $('#caseDrops').innerHTML = CS.drops[c.id].map(d => `<div class="gift tiers${tierOf(d.g.p)}">${GI(d.g)}<small>${esc(d.g.n)}</small><b>${(d.w * 100 < 0.1 ? '<0.1' : (d.w * 100).toFixed(d.w < .01 ? 2 : 1))}%</b></div>`).join('');
-  const b = $('#caseBtn'); b.innerHTML = c.p ? `Open · ${g$(c.p)}` : (freeLeft() ? 'Next free: ' + hm(freeLeft()) : 'Open for free');
-  if (!CS.busy) { const tr = $('#track'); tr.style.transition = 'none'; tr.style.transform = 'translateX(0)'; tr.innerHTML = Array.from({ length: 12 }, () => giftCard(caseRoll(c.id), 0)).join('').replace(/<b>.*?<\/b>/g, '') }
-}
-$('#caseList').onclick = e => { const b = e.target.closest('[data-c]'); if (!b || CS.busy) return; CS.sel = b.dataset.c; hap(); caseRender() };
-$('#caseBtn').onclick = async () => {
-  if (CS.busy) return; const c = CASES.find(x => x.id === CS.sel);
-  if (!c.p) { if (freeLeft()) { toast('Free case in ' + hm(freeLeft()) + ''); return } S.lastFreeCase = Date.now() }
-  else { if (c.p > S.bal) { toast('Insufficient balance'); openDeposit(); return } setBal(-c.p) }
-  CS.busy = true; const win = caseRoll(c.id);
-  const items = Array.from({ length: 50 }, () => caseRoll(c.id)); items[42] = win;
-  const tr = $('#track'); tr.innerHTML = items.map(g => `<div class="gift tiers${tierOf(g.p)}">${GI(g)}<small>${esc(g.n)}</small></div>`).join('');
-  tr.style.transition = 'none'; tr.style.transform = 'translateX(0)';
-  await sleep(30);
-  const mid = $('#reel').clientWidth / 2, c42 = tr.children[42]; tr.style.transition = 'transform 5s cubic-bezier(.1,.65,.15,1)'; tr.style.transform = `translateX(${-(c42.offsetLeft + c42.offsetWidth / 2 - mid) + rnd(-c42.offsetWidth * .35, c42.offsetWidth * .35)}px)`;
-  hap('medium'); await sleep(5200);
-  const it = (window.RIKI_W ? RIKI_W.with : (x, f) => f())({ game: 'cases', why: c.p ? '' : 'freecase' }, () => addItem(win, win.p * rnd(.95, 1.25))); logGame('Case ' + c.n, c.p, it.v, win.n);
-  showRes(true, win, esc(win.n), `${g$(it.v)} · added to Backpack`);
-  CS.busy = false; caseRender(); save();
-};
-
-// =====================================================================
-//  11) MARKET (haqiqiy NFT rasmlari: nft.fragment.com)
-// =====================================================================
-const MK = { list: [], col: 'all', sort: 'lo', q: '' };
-function mkGen() {
-  MK.list = [];
-  for (let i = 0; i < 48; i++) {
-    const g = Math.random() < .25 ? pick(GIFTS.slice(0, 25)) : pick(GIFTS);
-    const n = 1 + ri(Math.random() < .1 ? 60 : 900);
-    const rare = n <= 100 ? 1.6 : 1;
-    MK.list.push({ id: uid(), g: g.i, n, price: Math.round(g.p * rnd(1, 1.12) * rare * 100) / 100, seller: 'Market' });
-  }
-  mkRender();
-}
-function mkRender() {
-  const cols = ['all', ...new Set(MK.list.map(x => x.g))].slice(0, 24);
-  $('#mkChips').innerHTML = cols.map(c => c === 'all' ? `<button class="${MK.col === 'all' ? 'on' : ''}" data-c="all">Barchasi</button>` : `<button class="${MK.col == c ? 'on' : ''}" data-c="${c}">${GI(GIFTS[c])}${esc(GIFTS[c].n)}</button>`).join('');
-  let l = MK.list.filter(x => MK.col === 'all' || x.g == MK.col).filter(x => !MK.q || GIFTS[x.g].n.toLowerCase().includes(MK.q));
-  l.sort(MK.sort === 'lo' ? (a, b) => a.price - b.price : MK.sort === 'hi' ? (a, b) => b.price - a.price : (a, b) => a.n - b.n);
-  $('#mkCnt').textContent = l.length; $('#mkTs').textContent = (PRICE_LIVE ? 'jonli ' : 'snapshot ') + priceDate();
-  $('#mkGrid').innerHTML = l.map(x => { const g = GIFTS[x.g]; return `<div class="mkc" data-id="${x.id}"><div class="mki">${GIN(g, x.n)}<em style="background:${TIER_C[tierOf(g.p)]}">${TIER_N[tierOf(g.p)]}</em></div><b>${esc(g.n)}</b><small>#${x.n}</small><button class="mkb" data-buy="${x.id}">${g$(x.price)}</button></div>` }).join('') || '<div class="empty" style="grid-column:1/-1">Hech narsa topilmadi</div>';
-}
-$('#mkChips').onclick = e => { const b = e.target.closest('[data-c]'); if (!b) return; MK.col = b.dataset.c; mkRender() };
-$$('#mkSort button').forEach(b => b.onclick = () => { MK.sort = b.dataset.s; $$('#mkSort button').forEach(x => x.classList.toggle('on', x === b)); mkRender() });
-$('#mkQ').oninput = () => { MK.q = $('#mkQ').value.trim().toLowerCase(); mkRender() };
-$('#mkRef').onclick = () => { mkGen(); hap(); toast('Updated') };
-$('#mkGrid').onclick = e => {
-  const buy = e.target.closest('[data-buy]'); const card = e.target.closest('.mkc'); if (!card) return;
-  const x = MK.list.find(y => y.id === card.dataset.id); if (!x) return;
-  if (buy) { mkBuy(x); return }
-  nftModal({ g: GIFTS[x.g], n: x.n, v: x.price, market: x });
-};
-function mkBuy(x) {
-  if (x.price > S.bal) { toast('Insufficient balance'); openDeposit(); return }
-  setBal(-x.price); const g = GIFTS[x.g]; addItem(g, x.price, x.n, null, null, true); MK.list = MK.list.filter(y => y !== x);
-  logGame('Market', x.price, x.price, 'Sotib olindi: ' + g.n); closeM('nftM'); mkRender(); hapN('success'); toast(`🎁 ${esc(g.n)} #${x.n} added to Backpack`);
-}
 function nftModal(o) {
   const g = o.g, t = tierOf(g.p);
   $('#nftHero').style.background = `radial-gradient(circle at 50% 40%, ${TIER_C[t]}66, #212121 70%)`;
@@ -1073,7 +988,6 @@ function nftModal(o) {
   btn += o.market ? `<a href="https://t.me/nft/${g.pas}-${o.n}" target="_blank" id="nfL">View NFT in Telegram ↗</a>` : `<a href="https://fragment.com/gifts/${g.slug}" target="_blank" id="nfL">View collection on Fragment ↗</a>`;
   $('#nftBtns').innerHTML = btn;
   const L = $('#nfL'); L.onclick = e => { if (tg && tg.openTelegramLink) { e.preventDefault(); tg.openTelegramLink(L.href) } };
-  if (o.market) $('#nfB').onclick = () => mkBuy(o.market);
   if (o.item) {
     $('#nfS').onclick = () => { sellItem(o.item); closeM('nftM') };
     $('#nfU').onclick = () => { closeM('nftM'); UP.mode = 'gift'; UP.from = o.item.id; UP.to = null; go('upgrade') };
@@ -1156,14 +1070,13 @@ function openDeposit() { depRender(); openM('depM') }
 function depRender() {
   $$('#depTabs button').forEach(b => b.classList.toggle('on', b.dataset.t === depT));
   const B = $('#depBody');
-  if (depT === 'ton') B.innerHTML = `<p class="note">⚠️ Demo mode: buttons add demo TON to your balance.</p><div class="amts"><button data-add="1">+1</button><button data-add="5">+5</button><button data-add="20">+20</button><button data-add="50">+50</button><button data-add="100">+100</button><button data-add="500">+500</button></div>`;
+  if (depT === 'ton') B.innerHTML = `<div class="amts"><button data-add="1">+1</button><button data-add="5">+5</button><button data-add="20">+20</button><button data-add="50">+50</button><button data-add="100">+100</button><button data-add="500">+500</button></div>`;
   else if (depT === 'stars') B.innerHTML = `<p class="note">⭐ Telegram Stars (demo). 1 ⭐ ≈ 0.004 TON.</p><div class="amts"><button data-add="0.2">50 ⭐</button><button data-add="0.4">100 ⭐</button><button data-add="2">500 ⭐</button></div>`;
   else B.innerHTML = `<p class="note">🎁 Send Telegram gifts to our bot to deposit them. Demo: get a random gift.</p><button class="bigbtn p" id="depGift">Get demo gift</button>`;
   B.querySelectorAll('[data-add]').forEach(b => b.onclick = () => { setBal(+b.dataset.add); toast(`+${g$(+b.dataset.add)}`); hapN('success') });
   const dg = $('#depGift'); if (dg) dg.onclick = () => { const g = pick(BYPRICE.slice(0, 60)); addItem(g, g.p); toast(`🎁 ${esc(g.n)} added to Backpack`); closeM('depM') };
 }
 $$('#depTabs button').forEach(b => b.onclick = () => { depT = b.dataset.t; depRender() });
-$('#resetBtn').onclick = () => { if (!confirm('Balance, gifts and history will be erased. Continue?')) return; localStorage.removeItem(CFG.STORAGE_KEY); location.reload() };
 $('#hHist').onclick = () => {
   const l = S.hist.filter(h => cur === 'home' || !GAME_OF[cur] || h.game.startsWith(GAME_OF[cur]));
   info('Tarix', l.length ? l.slice(0, 50).map(h => `<div class="hrow"><div><b>${esc(h.game)}</b><small>${new Date(h.t).toLocaleString()} ${esc(h.note)}</small></div><span>${g$(h.bet)}</span><em class="${h.win > h.bet ? 'w' : h.win > 0 ? 'p' : 'l'}">${h.win > 0 ? '+' + fmt(h.win) : '−' + fmt(h.bet)}</em></div>`).join('') : '<div class="empty">No games yet</div>');
@@ -1195,8 +1108,6 @@ ENTER.spins = () => { if (!SP.grid.length) { SP.grid = spRoll(); spDraw(false) }
 ENTER.plinko = () => { plSize(); plDraw() };
 ENTER.dice = () => dcSync('t');
 ENTER.crafts = crRender;
-ENTER.cases = caseRender;
-ENTER.market = () => { if (!MK.list.length) mkGen(); else mkRender() };
 ENTER.backpack = bpRender;
 
 bindBet('pv', 'pvAmt', () => pvRender());
@@ -1215,10 +1126,10 @@ const first = load();
 fillStatic(); renderBal(); rkStars(); upTicks();
 $('#rkShip').innerHTML = `<span class="rkfl"></span><span class="rkg">${GI(byName('Stellar Rocket')).replace('loading="lazy"', '')}</span>`;
 rkNew(); for (let i = 0; i < 6; i++) RK.hist.push(rkCrashPoint());
-setInterval(slow, 250); setInterval(() => { if (cur === 'cases') caseRender(); if (cur === 'earn') renderTasks() }, 30000);
+setInterval(slow, 250); setInterval(() => { if (cur === 'earn') renderTasks() }, 30000);
 requestAnimationFrame(loop);
 window.addEventListener('resize', () => { if (cur === 'plinko') { plSize(); plDraw() } });
-if (first && CFG.START_BALANCE > 0) { $('#welV').textContent = CFG.START_BALANCE; openM('welM') }
+
 if (START_PARAM.startsWith('ref_') && !S.refUsed && !CFG.API_URL && !/[?&]api=/.test(location.search)) { S.refUsed = START_PARAM; setBal(5); toast('Referral bonus: +5 TON') }
 renderTasks(); save();
-if (!CFG.API_URL && !/[?&]api=/.test(location.search)) loadLivePrices().then(ok => { if (ok) { mkGen(); toast('💎 Prices updated', 1500) } });   // server bilan ishlaganda narxlar serverdan (/api/catalog)
+if (!CFG.API_URL && !/[?&]api=/.test(location.search)) loadLivePrices();   // server bilan ishlaganda narxlar serverdan (/api/catalog)
