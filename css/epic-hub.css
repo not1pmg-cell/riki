@@ -1,0 +1,82 @@
+/* PvP HUB — 408.mp4 6:04 (frames2/14b). 390 px; video 588 px → ×0.6633. Fon PNG'lari kadrdan (matn inpaint bilan olib tashlangan). */
+:root{--hb-m:15.9px;--hb-gap:10.6px;--hb-r:14.6px}
+#pvphub.on{padding:0 var(--hb-m) 20px!important;background:#161616}
+#pvphub>.pvpcard,#pvphub>.tvtcard{display:none!important}
+.e-pv,.e-tv{position:relative;height:156.5px;margin-top:var(--hb-gap);border-radius:var(--hb-r);overflow:hidden;background-size:100% 100%;cursor:pointer;box-sizing:border-box}
+.e-pv{background-image:url(../assets/hub2/card_pvp_bg.png);margin-top:13px;padding:12px 13px 0}
+.e-tv{height:155.2px;background-image:url(../assets/hub2/card_tvt_bg.png);padding:11px 13px 0}
+.e-pv .h,.e-tv .h{display:flex;align-items:center;gap:6px;height:24px}
+.e-pv .h img{width:20px;height:24.5px}.e-tv .h img{width:25px;height:26.5px}
+.e-pv .h b{font-size:20px;font-weight:800;color:#22142d}.e-tv .h b{font-size:20px;font-weight:800;color:#f9fdff}
+.e-pv .st,.e-tv .st{margin-left:auto;display:flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700}
+.e-pv .st{color:#371e13}.e-tv .st{color:#fbf2f1}
+.e-pv .st img,.e-tv .st img{width:10px;height:11.3px}
+.e-pv>small{display:block;margin-top:1px;font-size:12px;color:#8a4f00;opacity:.85}
+.e-tv>small{display:block;margin-top:1px;font-size:12px;color:#cfd3da}
+.e-pv .slots{display:flex;gap:7.3px;margin-top:6px;height:47px}
+.e-pv .slot{width:43.1px;height:47.1px;flex:none;border-radius:9px;box-sizing:border-box;display:grid;place-items:center}
+.e-pv .slot.e{border:1.3px dashed #c98a12;background:#eca616;color:#815702;font-size:15px}
+.e-pv .slot.p{position:relative;background:#2a1f1e;border:1px solid #4a3a2a;overflow:hidden;align-content:end;padding-bottom:3px}
+.e-pv .slot.p .av{position:absolute;inset:6px 8px 15px;width:auto;height:auto;border-radius:50%}
+.e-pv .slot.p .bt{position:absolute;right:3px;top:19px;font-size:7px;font-weight:800;color:#fff}
+.e-pv .slot.p b{position:relative;font-size:7.5px;font-weight:700;color:#fff;white-space:nowrap;max-width:41px;overflow:hidden;text-overflow:ellipsis}
+.e-pv .f{display:flex;align-items:center;gap:6px;margin-top:9px}
+.e-pv .f span:first-child{font-size:11.5px;color:#8a4f00;margin-right:8px}
+.e-pv .f .gm{width:16px;height:16px}
+.e-pv .f b{font-size:21.5px;font-weight:800;color:#26142d}
+.e-pv .joinb,.e-tv .joinw{position:absolute;right:13px;display:flex;align-items:center;gap:6px;border:0;font-size:14px;font-weight:700}
+.e-pv .joinb{bottom:16px;height:28.5px;padding:0 13px;border-radius:15px;background:#1b1333;color:#fcf8fd}
+.e-tv .joinw{bottom:12px;height:33px;padding:0 15px;border-radius:17px;background:#fbf1ed;color:#201630;box-shadow:0 0 0 1px #ffffff55}
+.e-pv .joinb i,.e-tv .joinw i{font-style:normal;font-size:16px}
+.e-tv .r{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
+.e-tv .l,.e-tv .rr{display:flex;align-items:center;gap:5px;font-size:13px;font-weight:700;color:#fff}
+.e-tv .l>img{width:13px;height:13.5px}.e-tv .rr>img{width:11px;height:12.5px}
+.e-tv .c{display:inline-flex;align-items:center;gap:3px;height:17px;padding:0 6px;border-radius:9px;background:#0f293bcc;font-style:normal;font-size:11px;font-weight:700;color:#e4f3fc}
+.e-tv .rr .c{background:#3b1a12cc}
+.e-tv .c img{width:11px;height:10.5px}
+.e-tv .v{display:flex;justify-content:space-between;margin-top:3px}
+.e-tv .v b{display:flex;align-items:center;gap:5px;font-size:21.5px;font-weight:800;color:#f9fdff}
+.e-tv .v .gm{width:16px;height:16px}
+/* sarlavha: avatar 43, tugmalar 41×41 (r 9), balans 155×41 — 408.mp4 6:04 */
+#hPill #hHelp img{width:20px;height:20px}
+#hPill #hTop{flex-direction:column;gap:0;padding-top:4px}
+#hPill #hTop img{width:17px;height:14px}
+#hPill #hTop b{font-size:11px;font-weight:800;color:#e6e6e6;line-height:1.1}
+/* PvP leaderboard — 408.mp4 6:04 */
+#pvphub>.lbcard{display:none!important}
+.e-lb{margin-top:11.3px;border:1px solid #4b3713;border-radius:var(--hb-r);padding:13.3px 13.3px 10px;background:radial-gradient(120% 60% at 0 0,#46300f 0,transparent 55%),linear-gradient(#241f1e,#25201f)}
+.e-lb .h{display:flex;align-items:center;gap:8px;height:28px}
+.e-lb .ti{width:28px;height:28px}
+.e-lb .h b{font-size:17px;font-weight:800;color:#fff}
+.e-lb .q{width:15px;height:15px}
+.e-lb .ends{margin-left:auto;height:26px;padding:0 10px;border-radius:13px;background:#4e3f35;color:#cc9d41;font-size:13px;font-weight:700;display:flex;align-items:center}
+.e-lb .pz{display:grid;grid-template-columns:99px 114px 99px;justify-content:space-between;align-items:end;margin-top:12px}
+.e-lb .p{display:flex;flex-direction:column;align-items:center;gap:6px;height:91.5px;border-radius:13px;padding-top:10px;box-sizing:border-box;background:linear-gradient(#564d42,#23202a)}
+.e-lb .p1{height:107px;background:linear-gradient(#544224,#23202a);border:1px solid #6b5527}
+.e-lb .p3{background:linear-gradient(#453830,#23202a)}
+.e-lb .p em{font-style:normal;font-size:13px;font-weight:700;color:#d9dadf}
+.e-lb .p1 em{color:#e3b85c}.e-lb .p3 em{color:#d99e67}
+.e-lb .p i{width:50px;height:50px;border-radius:10px;background:#373138;display:grid;place-items:center;overflow:hidden}
+.e-lb .p i .x{width:16px;height:16px}
+.e-lb .p i .gi-wrap,.e-lb .p i img:not(.x){width:44px;height:44px;object-fit:contain}
+#phLb{display:flex;flex-direction:column;gap:9px;margin-top:13px}
+#phLb .r{display:flex;align-items:center;gap:9px;height:61px;padding:0 9px;border-radius:14px;border:1px solid #3a2f22;background:#1f1b19;box-sizing:border-box}
+#phLb .r.me{border-color:#ac730d;background:#2a2116}
+#phLb .rk{width:34px;height:34px;border-radius:50%;background:#3a3330;color:#fff;font-size:14px;font-weight:800;display:grid;place-items:center;flex:none}
+#phLb .r.me .rk,#phLb .r.t1 .rk{background:#ffb616;color:#221505}
+#phLb .r .av{width:34px;height:34px;border-radius:50%;box-shadow:0 0 0 2px #e38a10}
+#phLb .r b{flex:1;min-width:0;font-size:13px;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#phLb .you{margin-left:auto;padding:2px 8px;border-radius:7px;background:#a67421aa;color:#ffd28a;font-size:11px;font-weight:700}
+#phLb .g{width:36px;height:36px;border-radius:8px;background:#373138;display:grid;place-items:center;overflow:hidden;flex:none}
+#phLb .g .x{width:12px;height:12px}
+#phLb .g .gi-wrap,#phLb .g img:not(.x){width:32px;height:32px;object-fit:contain}
+#phLb .sc{display:flex;align-items:center;gap:5px;height:26px;padding:0 9px;border-radius:9px;background:#48331f;border:1px solid #6b4c22;color:#df9b30;font-size:13px;font-weight:800;flex:none}
+#phLb .sc .sw{width:13px;height:13.5px}
+/* sarlavha tugmalari 41×41 r 9.3 #272727, balans pilli h41 #282828 — 408.mp4 6:04 */
+#hPill{padding:8px 15.9px!important;height:auto!important;background:#181818!important}
+#hPill .av{width:43px!important;height:43px!important}
+#hPill .ib{width:41px!important;height:41px!important;border-radius:9.3px!important;background:#272727!important;border:1px solid #2f2f2f!important}
+#hPill .pill{height:41px!important;border-radius:9.3px!important;background:#282828!important;padding:0 6px 0 6px!important;gap:8px}
+#hPill .pill .balv{font-size:15px;font-weight:700}
+#hPill .pill .plus{width:27px;height:27px;border-radius:50%;background:#3a3a3a!important}
+.e-tv .livep::before,.e-tv .livep::after{display:none!important}

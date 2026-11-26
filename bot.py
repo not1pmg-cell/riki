@@ -159,12 +159,12 @@ def check_init_data(init_data: str) -> dict | None:
 # ================================================================ SOZLAMALAR (admin paneldan o'zgaradi)
 RTP_DEF = {"mines": 97, "dice": 98, "upgrade": 95, "cases": 92, "plinko": 100, "spins": 100}
 RK_PEPE_MIN0 = float(os.getenv("RK_PEPE_MIN", "10000"))   # Rocket: shu tikishdan Pepe beriladi
-DEF_CFG = {"rk_pepe_min": RK_PEPE_MIN0, "ch_id": "", "ch_url": "", "dep_addr": "", "tix_per_ton": 5000.0, "ref_tix": 5.0, "ref_tix_day": 50.0, "ref_pct": 10.0, "ton_rate": TON_RATE, "stars_rate": STARS_RATE, "bot_max": 1000.0, "rk_min": 3, "rk_max": 4,
+DEF_CFG = {"rk_pepe_min": RK_PEPE_MIN0, "ch_id": "", "ch_url": "", "dep_addr": "", "tix_per_ton": 5000.0, "ref_tix": 5.0, "ref_tix_day": 50.0, "ref_pct": 10.0, "ton_rate": TON_RATE, "stars_rate": STARS_RATE, "bot_max": 1000.0, "bot_min": 0.1, "rk_min": 3, "rk_max": 4,
            "off": [], "maint": False, "rtp": RTP_DEF, "post_on": bool(CHANNEL_ID), "post_min": 1000.0,
            "ab_on": False, "ab_hours": 1.0, "ab_amount": 1000.0, "ab_uses": 500.0,      # avto bonus link
            "ds_on": False, "ds_hour": 21.0,                                                  # kunlik natijalar posti (Toshkent vaqti)
            "emoji": {},
-           "live_bots": 4.0,                                                                   # PvP/Roulette/TvT raundidagi botlar soni
+           "live_bots": 1.0,                                                                   # PvP/Roulette/TvT raundidagi botlar soni
            "bots_always": 1.0,                                                                 # 1 = botlar odam bo'lmasa ham doim o'ynaydi
            "top_on": False, "top_freq": "week", "top_dow": 6.0, "top_hour": 20.0,             # Top-10 rasmli post (kun/hafta)
            "poll_on": False, "poll_dow": 2.0, "poll_hour": 19.0,                              # haftalik "nima qo'shaylik?" so'rovnomasi                                                                      # premium emoji id'lari
@@ -1464,21 +1464,11 @@ async def giveaway_loop() -> None:
 # Rocket       — umumiy crash raund, cashout server vaqti bo'yicha
 LIVE_COLORS = ["#3df2ff", "#ff2d95", "#2563eb", "#ff6b5a", "#22c55e", "#f59e0b", "#8b5cf6", "#06b6d4", "#ef4444", "#eab308"]
 BOT_NAMES = {"roulette": "Roulette", "pvp": "PvP"}
-# PvP / Roulette / TvT botlari: generik avatar (mashina, to'p…), BOT belgisi bilan ko'rinadi, reytingga kirmaydi (uid < 0)
-LIVE_BOTS = [(-20, "Maverick", "🏎️", "#ef4444", "#7f1d1d"), (-21, "Striker", "⚽", "#22c55e", "#14532d"), (-22, "Turbo", "🚗", "#3b82f6", "#1e3a8a"),
-             (-23, "Goal Machine", "🥅", "#a855f7", "#3b0764"), (-24, "Drift King", "🏁", "#f59e0b", "#78350f"), (-25, "Lucky Seven", "🍀", "#10b981", "#064e3b"),
-             (-26, "Ace", "🃏", "#ec4899", "#831843"), (-27, "Phoenix", "🔥", "#f97316", "#7c2d12")]
-
-
-def bot_avatar(emoji: str, c1: str, c2: str) -> str:
-    import urllib.parse
-    svg = (f"<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'><defs><radialGradient id='g' cx='35%' cy='30%'><stop offset='0' stop-color='{c1}'/>"
-           f"<stop offset='1' stop-color='{c2}'/></radialGradient></defs><circle cx='32' cy='32' r='32' fill='url(#g)'/>"
-           f"<text x='32' y='42' font-size='30' text-anchor='middle'>{emoji}</text></svg>")
-    return "data:image/svg+xml," + urllib.parse.quote(svg)
-
-
-BOT_PROFILES = {b[0]: {"uid": b[0], "name": b[1], "photo": bot_avatar(b[2], b[3], b[4])} for b in LIVE_BOTS}
+# PvP / TvT botlari — Epic videosi bo'yicha (408.mp4 6:04, 8:44): PvP'da bitta brend bot ("Ebic Gift" → RIKI),
+# TvT'da har jamoada bitta bot — nomi jamoa nomi ("Ice" / "Fire"), BOT belgisi bilan, reytingga kirmaydi (uid < 0).
+# Avatar — RIKI logotipi (icon.png). Chizilgan SVG/emoji avatarlar olib tashlandi.
+BOT_PROFILES = {-20: {"uid": -20, "name": BRAND, "photo": "icon.png"}}
+TVT_BOTS = {"ice": {"uid": -21, "name": "Ice", "photo": "icon.png"}, "fire": {"uid": -22, "name": "Fire", "photo": "icon.png"}}
 
 
 def bots_join(lst: list, want: int, chance: float) -> None:
@@ -1510,9 +1500,10 @@ def now_ms() -> int:
 
 def bot_amt(cap: float | None = None) -> float:
     cap = min(cap if cap is not None else 1e9, float(cfg("bot_max")))
+    lo = max(0.01, float(cfg("bot_min")))
     r = random.random()
-    v = random.uniform(.1, 3) if r < .55 else random.uniform(3, 60) if r < .85 else random.uniform(60, 300) if r < .97 else random.uniform(300, 1000)
-    return round(min(cap, v), 2)
+    v = random.uniform(lo, max(lo, 3)) if r < .55 else random.uniform(3, 60) if r < .85 else random.uniform(60, 300) if r < .97 else random.uniform(300, 1000)
+    return round(max(lo, min(cap, v)), 2)
 
 
 def new_round(g: str, rid: int) -> dict:
@@ -1736,10 +1727,8 @@ async def live_loop() -> None:
                             other = R["fire" if team == "ice" else "ice"]
                             taken = {p["uid"] for p in other}
                             lst = R[team]
-                            if sum(1 for p in lst if p["bot"]) < max(1, int(cfg("live_bots")) // 2) and random.random() < (.08 if not lst else .02):
-                                free = [b for uid, b in BOT_PROFILES.items() if uid not in taken and not any(p["uid"] == uid for p in lst)]
-                                if free:
-                                    add_stake(lst, dict(random.choice(free)), bot_amt(), [], True)
+                            if int(cfg("live_bots")) > 0 and not any(p["bot"] for p in lst) and random.random() < (.08 if not lst else .02):
+                                add_stake(lst, dict(TVT_BOTS[team]), bot_amt(), [], True)
                     if R["ice"] and R["fire"] and not R["endAt"]:
                         R["endAt"] = t + 20000
                     if R["endAt"] and t >= R["endAt"]:
@@ -2488,12 +2477,12 @@ def set_kb() -> InlineKeyboardMarkup:
     B = InlineKeyboardButton
     off = cfg("off")
     rows = [[B(text=f"💱 1 TON = {cfg('ton_rate'):g}", callback_data="ad:sv:ton_rate"), B(text=f"⭐ 1 Star = {cfg('stars_rate'):g}", callback_data="ad:sv:stars_rate")],
-            [B(text=f"🤖 Bot max bet: {cfg('bot_max'):g}", callback_data="ad:sv:bot_max"), B(text=f"🚀 Rocket bots: {cfg('rk_min')}–{cfg('rk_max')}", callback_data="ad:sv:rk")],
+            [B(text=f"🤖 Bots: {'ON' if cfg('live_bots') else 'OFF'} ({cfg('live_bots'):g})", callback_data="ad:sv:live_bots"), B(text=f"🤖 Bot bet: {cfg('bot_min'):g}–{cfg('bot_max'):g}", callback_data="ad:sv:bot_rng")],
+            [ B(text=f"🚀 Rocket bots: {cfg('rk_min')}–{cfg('rk_max')}", callback_data="ad:sv:rk")],
             [B(text=(f"🐸 Rocket Pepe from {cfg('rk_pepe_min'):g} TON" if cfg("rk_pepe_min") else "🐸 Rocket Pepe: OFF (TON)"), callback_data="ad:sv:rk_pepe_min")],
             [B(text=f"🤝 Referral: {cfg('ref_pct'):g}% of deposits", callback_data="ad:sv:ref_pct")],
             [B(text=f"🎟 Ref tickets: {cfg('ref_tix'):g}", callback_data="ad:sv:ref_tix"), B(text=f"📅 Max/day: {cfg('ref_tix_day'):g}", callback_data="ad:sv:ref_tix_day")],
-            [B(text=f"👥 PvP/TvT/Roulette bots: {int(cfg('live_bots'))}", callback_data="ad:sv:live_bots"),
-             B(text=("🟢 Bots always play" if cfg("bots_always") else "⚪ Bots only with players"), callback_data="ad:botal")],
+            [B(text=("🟢 Bots always play" if cfg("bots_always") else "⚪ Bots only with players"), callback_data="ad:botal")],
             [B(text=("🔴 Maintenance ON — tap to turn off" if cfg("maint") else "🟢 Maintenance OFF — tap to turn on"), callback_data="ad:maint")]]
     g = [B(text=("❌ " if x in off else "✅ ") + x.capitalize(), callback_data=f"ad:gt:{x}") for x in GAMES]
     rows += [g[i:i + 3] for i in range(0, len(g), 3)]
@@ -2778,7 +2767,8 @@ async def on_admin_cb(cq: CallbackQuery, bot: Bot) -> None:
         k = act[3:]
         ADMIN_WAIT[uid] = "sv:" + k
         hint = {"ton_rate": "balance per 1 TON, e.g. <code>100000</code>", "stars_rate": "balance per 1 Star, e.g. <code>800</code> (125 ⭐ = 100 000)",
-                "bot_max": "max bot bet, e.g. <code>1000</code>", "rk": "rocket bots per round as <code>min max</code>, e.g. <code>3 4</code> (0–8)",
+                "bot_max": "max bot bet, e.g. <code>1000</code>", "bot_rng": "bot bet range as <code>min max</code>, e.g. <code>0.1 1000</code>",
+                "live_bots": "bots in PvP/TvT: <code>0</code> = off, <code>1</code> = on (Epic: 1 bot per PvP round, 1 per TvT team)", "rk": "rocket bots per round as <code>min max</code>, e.g. <code>3 4</code> (0–8)",
                 "post_min": "minimum win to post in the channel, e.g. <code>1000</code>",
                 "ab_hours": "auto bonus interval in hours, e.g. <code>1</code> or <code>0.5</code>", "ab_amount": "TON per player, e.g. <code>1000</code>",
                 "ab_uses": "how many people, e.g. <code>500</code>",
@@ -3069,6 +3059,16 @@ async def on_admin_input(message: Message, bot: Bot) -> None:
                 if not (1 <= v <= 7 and 0 <= h <= 23):
                     raise ValueError
                 upd = {"poll_dow": float(v - 1), "poll_hour": float(h)}
+            elif k == "bot_rng":
+                lo, hi = (parse_amount(x) for x in parts[:2]) if len(parts) >= 2 else (None, None)
+                if lo is None or hi is None or lo <= 0 or hi < lo:
+                    raise ValueError
+                upd = {"bot_min": float(lo), "bot_max": float(hi)}
+            elif k == "live_bots":
+                v = parse_amount(parts[0]) if parts else None
+                if v is None or v < 0 or v > 1:
+                    raise ValueError
+                upd = {"live_bots": float(int(v))}
             elif k in ("ref_pct", "ref_tix", "ref_tix_day"):
                 v = parse_amount(parts[0]) if parts else None
                 if v is None or v < 0 or (k == "ref_pct" and v > 50):

@@ -109,7 +109,7 @@ function ui(now) {
       const lose = RK.phase === 'crash' && !b.out, m = b.out || (RK.phase === 'fly' ? RK.m : RK.phase === 'crash' ? RK.crash : 1);
       const val = b.out ? b.amt * b.out : lose ? b.amt : b.amt * m;
       const gg = typeof giftFor === 'function' ? (giftFor(val) || {}).g : null;
-      return `<div class="er ${b.out ? 'w' : lose ? 'l' : ''}">${avHTML(b.name)}<div class="nm"><b>${esc(b.name)}</b><small>${GEM}${fmt(b.amt)} ×${m.toFixed(2)}</small></div><span class="v">${GEM}${fmt(val)}</span><span class="gt">${gg ? GI(gg) : ''}</span></div>`;
+      return `<div class="er ${b.out ? 'w' : lose ? 'l' : ''}">${avHTML(b.name)}<div class="nm"><b>${esc(b.name)}${b.bot ? ' <span class="bt">BOT</span>' : ''}</b><small>${GEM}${fmt(b.amt)} ×${m.toFixed(2)}</small></div><span class="v">${GEM}${fmt(val)}</span><span class="gt">${gg ? GI(gg) : ''}</span></div>`;
     }).join('');
     L.innerHTML = rows + (bets.length > 5 ? `<div class="more">+${bets.length - 5} more players</div>` : '');
   }

@@ -1027,7 +1027,12 @@ setInterval(() => { const e = $id('lbE'); if (e && cur === 'leader') e.innerHTML
 const _pvHubEnter = ENTER.pvphub;
 ENTER.pvphub = async () => {
   _pvHubEnter && _pvHubEnter();
-  const draw = () => { const d = lbData('pvp'); const sw = ICO.swords.replace('class="ic"', 'class="ic" style="width:12px;height:12px;vertical-align:-2px"'); $id('phLb').innerHTML = `<div class="lrow me"><span class="rk">${d.rank || '–'}</span>${avP(pubName(), pubPhoto())}<div><b>${esc(pubName())}</b><span class="you">You</span><br><small style="color:#fbbf24">${d.rank ? 'Rank ' + d.rank : 'Unranked'}</small></div><span class="sc" style="margin-left:auto">${sw}${fmtK(d.mine)}</span></div>` + (d.l.slice(0, 10).map((r, i) => `<div class="lrow ${i < 3 ? 't' + (i + 1) : ''}"><span class="rk">${i + 1}</span>${avP(r.name, r.photo)}<b>${esc(r.name)}</b><span class="gi">${GI(prizeFor(i))}</span><span class="sc">${sw}${fmtK(r.s)}</span></div>`).join('') || `<div class="empty">No PvP players yet</div>`) };
+  // 408.mp4 6:04: sovrin plitkalari (sovg'a yo'q bo'lsa — ✕), qatorlar: o'rin · avatar · ism/You · sovg'a · ⚔ ball
+  const X = '<img class="x" src="assets/hub2/ic_x.png" alt="">', SW = '<img class="sw" src="assets/hub2/ic_sw_small.png" alt="">';
+  const tile = g => g ? GI(g) : X;
+  const draw = () => { const d = lbData('pvp');
+    $$('#pvphub [data-pz]').forEach(e => e.innerHTML = tile(prizeFor(+e.dataset.pz)));
+    $id('phLb').innerHTML = `<div class="r me"><span class="rk">${d.rank || '–'}</span>${avP(pubName(), pubPhoto())}<span class="you">You</span><span class="g">${tile(d.rank ? prizeFor(d.rank - 1) : null)}</span><span class="sc">${SW}${fmtK(d.mine)}</span></div>` + d.l.slice(0, 10).map((r, i) => `<div class="r ${i < 3 ? 't' + (i + 1) : ''}"><span class="rk">${i + 1}</span>${avP(r.name, r.photo)}<b>${esc(r.name)}</b><span class="g">${tile(prizeFor(i))}</span><span class="sc">${SW}${fmtK(r.s)}</span></div>`).join('') };
   draw(); await pullLb(); if (cur === 'pvphub') draw();
 };
 

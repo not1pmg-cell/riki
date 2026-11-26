@@ -255,8 +255,9 @@ function go(id, noPush) {
   const main = MAIN_HDR.includes(id);
   $('#hMain').style.display = main ? 'flex' : 'none';
   $('#hPill').style.display = main ? 'none' : 'flex';
-  $('#hTop').style.display = ['pvp', 'tvt'].includes(id) ? 'grid' : 'none';
-  $('#hHelp').style.display = ['pvp'].includes(id) ? 'none' : 'grid';
+  $('#hTop').style.display = ['pvphub', 'pvp', 'tvt'].includes(id) ? 'grid' : 'none';   // 408.mp4 6:04 (hub), 6:16 (pvp)
+  $('#hHelp').style.display = 'grid';
+  $('#hHist').style.display = id === 'pvphub' ? 'none' : 'grid';
   window.scrollTo(0, 0);
   if (tg && tg.BackButton) { try { id === 'home' ? tg.BackButton.hide() : tg.BackButton.show() } catch (e) {} }
   ENTER[id] && ENTER[id]();
@@ -572,16 +573,16 @@ function pvRender(force) {
 }
 function pvHub() {
   const tot = pvTotal();
-  $('#phPot').innerHTML = g$(tot);
-  $('#phStarts').textContent = PV.phase === 'done' ? '🏆 PvP won' : PV.end && PV.phase === 'wait' ? 'Starts in ' + Math.max(0, Math.ceil((PV.end - Date.now()) / 1000)) + 's' : PV.phase === 'wait' ? (PV.pl.length === 1 ? '1 more to start' : 'Waiting for players') : 'LIVE';
-  const lp = $('.tvtcard .livep'); if (lp) lp.textContent = TV.phase === 'done' && TV.win ? `🏆 ${TV.win === 'ice' ? 'Ice' : 'Fire'} wins` : TV.end && TV.phase === 'wait' ? 'Starts in ' + Math.max(0, Math.ceil((TV.end - Date.now()) / 1000)) + 's' : TV.phase === 'wait' ? 'Waiting for players' : 'Live';
+  $('#phPot').textContent = fmt(tot);
+  $('#phStarts').innerHTML = PV.end && PV.phase === 'wait' ? `<img src="assets/hub2/ic_timer.png" alt="">Starts in ${Math.max(0, Math.ceil((PV.end - Date.now()) / 1000))}s` : PV.phase === 'wait' ? (PV.pl.length ? `${Math.max(1, 2 - PV.pl.length)} more to start` : 'Waiting for players') : 'Live';   // 408.mp4 6:04
+  const lp = $('.e-tv .livep'); if (lp) lp.innerHTML = TV.end && TV.phase === 'wait' ? `<img src="assets/hub2/ic_timer.png" alt="">Starts in ${Math.max(0, Math.ceil((TV.end - Date.now()) / 1000))}s` : TV.phase === 'wait' ? 'Waiting for players' : 'Live';
   let h = '';
   if (PV.pl.length) h = [...PV.pl].sort((a, b) => b.amt - a.amt).map(p => `<div class="pchip" style="--c:${p.c}">${pvAv(p)}${p.bot ? '<span class="bt">BOT</span>' : ''}<b>${esc(p.name)}</b><em>${(p.amt / (tot || 1) * 100).toFixed(1)}%</em></div>`).join('');
   else for (let i = 0; i < 5; i++) h += '<div class="slot e">+</div>';
   $('#phSlots').innerHTML = h; $('#phSlots').classList.toggle('chips', PV.pl.length > 0);
   const it = tvSum('ice'), ft = tvSum('fire'), t = it + ft || 1;
-  $('#thI').innerHTML = g$(it); $('#thF').innerHTML = g$(ft);
-  $('#thIn').textContent = TV.ice.length + ' pl'; $('#thFn').textContent = TV.fire.length + ' pl';
+  $('#thI').textContent = fmt(it); $('#thF').textContent = fmt(ft);
+  $('#thIn').textContent = TV.ice.length; $('#thFn').textContent = TV.fire.length;
   $('#thIx').textContent = 'x' + (it ? (t / it).toFixed(2) : '0'); $('#thFx').textContent = 'x' + (ft ? (t / ft).toFixed(2) : '0');
 }
 $('#pvJoin').onclick = () => {
@@ -1105,7 +1106,7 @@ $('#hHelp').onclick = () => info('How to play', `<div class="helpb">${HELP[cur] 
 // =====================================================================
 ENTER.rocket = () => rkRender(true);
 ENTER.pvp = () => pvRender(true);
-ENTER.pvphub = () => { pvHub(); $('#phLb').innerHTML = lbRender().split('<div class="lrow').slice(0, 5).join('<div class="lrow'); $('#lbEnds').textContent = 'Ends in ' + (7 - new Date().getDay()) + 'd' };
+ENTER.pvphub = () => { pvHub(); $('#phLb').innerHTML = lbRender().split('<div class="lrow').slice(0, 5).join('<div class="lrow'); const n = new Date(), e = new Date(n); e.setDate(n.getDate() + ((8 - n.getDay()) % 7 || 7)); e.setHours(0, 0, 0, 0); const ms = e - n; $('#lbEnds').textContent = `Ends in ${Math.floor(ms / 864e5)}d ${Math.floor(ms % 864e5 / 36e5)}h` };   // 408.mp4: "Ends in 3d 14h"
 ENTER.tvt = () => { tvRender(true); if (TV.phase === 'wait') tvBallHome() };
 ENTER.upgrade = upRender;
 ENTER.mines = mRender;
