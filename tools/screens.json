@@ -141,7 +141,7 @@
   ]
  },
  "leader": {
-  "frame": "frames2/53_leaderboard.png",
+  "frame": "frames2/54_earn.png",
   "go": "leader",
   "mask": [
    [
@@ -150,10 +150,12 @@
     390,
     66
    ]
-  ]
+  ],
+  "js": "(()=>{NET.lb=Array.from({length:30},(_,i)=>({id:i+100,name:'User'+i+'abc',bal:240e9-i*5e9}));NET.lbTs=1;NET.on=true;ENTER.leader();setTimeout(()=>{const r=document.querySelectorAll('#leader .lr')[18];if(r)window.scrollTo(0,r.getBoundingClientRect().top+scrollY-89)},300)})()",
+  "wait": 1200
  },
  "earn": {
-  "frame": "frames2/54_earn.png",
+  "frame": "frames2/55_earn_daily_tasks.png",
   "go": "earn",
   "mask": [
    [
@@ -165,7 +167,7 @@
   ]
  },
  "invite": {
-  "frame": "frames2/59_invite.png",
+  "frame": "frames2/60_my_invites.png",
   "go": "invite",
   "mask": [
    [
@@ -177,7 +179,7 @@
   ]
  },
  "backpack": {
-  "frame": "frames2/61_backpack.png",
+  "frame": "frames2/62_backpack_items.png",
   "go": "backpack",
   "mask": [
    [
@@ -189,7 +191,7 @@
   ]
  },
  "topup": {
-  "frame": "frames2/63_topup_ton.png",
+  "frame": "frames2/65_topup_transfer.png",
   "go": "topup",
   "mask": [
    [

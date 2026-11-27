@@ -1008,22 +1008,22 @@ const avP = (name, photo) => photo ? `<span class="av" style="background:#393939
 // boshqa o'yinchilarning ismi yashiriladi (Epic'dagidek: nn***z4); o'zingizniki to'liq
 const lbMask = (n, me) => { n = String(n || ''); if (me || n.length <= 5) return n; return n.slice(0, 2) + '***' + n.slice(-2) };
 function lbRows(d, max) {
-  return d.l.slice(0, max).map((r, i) => { const me = String(r.id) === String(TGU.id || 0); return `<div class="lr ${i < 3 ? 't' + (i + 1) : ''}${me ? ' me' : ''}"><span class="n">${i + 1}</span>${avP(r.name, r.photo)}<b>${esc(lbMask(r.name, me))}${me ? ' <span class="you">YOU</span>' : ''}</b><span class="pz">${GI(prizeFor(i))}</span><span class="lpt">${fmtK(r.s)}</span></div>` }).join('') || `<div class="empty">No players yet — play and be the first!</div>`;
+  return d.l.slice(0, max).map((r, i) => { const me = String(r.id) === String(TGU.id || 0); return `<div class="lr ${i < 3 ? 't' + (i + 1) : ''}${me ? ' me' : ''}"><span class="n">${i + 1}</span>${avP(r.name, r.photo)}<b>${esc(lbMask(r.name, me))}${me ? ' <span class="you">YOU</span>' : ''}</b><span class="pz">${i < LB_PRIZE.length ? GI(prizeFor(i)) : '<img class="px" src="assets/hub2/ic_x.png" alt="">'}</span><span class="lpt">${fmtK(r.s)}</span></div>` }).join('') || `<div class="empty">No players yet — play and be the first!</div>`;
 }
 const LBEND = (() => { const W0 = (4 * 86400 + 14 * 3600) * 1000, W = 604800000; return W0 + (Math.floor((Date.now() - W0) / W) + 1) * W })(); // server bilan bir xil: dushanba 14:00 UTC
 ENTER.leader = async () => {
   const draw = () => {
     const d = lbData('points');
-    $id('leader').innerHTML = `<div class="lbc"><div class="bgg">${GI(byName('Heart Locket'))}</div><div class="t"><i>${IC.trophy}</i>Leaderboard<button id="lbQ">${IC.help}</button></div><div class="r"><div><small>Ends in</small><div class="ends" id="lbE">${IC.clock}${dur((NET.lbEnd || LBEND) - Date.now())}</div></div><div class="pw"><small>Prizes &amp; Winners</small><b>${IC.users.replace('class="ic"', 'class="ic" style="width:16px;height:16px"')}${Math.max(d.l.length, 1)}</b></div></div><p>Compete with others and win amazing prizes!</p></div>
-    <div class="tph">${IC.trophy}Top Players <button class="rf" id="lbR">${IC.refresh}</button><span><em style="font-style:normal">Prize</em><em style="font-style:normal">Wealth</em></span></div>
+    $id('leader').innerHTML = `<div class="lbc"><div class="t"><img class="lbti" src="assets/lb/tile_trophy.png" alt="">Leaderboard<button id="lbQ"><img src="assets/lb/btn_help.png" alt=""></button></div><div class="r"><div><small>Ends in</small><div class="ends" id="lbE"><img src="assets/lb/ic_clock.png" alt="">${dur((NET.lbEnd || LBEND) - Date.now())}</div></div><div class="pw"><small>Prizes &amp; Winners</small><b><img src="assets/lb/ic_users.png" alt="">${Math.max(d.l.length, 1)}</b></div></div><p>Compete with others and win amazing prizes!</p></div>
+    <div class="tph"><img class="tpi" src="assets/lb/ic_trophy_sm.png" alt="">Top Players <button class="rf" id="lbR"><img src="assets/lb/ic_refresh.png" alt=""></button><span><em style="font-style:normal">Prize</em><em style="font-style:normal">Wealth</em></span></div>
     <div id="lbRows">${NET.on && !NET.lbTs ? `<div class="lbload"><span class="spin"></span>Loading leaderboard...</div>` : NET.lbErr && !NET.lb.length ? `<div class="empty">Couldn't load the leaderboard. Pull to refresh.</div>` : lbRows(d, 250)}</div>
-    <div class="lbme"><span class="r9">${d.rank ? d.rank : '999+'}</span>${avP(pubName(), pubPhoto())}<span class="you">YOU</span><span class="x">✕</span><span class="lpt">${fmtK(d.mine || 0)}</span></div>`;
+    <div class="lbme"><span class="r9">${d.rank ? d.rank : '999+'}</span>${avP(pubName(), pubPhoto())}<span class="you">YOU</span><span class="x"><img src="assets/hub2/ic_x.png" alt=""></span><span class="lpt">${fmtK(d.mine || 0)}</span></div>`;
     $id('lbR').onclick = async () => { await pullLb(true); draw(); toast('Updated') };
     $id('lbQ').onclick = () => howModal('Leaderboard', [['Real balances', `Players are ranked by their real ${CUR} balance stored on the server.`], ['Zero balance', 'Players with 0 balance are not shown. Top up or win to get back in.'], ['Get your prize', 'At the end of the week the top players receive the prizes shown next to their rank.']]);
   };
   draw(); await pullLb(); if (cur === 'leader') draw();
 };
-setInterval(() => { const e = $id('lbE'); if (e && cur === 'leader') e.innerHTML = `${IC.clock}${dur(Math.max(0, (NET.lbEnd || LBEND) - Date.now()))}` }, 1000);
+setInterval(() => { const e = $id('lbE'); if (e && cur === 'leader') e.innerHTML = `<img src="assets/lb/ic_clock.png" alt="">${dur(Math.max(0, (NET.lbEnd || LBEND) - Date.now()))}` }, 1000);
 // PvP hub leaderboard ham real
 const _pvHubEnter = ENTER.pvphub;
 ENTER.pvphub = async () => {
