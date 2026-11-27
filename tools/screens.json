@@ -49,7 +49,8 @@
  },
  "pvp": {
   "frame": "frames2/18_pvp_place_bet_empty.png",
-  "go": "pvp"
+  "go": "pvp",
+  "js": "document.querySelector('#pvRing').style.setProperty('animation','none','important')"
  },
  "tvt": {
   "frame": "frames2/21_tvt_waiting_for_ice.png",

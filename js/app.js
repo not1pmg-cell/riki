@@ -546,7 +546,7 @@ function pvSpin(forced) {
 let pvLast = 0;
 const pvAv = p => p.photo ? `<span class="av" style="background:#393939 url('${esc(p.photo)}') center/cover"></span>` : avHTML(p.name);
 // o'yinchilar yoyning TEPA-O'RTASIDAN boshlab joylashadi (8,7,9,6,…) — chetdagilar ekrandan chiqib ketadi
-const PV_SLOT = [8, 7, 9, 6, 10, 5, 11, 4, 3, 2, 1, 0];
+const PV_SLOT = [5, 4, 6, 3, 7, 2, 8, 1, 9, 0, 10];   // 11 ta katak: tepa-o'rtadan boshlab
 function pvRender(force) {
   const now = Date.now(); const tot = pvTotal();
   $('#pvPool').textContent = fmt(tot); $('#pvGame').textContent = 'Game #' + PV.game;
@@ -557,12 +557,12 @@ function pvRender(force) {
   jb.className = 'bigbtn' + (ok ? ' y' : ''); jb.textContent = PV.phase === 'wait' ? 'Join the Battle' : PV.phase === 'spin' ? 'Spinning…' : 'Next round soon';
   if (!force && now - pvLast < 400) return; pvLast = now;
   // yoy (arc)
-  const ring = $('#pvRing'); const N = 12, R = 161; let h = '';
+  const ring = $('#pvRing'); const N = 11, R = 134.2; let h = '';   // frames2/18: markaz (192.1, 251.7), R 134.2, qadam 32.2° (≈360/11)
   for (let i = 0; i < N; i++) {
-    const a = -90 + (i - (N - 1) / 2) * 30; const p = PV.pl[PV_SLOT.indexOf(i)];
+    const a = -90 + (i - (N - 1) / 2) * (360 / N) - 180 / N; const p = PV.pl[PV_SLOT.indexOf(i)];   // frames2/18: tepada oraliq (±16.1°)
     const tr = `transform:rotate(${a + 90}deg) translateY(-${R}px)`;
     const gf = p && p.gifts && p.gifts.length ? [...p.gifts].sort((x, y) => (y.p || y.v || 0) - (x.p || x.v || 0))[0] : null;
-    h += p ? `<div class="atile f" style="${tr};--c:${p.c}">${gf ? GI(gf) : GEM}<b>${fmt(p.amt)}</b></div>` : `<div class="atile e" style="${tr}"><span class="ph">${esc((CFG.BRAND || 'RIKI').toUpperCase())}<br>GIFT</span></div>`;
+    h += p ? `<div class="atile f" style="${tr};--c:${p.c}">${gf ? GI(gf) : GEM}<b>${fmt(p.amt)}</b></div>` : `<div class="atile e" style="${tr}"><img class="tbg" src="assets/pvp/tile_empty.png" alt=""><span class="ph">${esc((CFG.BRAND || 'RIKI').toUpperCase())}<br>GIFT</span></div>`;
   }
   ring.innerHTML = h; ring.classList.toggle('idle', PV.phase === 'wait');
   if (PV.phase === 'wait') {
@@ -570,7 +570,8 @@ function pvRender(force) {
     tr.innerHTML = PV.pl.length ? PV.pl.map(p => `<div class="scard" style="--c:${p.c}">${pvAv(p)}<b>${esc(p.name)}</b><em>${(p.amt / tot * 100).toFixed(1)}%</em></div>`).join('') : '';
   }
   $('#pvCnt').textContent = PV.pl.length;
-  $('#pvPl').innerHTML = [...PV.pl].sort((a, b) => b.amt - a.amt).map(p => `<div class="vrow ${PV.winner === p && PV.phase === 'done' ? 'w' : ''}" style="--c:${p.c}">${pvAv(p)}<div><b>${esc(p.name)}${p.bot ? ' <span class="bt">BOT</span>' : ''}${p.me ? ' <span class="youb">YOU</span>' : ''}</b><small>${g$(p.amt)}</small></div><span class="pc2">${(p.amt / (tot || 1) * 100).toFixed(1)}%</span></div>`).join('') || '<div class="empty">Be the first to join!</div>';
+  $('#pvPl').innerHTML = [...PV.pl].sort((a, b) => b.amt - a.amt).map(p => `<div class="vrow ${PV.winner === p && PV.phase === 'done' ? 'w' : ''}" style="--c:${p.c}">${pvAv(p)}<div><b>${esc(p.name)}${p.bot ? ' <span class="bt">BOT</span>' : ''}${p.me ? ' <span class="youb">YOU</span>' : ''}</b><small>${g$(p.amt)}</small></div><span class="pc2">${(p.amt / (tot || 1) * 100).toFixed(1)}%</span></div>`).join('') || '<div class="pvempty"><b>Place Bet</b><small>Waiting for players..</small></div>';   // frames2/18
+  $('#pvp').classList.toggle('pv-empty', !PV.pl.length);
 }
 function pvHub() {
   const tot = pvTotal();
