@@ -13,7 +13,7 @@ Davom ettirish: shu jadvaldagi ⚠️/❌ qatorlardan boshlanadi.
 | mines | frames2/31_mines_cashout.png | 14.6% | ⚠️ | kadr o'yin holatida (Cash Out, ochilgan plitka); ochilgan plitka/bomba san'ati PNG emas |
 | pvp | frames2/18_pvp_place_bet_empty.png | 9.2% | ⚠️ | kafel matni RIKI GIFT; o'yinchilar bilan holat (frames/19) qilinmagan |
 | tvt | frames/06_tvt_countdown.png | 28.6% | ⚠️ | desktop kadr (scrollbar 380px); halqa sariq (ko'rsatmangiz) |
-| playhub | frames2/30_playhub.png | 17.2% | ⚠️ | Crafts kartasi desktopdan; Live lenta mock |
+| playhub | frames2/30_playhub.png (eski joylashuv — yangi videoda Race kartasi qo'shilgan, diff shuning uchun oshgan) | 17.2% | ⚠️ | Crafts kartasi desktopdan; Live lenta mock |
 | rocket_wait | frames2/13_rocket_waiting_5.png | 35.3% | ⚠️ | kadrda bet oynasi ochiq; Rocket sahifasi alohida o'lchanadi |
 | spins | frames2/34_spins.png | 37.8% | ⚠️ | plitkalar ochilgan holatda; Buy Features/Double Chance kartalari |
 | plinko | frames2/37_plinko.png | 33.1% | ⚠️ | piramida o'lchami, Easy/Medium/Hard tugmalari |

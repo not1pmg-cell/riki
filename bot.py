@@ -2128,7 +2128,7 @@ def make_app() -> web.Application:
 dp = Dispatcher()
 
 
-UI_VER = "20261127a"   # Mini App kesh-buster (index.html ?v= bilan bir xil)
+UI_VER = "20261127c"   # Mini App kesh-buster (index.html ?v= bilan bir xil)
 
 
 def webapp_url(start_param: str = "") -> str:
