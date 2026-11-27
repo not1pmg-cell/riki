@@ -69,3 +69,24 @@ compare/race.png — Betting | Live | Result | History (original vs RIKI)
 | Play Hub kartasi | ⚠️ | statik kadr; kartadagi mini-poyga animatsiyasi UNCLEAR |
 
 UNCLEAR (Race): banner mavzusi qoidasi (o'rmon/shahar — raundga qarab tasodifiy qilindi); Play Hub kartasidagi animatsiya to'liq sikli (videoda kursor bilan yopilgan); "All bets" oynasi videoda ko'rinmadi; "Leaderboard multiplier" ma'nosi.
+
+## MINES — qayta qurildi (409.mp4 62–89 s)
+Har bir element kadrlardan: 62.5 (bo'sh), 68.0 (miqdor, fokus), 69.6 (raund boshlandi), 70.2 / 72.0 / 75.6 (Cash Out), 75.8–77.6 har kadr (mina), 81.0 (minalar soni), frames/55 (yutuq, desktop).
+
+| Holat | Kadr | Diff | Holat |
+|---|---|---|---|
+| Bo'sh | 62.5 | 3.3% | ✅ (farq: header — avatar/balans, nav Home rangi*) |
+| Miqdor kiritilgan (fokus) | 68.0 | 4.0% | ✅ |
+| Cash Out | 72.0 | 4.7% | ✅ |
+| Mina (qizil) | 76.3 | 6.4% | ✅ |
+| Yutuq | frames/55 (desktop masshtab) | — | ⚠️ konfetti va davomiylik UNCLEAR |
+
+| Harakat | Vaqt farqi | Pozitsiya | Holat |
+|---|---|---|---|
+| Kristal ochilishi | 1 kadr (≤50 ms) | — | ✅ |
+| Mina: qizil katak → nur → chaqnash → 2 to'lqin → 0.92 s da tiklanish | ±1 kadr (compare/mines_boom_strip.png) | ±2 px | ✅ |
+| Chiplar siljishi (joriy chip 3-o'ringa) | o'lchanmagan | — | ⚠️ |
+
+\* Nav: videoda o'yin ekranlarida Home binafsha; siz kulrang dedingiz — kulrang qoldirildi.
+
+UNCLEAR (Mines): oltin chip qiymati qoidasi; yutuq holati qancha turadi va konfetti; Cash Out tugmasidagi sovg'a rasmi qaysi sovg'a (eng yaqin narx olindi); History va How it works oynalari hali kadr bilan solishtirilmagan.
