@@ -37,7 +37,10 @@ async def main(names):
             await pg.add_style_tag(content='#offLv{display:none!important}*{caret-color:transparent!important}')
             await pg.evaluate("document.getElementById('splash')&&document.getElementById('splash').remove()")
             if c.get('go'): await pg.evaluate(f"go('{c['go']}')"); await pg.wait_for_timeout(600)
-            if c.get('js'): await pg.evaluate(c['js']); await pg.wait_for_timeout(c.get('wait', 700))
+            if c.get('js'):
+                try: await pg.evaluate(c['js'])
+                except Exception as e: errs.append('JS: ' + str(e)[:200])
+                await pg.wait_for_timeout(c.get('wait', 700))
             path = f'/tmp/mine_{n}.png'; await pg.screenshot(path=path); await pg.close()
             mine = Image.open(path).convert('RGB')
             d, sc = score(o, mine, c.get('mask', []))

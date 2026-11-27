@@ -204,3 +204,24 @@ nav .in{margin-top:-1.3px}
 /* o'yin ekranlari foni: #181818 → #121212 (frames2/31, 37, 18: y 150 → 620) */
 html,body{background:#181818!important}
 #mines.on,#plinko.on,#dice.on,#spins.on,#crafts.on,#pvp.on,#tvt.on{background:linear-gradient(#181818 0,#181818 85px,#121212 555px)!important;min-height:calc(100vh - 65.7px - 90.1px)}
+/* --- PLAY HUB (frames2/30_playhub): kartalar kadrdan (soya bilan) --- */
+#playhub.on{padding:0 15.9px 110px!important}
+#playhub .live{margin:20.2px 0 0!important;height:47.8px;gap:0!important;align-items:center}
+#playhub .live .lbl{width:24px;flex:none;font-size:12.5px;margin-left:-6px}
+#playhub .feed{gap:3.3px!important;margin-left:8.2px}
+#playhub .hubimg{display:block;padding:0!important;border:0!important;background:none!important;box-shadow:none!important;border-radius:0!important;overflow:visible!important;margin:0!important}
+#playhub .hubimg img{display:block;width:100%;height:auto;border-radius:0!important}
+#playhub .hubimg.wide[data-go="upgrade"]{margin-top:16.6px!important}
+#playhub .hubg{display:grid!important;grid-template-columns:176.4px 175.8px;column-gap:6px;row-gap:6.3px;margin-top:11.9px!important}
+#playhub .hubimg.crf{margin-top:15px!important}
+.fi.ton{background:linear-gradient(180deg,#f7bb21,#e9b206)!important;box-shadow:none!important}
+.fi.ton .fton{width:30px!important;height:30px!important}
+.live .lbl{font-size:14px!important;font-weight:800!important;color:#fff}
+/* Shrift: Epic — Roboto (Android tizim shrifti; frames2/* glif shakllari: "1" bayroqli, "a" Roboto) */
+html,body,button,input,select,textarea,*{font-family:Roboto,system-ui,-apple-system,"Segoe UI",sans-serif!important}
+#hMain{align-items:flex-start!important}
+#hMain .bal{margin-left:11px;margin-top:-1px}
+#hMain .bal small{font-size:12.5px!important;color:#9a9a9a!important;line-height:1.2}
+#hMain .bv{margin-top:3px}
+#hMain .depbtn{width:106px!important;height:37.2px!important;margin:4.6px 0 0 auto!important;border-radius:10.6px!important;background:#8373d0!important;font-size:14.5px!important;font-weight:500!important;gap:7px!important;display:flex;align-items:center;justify-content:center;padding:0!important;box-shadow:none!important}
+#hMain .depbtn .dpi{width:18.6px;height:17.3px}

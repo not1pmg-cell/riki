@@ -973,6 +973,7 @@ function feedDraw() {
   const f2 = $id('feed2'); if (f2) { f2.innerHTML = f.innerHTML; f2.onclick = f.onclick }
   NET.feedNew = 0;
 }
+window.feedDraw = feedDraw;
 function feedPushTon(v, game) {
   const it = { kind: 'ton', v: r2(v), name: pubName(), game, t: Date.now() };
   NET.feed.unshift(it); NET.feed = NET.feed.slice(0, 30); S.myFeed = [it].concat(S.myFeed || []).slice(0, 30); save();

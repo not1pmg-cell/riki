@@ -9,7 +9,8 @@
     200,
     50
    ]
-  ]
+  ],
+  "js": "S.myFeed=Array.from({length:8},()=>({kind:'ton',v:1,name:'x',t:1}));feedDraw()"
  },
  "upgrade": {
   "frame": "frames2/26_upgrade_select_target.png",
@@ -64,6 +65,7 @@
  },
  "playhub": {
   "frame": "frames2/30_playhub.png",
-  "go": "playhub"
+  "go": "playhub",
+  "js": "S.myFeed=Array.from({length:8},()=>({kind:'ton',v:1,name:'x',t:1}));feedDraw()"
  }
 }
