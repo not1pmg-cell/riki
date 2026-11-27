@@ -102,7 +102,7 @@ const UZ = {
   'Promo codes are posted in our channel and giveaways.': "Promo-kodlar kanalimiz va giveaway'larda e'lon qilinadi.",
   // rocket
   'Place bet': 'Tikish', 'Place Bet': 'Tikish', 'Waiting': 'Kutilmoqda', 'Cash Out': 'Pulni olish', 'Cash out': 'Pulni olish',
-  'Cancel Bet': 'Tikishni bekor qilish', 'No Players Yet': "Hali o'yinchi yo'q", 'Waiting for next round...': 'Keyingi raund kutilmoqda...',
+  'Cancel Bet': 'Tikishni bekor qilish', 'No players yet': "Hali o'yinchi yo'q", 'Wait for next round': 'Keyingi raundni kuting', 'No Players Yet': "Hali o'yinchi yo'q", 'Waiting for next round...': 'Keyingi raund kutilmoqda...',
   'Available Balance': 'Mavjud balans', 'Bet Amount': 'Tikish summasi', 'Auto cashout': 'Avto olish', 'Rocket Reward!': 'Rocket yutug\'i!',
   'Place bet in rocket': "Rocket'da tikish", 'Sell': 'Sotish', 'Keep': 'Saqlash',
   // PvP / TvT

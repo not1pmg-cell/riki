@@ -268,5 +268,123 @@
   ],
   "js": "(()=>{S.bal=9600;renderBal&&renderBal();const A=document.getElementById('bbA_mn');A.value='4.19';A.dispatchEvent(new Event('input'));const M=RIKI_M2.st();M.on=true;M.bet=4.19;M.n=3;M.mines=new Set([0,12,18]);M.open=new Set();M.open.add(10);M.open.add(11);M.open.add(24);document.querySelectorAll('#m2Board .mx-t').forEach(t=>{const i=+t.dataset.i;if(M.open.has(i)){t.classList.add('rv','gem');t.querySelector('.o').src='assets/mines2/tile_gem.png'}});RIKI_M2.render();document.getElementById('m2Go').click()})()",
   "wait": 600
+ },
+ "rk_wait": {
+  "frame": "frames5/r_280.0.png",
+  "go": "rocket",
+  "mask": [
+   [
+    0,
+    0,
+    390,
+    66
+   ]
+  ],
+  "js": "(()=>{RK.phase='wait';RK.waitEnd=performance.now()+3500;RK.bets=[];RK.my=null})()",
+  "wait": 300
+ },
+ "rk_fly": {
+  "frame": "frames5/r_282.0.png",
+  "go": "rocket",
+  "mask": [
+   [
+    0,
+    0,
+    390,
+    66
+   ]
+  ],
+  "js": "(()=>{RK.crash=100;RK.phase='fly';let lo=0,hi=40;for(let i=0;i<40;i++){const m=(lo+hi)/2;rkMult(m)<6.81?lo=m:hi=m}RK.t0=performance.now()-lo*1000+900;RK.my=null;RK.bets=[{name:'Gladiator',amt:600000000,out:4.83},{name:'K',amt:4,out:2.86},{name:'L',amt:2.5,out:2.83},{name:'Outlaw',amt:20,out:0}]})()",
+  "wait": 900
+ },
+ "rk_crash": {
+  "frame": "frames5/r_302.0.png",
+  "go": "rocket",
+  "mask": [
+   [
+    0,
+    0,
+    390,
+    66
+   ]
+  ],
+  "js": "(()=>{RK.phase='crash';RK.crash=2.21;RK.m=2.21;RK.crashAt=performance.now()-1500;RK.t0=RK.crashAt-6200;RK.bets=[{name:'Ibrohim',amt:6.73,me:1},{name:'Leo',amt:6,out:1.87},{name:'Gladiator',amt:600000000,out:1.63},{name:'Neo',amt:7.93,out:1.87}];RK.my=RK.bets[0];RK.hist=[10,1.06,2.56,1.27,39,1.96]})()",
+  "wait": 200
+ },
+ "rk_flybet": {
+  "frame": "frames5/r_299.0.png",
+  "go": "rocket",
+  "mask": [
+   [
+    0,
+    0,
+    390,
+    66
+   ]
+  ],
+  "js": "(()=>{RK.crash=100;RK.phase='fly';let lo=0,hi=40;for(let i=0;i<40;i++){const m=(lo+hi)/2;rkMult(m)<1.6?lo=m:hi=m}RK.t0=performance.now()-lo*1000+700;RK.my={name:'Ibrohim',amt:6.73,out:0,me:1};RK.bets=[RK.my,{name:'721',amt:11794636.74,out:0},{name:'..',amt:33,out:0},{name:'PHAN',amt:3.5,out:0}]})()",
+  "wait": 700
+ },
+ "rk_sheet": {
+  "frame": "frames6/s_625.5.png",
+  "go": "rocket",
+  "mask": [
+   [
+    0,
+    0,
+    390,
+    66
+   ]
+  ],
+  "js": "(()=>{const f=n=>GIFTS.findIndex(x=>x.n===n);S.inv=[{id:'a',g:f('Mighty Arm'),v:124.78},{id:'b',g:f('Rare Bird'),v:29.71},{id:'c',g:f('Snoop Dogg'),v:37.15,m:'Black'},{id:'d',g:f('Plush Pepe'),v:14703.20}];RK.phase='wait';RK.waitEnd=performance.now()+9000;BS.bt=null;openBetModal();document.querySelector('#btTabs [data-t=gift]').click()})()",
+  "wait": 700
+ },
+ "rk_ton": {
+  "frame": "frames6/t_648.4.png",
+  "go": "rocket",
+  "mask": [
+   [
+    0,
+    0,
+    390,
+    66
+   ],
+   [
+    15,
+    340,
+    375,
+    400
+   ]
+  ],
+  "js": "(()=>{S.bal=9492.92;renderBal();RK.phase='wait';RK.waitEnd=performance.now()+4500;BS.bt=null;openBetModal();document.querySelector('#btTabs [data-t=coin]').click();const i=document.getElementById('btAmt');i.value='400';i.oninput()})()",
+  "wait": 700
+ },
+ "rk_gift0": {
+  "frame": "frames6/t_647.6.png",
+  "go": "rocket",
+  "mask": [
+   [
+    0,
+    0,
+    390,
+    66
+   ]
+  ],
+  "js": "(()=>{const f=n=>GIFTS.findIndex(x=>x.n===n);S.inv=[{id:'c',g:f('Snoop Dogg'),v:37.15,m:'Black'},{id:'d',g:f('Plush Pepe'),v:14703.20,m:'Onyx Black'}];RK.phase='wait';RK.waitEnd=performance.now()+4500;BS.bt=null;openBetModal();document.querySelector('#btTabs [data-t=gift]').click()})()",
+  "wait": 700
+ },
+ "rk_gift1": {
+  "frame": "frames6/t_648.0.png",
+  "go": "rocket",
+  "mask": [
+   [
+    0,
+    0,
+    390,
+    66
+   ]
+  ],
+  "js": "(()=>{const f=n=>GIFTS.findIndex(x=>x.n===n);S.inv=[{id:'c',g:f('Snoop Dogg'),v:37.15,m:'Black'},{id:'d',g:f('Plush Pepe'),v:14703.20,m:'Onyx Black'}];RK.phase='wait';RK.waitEnd=performance.now()+4500;BS.bt=null;openBetModal();document.querySelector('#btTabs [data-t=gift]').click();document.querySelector('#btGifts .rg-c').click()})()",
+  "wait": 700
  }
 }

@@ -225,11 +225,12 @@ rkRender = function (force) {
   const chip = RK.phase === 'wait' ? `<span class="bet">BET</span>` : RK.phase === 'fly' ? `<span class="now">${RK.m.toFixed(2)}x</span>` : '';
   $id('rkHist').innerHTML = chip + RK.hist.map(h => `<span class="${h < 1.2 ? 'c-red' : h < 2 ? 'c-blu' : h < 5 ? 'c-grn' : h < 10 ? 'c-pur' : 'c-gld'}">${h.toFixed(2)}x</span>`).join('');
   const list = [...RK.bets].sort((a, b) => (b.me ? 1 : 0) - (a.me ? 1 : 0) || (b.out ? 1 : 0) - (a.out ? 1 : 0) || b.amt - a.amt);
+  if (window.ERK_ON) return;   // ro'yxatni epic-rocket.js chizadi (ikki renderer almashib miltillamasligi uchun)
   $id('rkPl').innerHTML = list.length ? list.map(b => {
     const lose = RK.phase === 'crash' && !b.out, m = b.out || (RK.phase === 'fly' ? RK.m : RK.phase === 'crash' ? RK.crash : 1);
     const val = b.out ? b.amt * b.out : lose ? b.amt : b.amt * m;
     return `<div class="prow ${b.out ? 'win' : ''} ${lose ? 'lose' : ''} ${b.me ? 'me' : ''}">${avHTML(b.name)}<div class="pi"><b>${esc(b.name)}${b.me ? ' (you)' : ''}${b.bot ? ' <span class="bt">BOT</span>' : ''}</b><span class="chipg">${GEM}${fmt(b.amt)} ×${m.toFixed(2)}</span></div><span class="pv">${gem(val)}</span>${b.nf ? `<span class="gsq">${GIM(b.nf.g, b.nf.ms)}</span>` : ''}</div>`;
-  }).join('') : `<div class="noply"><i>${ICO.rocket}</i><b>No Players Yet</b><small>Waiting for next round...</small></div>`;
+  }).join('') : `<div class="noply rk0"><img src="assets/rocket/noply.png" alt=""><b>No players yet</b><small>Wait for next round</small><em>• • •</em></div>`;
 };
 // tikish oynasi — video bo'yicha
 const _btGo = $id('btGo').onclick;
@@ -2217,7 +2218,7 @@ rkDraw = function (now) {
 const _rkR11 = rkRender;
 rkRender = function (f) {
   _rkR11(f);
-  const b = $id('rkBtn'); if (b && RK.my && RK.my.out && RK.phase === 'fly') { b.className = 'bigbtn ok'; const nf = RK.my.nf || (typeof LV !== 'undefined' && LV.paidRk === RK.round ? LV.rkNf : null); b.innerHTML = nf ? `✓ Won ${esc(nf.g.n)} · ${g$(nf.p)}` : `✓ Cashed out ${g$(RK.my.amt * RK.my.out)}` }
+  const b = $id('rkBtn'); if (!window.ERK_ON && b && RK.my && RK.my.out && RK.phase === 'fly') { b.className = 'bigbtn ok'; const nf = RK.my.nf || (typeof LV !== 'undefined' && LV.paidRk === RK.round ? LV.rkNf : null); b.innerHTML = nf ? `✓ Won ${esc(nf.g.n)} · ${g$(nf.p)}` : `✓ Cashed out ${g$(RK.my.amt * RK.my.out)}` }
   if (b && /^Place bet \(next round\)$/.test(b.textContent.trim())) b.textContent = 'Place bet';
   if (b && RK.next && RK.phase !== 'wait') { b.className = 'bigbtn wait'; b.innerHTML = `Next round · ${g$(RK.next.amt)} <small style="opacity:.7;font-weight:600">tap to cancel</small>` }
   const h = $id('rkHist'); if (h && !h._v11) { h._v11 = 1 }
@@ -2992,3 +2993,52 @@ document.addEventListener('click', e => { const o = e.target.closest('#dtOk'); i
 // header "+" va "Deposit" — Top Up Balance, TON tabi
 document.addEventListener('click', e => { const p = e.target.closest('#hPill .plus, #hMain .depbtn, [data-dep]'); if (!p) return; e.stopImmediatePropagation(); e.preventDefault(); openDeposit() }, true);
 })()
+
+// =====================================================================
+//  ROCKET — "Place bet" oynasi, Gifts tabi (409.mp4 10:25.5 kadri, 390 px o'lchovlar):
+//  tanlangan sovg'a kartasi + Auto cashout + "Place bet in rocket"; pastda "Choose a different gift:" 3 ustunli to'r.
+//  Bitta sovg'a tanlanadi (kadrda faqat bittasi belgilangan).
+// =====================================================================
+;(function () {
+  const $id = id => document.getElementById(id), GBOT = 'buyernewss';
+  const gbox = $id('btGift');
+  gbox.innerHTML = `<div class="rg-hero" id="rgHero"></div><div class="rg-lbl">Choose a different gift:</div><div class="rg-grid" id="btGifts"></div><button class="mbtn hide" id="btGoG"></button>`;
+  const head = $('#betM .mhead'); if (head) head.innerHTML = `Place bet<button class="mx rg-x" data-close><img src="assets/rocket/close.png" alt=""></button>`;
+  const card = it => { const g = GIFTS[it.g]; return `<div class="rg-c ${BS.bt.gifts[0] === it.id ? 'sel' : ''}" data-id="${it.id}"><span class="rg-im">${GII(it)}</span><span class="rg-p">${fmt(it.v)}${GEM}</span><b>${esc(g.n)}</b>${it.m ? `<em><i></i>${esc(it.m)}</em>` : ''}</div>` };
+  const drawG = () => {
+    const grid = $id('btGifts'), hero = $id('rgHero');
+    if (!S.inv.length) { hero.style.display = 'none'; $('#btGift .rg-lbl').style.display = 'none'; grid.innerHTML = `<div class="nogift"><b>No Gifts Available</b><p>Send gifts to <a class="lnk" href="https://t.me/${GBOT}">@${GBOT}</a> and play Rocket</p></div>`; return }
+    hero.style.display = ''; $('#btGift .rg-lbl').style.display = '';
+    const it = invGet(BS.bt.gifts[0]);
+    $('#btGift .rg-lbl').textContent = it ? 'Choose a different gift:' : 'Choose a gift';   // 409.mp4 10:47.6 → 10:48.0
+    if (!it) { hero.style.display = 'none'; grid.innerHTML = S.inv.map(card).join(''); return }
+    const g = GIFTS[it.g];
+    const on = $id('btAutoOn').checked;
+    hero.innerHTML = `<div class="rg-top"><span class="rg-tile">${GII(it)}</span><div class="rg-inf"><b>${esc(g.n)}</b>${it.m ? `<em><i></i>${esc(it.m)}</em>` : ''}<span><img src="assets/rocket/ton.png" alt="">${fmt(it.v)}</span></div></div>
+      <div class="rg-auto"><span>Auto cashout</span><label class="sw rg-sw"><input type="checkbox" id="rgAuto" ${on ? 'checked' : ''}><i></i></label></div>
+      <div class="acrow" id="rgAutoW" style="${on ? '' : 'display:none'}"><button id="rgM">−</button><div class="inp"><input id="rgAutoV" type="number" value="${$id('btAuto').value}" step="0.1"><span>x</span></div><button id="rgP">+</button></div>
+      <button class="rg-go" id="rgGo">Place bet in rocket</button>`;
+    grid.innerHTML = S.inv.map(card).join('');
+    $id('rgAuto').onchange = () => { $id('btAutoOn').checked = $id('rgAuto').checked; $id('rgAutoW').style.display = $id('rgAuto').checked ? '' : 'none'; hap('light') };
+    $id('rgAutoV').oninput = () => { $id('btAuto').value = $id('rgAutoV').value };
+    $id('rgM').onclick = () => { $id('rgAutoV').value = Math.max(1.01, (parseFloat($id('rgAutoV').value) || 2) - .1).toFixed(2); $id('rgAutoV').oninput() };
+    $id('rgP').onclick = () => { $id('rgAutoV').value = ((parseFloat($id('rgAutoV').value) || 2) + .1).toFixed(2); $id('rgAutoV').oninput() };
+    $id('rgGo').onclick = () => { if ($id('rgGo').disabled) return; $id('rgGo').disabled = true; setTimeout(() => { const b = $id('rgGo'); if (b) b.disabled = false }, 600); BS.bt.mode = 'gift'; $id('btGo').click() };
+  };
+  // TON tabi — 409.mp4 10:48.4: "Available balance", "Bet amount", markazlangan qiymat, "Place 400.00 TON Bet"
+  const coin = $id('btCoin');
+  coin.querySelector('.mrow span').textContent = 'Available balance';
+  const lb = coin.querySelector('.lbl'); if (lb) lb.textContent = 'Bet amount';
+  $id('btAmt').placeholder = '';
+  const goTxt = () => { const v = parseFloat($id('btAmt').value) || 0; $id('btGo').textContent = `Place ${v.toFixed(2)} ${CUR} Bet` };
+  const _inp = $id('btAmt').oninput; $id('btAmt').oninput = () => { _inp && _inp(); goTxt() };
+  const _open = openBetModal;
+  openBetModal = function () {
+    _open(); goTxt();
+    BS.bt.gifts = [];   // har ochilganda tanlov bo'sh (409.mp4 10:47.6)
+    $id('btGifts').onclick = e => { const c = e.target.closest('.rg-c'); if (!c) return; BS.bt.gifts = [c.dataset.id]; hap('light'); drawG(); $('#betM .mbox').scrollTo({ top: 0, behavior: 'smooth' }) };
+    const setT = t => { BS.bt.mode = t; $$('#btTabs button').forEach(b => b.classList.toggle('on', b.dataset.t === t)); $id('btCoin').style.display = t === 'coin' ? '' : 'none'; $id('btGift').style.display = t === 'gift' ? '' : 'none'; if (t === 'gift') drawG() };
+    $$('#btTabs button').forEach(b => b.onclick = () => { setT(b.dataset.t); hap('light') });
+    setT(BS.bt.mode);
+  };
+})();

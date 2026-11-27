@@ -90,3 +90,26 @@ Har bir element kadrlardan: 62.5 (bo'sh), 68.0 (miqdor, fokus), 69.6 (raund bosh
 \* Nav: videoda o'yin ekranlarida Home binafsha; siz kulrang dedingiz — kulrang qoldirildi.
 
 UNCLEAR (Mines): oltin chip qiymati qoidasi; yutuq holati qancha turadi va konfetti; Cash Out tugmasidagi sovg'a rasmi qaysi sovg'a (eng yaqin narx olindi); History va How it works oynalari hali kadr bilan solishtirilmagan.
+
+## ROCKET — qayta qurildi (408.mp4 4:42–5:05, 409.mp4 10:22–10:56)
+| Ekran | Kadr | Diff | Holat |
+|---|---|---|---|
+| Kutish (sanoq, BET chip, bo'sh ro'yxat PNG ikonka) | frames5/r_280.0 | 6.4% | ✅ |
+| Uchish, tikishsiz (Stellar Rocket, iz egri chizig'i) | frames5/r_282.0 | 13.0% | ⚠️ sovg'a rasmi CDN (sinovda internet yo'q) |
+| Uchish, tikish bilan (Cash Out, qatorlar) | frames5/r_299.0 | 12.4% | ⚠️ avatar fotolari / sovg'a rasmlari |
+| Portlash (2.21x yashil, qizil/yashil qatorlar) | frames5/r_302.0 | 12.0% | ⚠️ shu sabab |
+| Place bet — Gifts (tanlovsiz) | frames6/t_647.6 | 8.3% | ✅ |
+| Place bet — Gifts (tanlangan) | frames6/t_648.0 | 9.3% | ✅ |
+| Place bet — TON | frames6/t_648.4 | 5.0% | ✅ (kadrda tab 1 kadr kech yangilangan) |
+
+| Harakat | Original | RIKI |
+|---|---|---|
+| Sanoq raqami | har 1000 ms, rang 5→1 ko'k/yashil/to'q sariq/qizil | bir xil |
+| Portlash → matn | portlash sprite ~0.6 s, bo'sh ~0.5 s, matn ≈1.17 s da | bir xil (crashAt dan hisoblanadi) |
+| Iz uchi x(t) | 1.60x → 75 px, 6.81x → 251 px | 21.6 + 18.3·(t−1.38)^1.042 (xato ≤2 px) |
+| Tab almashishi | 1 kadr (≈45 ms), slayd yo'q | darhol |
+| Cash Out dan keyin | tugma darhol "Place bet" ko'k | bir xil |
+
+UNCLEAR (Rocket): portlash matni rangi 5–10x oralig'ida (faqat 1.20/1.48 ko'k, 2.21 yashil, 80.03 to'q sariq ko'rilgan);
+TON tabida bo'sh miqdor bilan tugma matni ("Place 0.00 TON Bet" qilindi); Auto cashout yoqilganda chiqadigan maydon ko'rinishi;
+"Rocket Reward!" oynasi — 409.mp4 da Cash Out dan keyin ko'rinmaydi, oldingi manbadan qoldirildi; qatorlar tartibi (kadrda summa bo'yicha emas).

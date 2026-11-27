@@ -177,7 +177,7 @@ function save() {
   }, 250);
 }
 function setBal(d) { S.bal = Math.max(0, Math.round((S.bal + d) * 100) / 100); renderBal(); save() }
-function renderBal() { const t = fmt(S.bal), i = t.lastIndexOf('.'); $$('.balv').forEach(e => { if (e.closest('.bal') && i > 0) e.innerHTML = t.slice(0, i) + '<small class="dec">' + t.slice(i) + '</small>'; else e.textContent = t }) }   // sarlavhada kasr qismi kichikroq
+function renderBal() { const t = (Math.floor(S.bal * 1000 + 1e-6) / 1000).toLocaleString('en-US', { minimumFractionDigits: 3, maximumFractionDigits: 3 }).replace(/,/g, ''), i = t.lastIndexOf('.'); $$('.balv').forEach(e => { if (e.closest('.bal') && i > 0) e.innerHTML = t.slice(0, i) + '<small class="dec">' + t.slice(i) + '</small>'; else e.textContent = t }) }   // sarlavhada kasr qismi kichikroq   // + balans 3 xona: 408.mp4 "9913.203", 409.mp4 "9492.920"
 function addItem(g, v, n, m, ms) { const it = { id: uid(), g: g.i, sh: g.sh, v: Math.round((v || g.p) * 100) / 100, n: n || (1 + ri(900)), m: m || null, ms: ms || null }; S.inv.unshift(it); save(); return it }
 const invGet = id => S.inv.find(x => x.id === id);
 function invDel(ids) { S.inv = S.inv.filter(x => !ids.includes(x.id)); save() }
@@ -441,7 +441,7 @@ function rkRender(force) {
   const md = $('#rkModel');
   if (RK.my && RK.phase === 'fly' && !RK.my.out) { const gg = giftFor(RK.my.amt * RK.m); if (gg) { const key = gg.g.i + ':' + gg.m; if (md.dataset.g != key) { md.dataset.g = key; md.innerHTML = `${GIM(gg.g, gg.ms)}<span>${esc(gg.m || gg.g.n)}</span><em>${g$(gg.p)}</em>`; md.style.setProperty('--glow', TIER_C[tierOf(gg.p)]); md.classList.remove('rev'); void md.offsetWidth; md.classList.add('rev', 'gw') } } else if (md.dataset.g !== 'x') { md.dataset.g = 'x'; md.classList.remove('gw'); md.innerHTML = `NFT: <em>${g$(NFTS[0].p)}+</em>` } }
   else if (md.dataset.g !== 'r' + RK.round) { md.dataset.g = 'r' + RK.round; md.classList.remove('gw'); md.innerHTML = `Round <em>#${RK.round}</em>` }
-  const btn = $('#rkBtn');
+  const btn = window.ERK_ON ? document.createElement('b') : $('#rkBtn');   // tugmani epic-rocket.js boshqaradi
   if (RK.phase === 'wait') {
     const s = Math.max(0, (RK.waitEnd - now) / 1000);
     $('#rkSub').textContent = 'Starting in ' + s.toFixed(1) + 's';
@@ -450,7 +450,7 @@ function rkRender(force) {
     else { btn.className = 'bigbtn ok'; btn.textContent = 'Place bet' }
   } else if (RK.phase === 'fly') {
     $('#rkSub').textContent = RK.my && !RK.my.out ? '' : 'Flying…'; $('#rkBar').style.width = Math.min(100, Math.log(RK.m) / Math.log(20) * 100) + '%';
-    if (RK.my && !RK.my.out) { btn.className = 'bigbtn out'; btn.innerHTML = `Cash out ${g$(RK.my.amt * RK.m)}` }
+    if (RK.my && !RK.my.out) { btn.className = 'bigbtn out'; btn.textContent = "Cash Out" }
     else if (RK.next) { btn.className = 'bigbtn wait'; btn.innerHTML = `Next round: ${g$(RK.next.amt)}` }
     else { btn.className = 'bigbtn ok'; btn.textContent = RK.my ? 'Cashed out ✓ · Next round' : 'Place bet (next round)' }
     if (RK.my && !RK.my.out) { const gg = giftFor(RK.my.amt * RK.m); $('#rkSub').innerHTML = gg ? `🎁 ${esc(gg.g.n)}${gg.m ? ' · ' + esc(gg.m) : ''} (${fmt(gg.p)}) + ${g$(RK.my.amt * RK.m - gg.p)}` : `Need ${g$(NFTS[0].p)} for an NFT` }

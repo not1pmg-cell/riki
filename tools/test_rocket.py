@@ -1,0 +1,76 @@
+# Rocket — Playwright testlari (tugma holatlari, TON va sovg'a tikish, cash out, ro'yxat miltillamasligi, xatolar)
+import asyncio, json
+from playwright.async_api import async_playwright
+async def main():
+    async with async_playwright() as p:
+        b=await p.chromium.launch(executable_path='/usr/bin/google-chrome',args=['--no-sandbox'])
+        pg=await b.new_page(viewport={'width':390,'height':766}, has_touch=True)
+        errs=[]; pg.on('pageerror',lambda e: errs.append(str(e))); pg.on('console',lambda m: m.type=='error' and 'net::' not in m.text and errs.append('console: '+m.text))
+        await pg.route('**/*', lambda r: r.abort() if not r.request.url.startswith('http://localhost') else r.continue_())
+        await pg.goto('http://localhost:8765/index.html'); await pg.wait_for_timeout(1500)
+        E=pg.evaluate; bugs=[]
+        await E("document.getElementById('splash')&&document.getElementById('splash').remove();S.bal=100;const f=n=>GIFTS.findIndex(x=>x.n===n);S.inv=[{id:'a',g:f('Mighty Arm'),v:124.78},{id:'b',g:f('Rare Bird'),v:29.71}];renderBal();go('rocket');document.head.insertAdjacentHTML('beforeend','<style>#offLv{display:none!important}</style>')")
+        await pg.wait_for_timeout(800)
+        btn=lambda: E("(()=>{const b=document.getElementById('rkBtn');return b.textContent.trim()+'|'+b.className})()")
+        # 1 kutish: tugma "Place bet"
+        await E("RK.phase='wait';RK.waitEnd=performance.now()+8000;RK.bets=[];RK.my=null;RK.next=null"); await pg.wait_for_timeout(400)
+        t=await btn(); print('wait',t)
+        if not t.startswith('Place bet'): bugs.append('wait btn: '+t)
+        # 2 ro'yxat 1 s davomida bir xil (ikki renderer almashmaydi)
+        seen=set()
+        for i in range(10): seen.add(await E("document.getElementById('rkPl').firstElementChild?.className||''")); await pg.wait_for_timeout(100)
+        print('rkPl classes',seen)
+        if len(seen)>1: bugs.append('rkPl flicker '+str(seen))
+        # 3 TON tikish
+        await pg.click('#rkBtn'); await pg.wait_for_timeout(400)
+        if not await E("document.getElementById('betM').classList.contains('on')||getComputedStyle(document.getElementById('betM')).display!=='none'"): bugs.append('sheet not open')
+        await pg.click('#btTabs [data-t=coin]'); await pg.fill('#btAmt','5'); await E("document.getElementById('btAmt').oninput()")
+        gt=await E("document.getElementById('btGo').textContent")
+        if gt!='Place 5.00 '+await E("CUR")+' Bet': bugs.append('TON btn text '+gt)
+        b0=await E("S.bal"); await pg.click('#btGo'); await pg.wait_for_timeout(500)
+        b1=await E("S.bal"); my=await E("!!RK.my"); t=await btn(); print('bet',b0,'->',b1,'my',my,t)
+        if not my: bugs.append('TON bet not placed')
+        if abs(b0-5-b1)>1e-6: bugs.append(f'bal not debited {b0}->{b1}')
+        if not t.startswith('Waiting'): bugs.append('after bet btn: '+t)
+        # 4 uchish → Cash Out
+        await E("RK.phase='fly';RK.t0=performance.now()-6000;RK.crash=50"); await pg.wait_for_timeout(500)
+        t=await btn(); print('fly',t)
+        if not t.startswith('Cash Out'): bugs.append('fly btn: '+t)
+        await pg.click('#rkBtn'); await pg.wait_for_timeout(400)
+        b2=await E("S.bal"); w=await E("S.inv.reduce((s,x)=>s+x.v,0)"); out=await E("RK.my&&RK.my.out"); t=await btn(); print('cash',b2,'inv',w,out,t)
+        if not out or (b2+w)<=b1+5: bugs.append(f'cashout failed bal {b1}->{b2} out {out}')
+        if not t.startswith('Place bet'): bugs.append('after cashout btn (409.mp4 10:44 → Place bet): '+t)
+        # 5 ikki marta bosish — ikki marta to'lamaydi
+        await E("document.getElementById('rkBtn').click();document.getElementById('rkBtn').click()"); await pg.wait_for_timeout(300); b3=await E("S.bal")
+        if b3>b2+1e-6: bugs.append('double cashout paid twice')
+        rw=await E("document.getElementById('rwM').classList.contains('on')"); print('reward sheet',rw)
+        await E("closeM('betM');closeM('rwM')"); await pg.wait_for_timeout(400)
+        # 6 portlash: matn va qizil qator
+        await E("RK.phase='crash';RK.crash=2.21;RK.m=2.21;RK.crashAt=performance.now()-1500;RK.bets=[{name:'X',amt:1}]"); await pg.wait_for_timeout(500)
+        tx=await E("(()=>{const e=document.getElementById('erkT');return [e.textContent,e.classList.contains('on'),getComputedStyle(e).color]})()"); print('crash',tx)
+        if tx[0]!='2.21x' or not tx[1]: bugs.append('crash text '+str(tx))
+        if 'rgb(33, 195, 92)' not in tx[2]: bugs.append('crash color '+tx[2])
+        lose=await E("!!document.querySelector('#rkPl .er.l')")
+        if not lose: bugs.append('no lose row')
+        # 7 sovg'a tikish
+        await E("RK.phase='wait';RK.waitEnd=performance.now()+8000;RK.bets=[];RK.my=null;RK.next=null"); await pg.wait_for_timeout(400)
+        await pg.click('#rkBtn'); await pg.wait_for_timeout(400); await pg.click('#btTabs [data-t=gift]'); await pg.wait_for_timeout(200)
+        if await E("document.getElementById('rgHero').style.display")!='none': bugs.append('hero shown before selection')
+        if await E("document.querySelector('#btGift .rg-lbl').textContent")!='Choose a gift': bugs.append('label before selection')
+        n=await E("document.querySelectorAll('#btGifts .rg-c').length"); sel=await E("document.querySelectorAll('#btGifts .rg-c.sel').length")
+        if n!=await E("S.inv.length") or sel!=0: bugs.append(f'gift grid n={n} sel={sel}')
+        await pg.click('#btGifts .rg-c[data-id=b]'); await pg.wait_for_timeout(200)
+        sel=await E("document.querySelectorAll('#btGifts .rg-c.sel').length")
+        hero=await E("document.querySelector('#rgHero .rg-inf b').textContent"); print('hero',hero)
+        if hero!='Rare Bird': bugs.append('hero not switched: '+hero)
+        await pg.click('#rgAuto+i', force=True) if await E("!!document.querySelector('#rgAuto+i')") else None
+        await pg.click('#rgGo'); await pg.wait_for_timeout(500)
+        g=await E("RK.my&&RK.my.gift"); inv=await E("S.inv.length"); print('gift bet',g,inv)
+        if not g: bugs.append('gift bet not placed')
+        # 8 sovg'a tikishni bekor qilib bo'lmaydi
+        await pg.click('#rkBtn'); await pg.wait_for_timeout(300)
+        if not await E("!!RK.my"): bugs.append('gift bet cancelled')
+        print('errors',errs); bugs+=errs
+        print('BUGS',json.dumps(bugs))
+        await b.close()
+asyncio.run(main())

@@ -117,3 +117,117 @@ body.e-rk #rkStage{height:302px}
 #erkC.pop .halo{animation:rkHalo .25s ease-out}
 @keyframes rkDig{0%{transform:scale(1.35);opacity:.35}100%{transform:none;opacity:1}}
 @keyframes rkHalo{0%{transform:scale(1);opacity:.55}100%{transform:scale(1.22);opacity:0}}
+/* ===== 408.mp4 telefon kadrlari (4:40–5:05; sahifa y = (kadr y − 122)·0.6633): halqa markazi 155.2 (r 68.3, chiziq 6, trek #333a39, tashqi halqa r 85.6),
+   chiplar y 267.3 (h 33.2), tugma y 309.1 (h 60.3), ro'yxat y 377.4; crash yozuvi markazi 157.9; sovg'a markazi 151.2 */
+body.e-rk #rkStage{height:309.1px!important}
+#erkC{top:155.2px!important}
+#erkT{top:128px!important}
+#erkH{top:267.3px!important;height:33.2px!important}
+#erkH span{height:33.2px!important}
+#rkBtn{height:60.3px!important}
+#rkPl{margin-top:8px!important}
+#erkC .halo{inset:-17.3px!important;border:1.3px solid color-mix(in srgb,var(--cc) 55%,#191919)!important}
+#erkC.pop .halo{animation:rkHalo2 .6s linear!important}
+@keyframes rkHalo2{0%{opacity:.9}70%{opacity:.6}100%{opacity:0}}
+/* sarlavha pillari — 408.mp4 4:42 kadri: wifi 62.4×34.5 (y 12), tishli 41.1×34.5, balans 160.5×40 (y 9); fon #282828, chegara 1px #353535 */
+body.e-rk #hPill{top:-7.6px!important}
+body.e-rk #hRk .wf,body.e-rk #hRk .gr{background:#282828!important;border:1px solid #353535!important;height:34.5px!important;box-sizing:border-box}
+body.e-rk #hRk .wf{width:62.4px!important}
+body.e-rk #hRk .gr{width:41.1px!important}
+body.e-rk #hPill .pill{background:#282828!important;border:1px solid #333!important;height:40px!important;width:160.5px!important;box-sizing:border-box;margin-right:0!important}
+/* bo'sh ro'yxat — 408.mp4 4:42: ikonka 49×48.4 (panel ichida 46 px), sarlavha 15/#d7d7d7 markaz 499, izoh 13/#959595 markaz 525, nuqtalar #4c4c4c markaz 550 */
+#rkPl .noply.rk0{padding:32px 0 0;gap:0;min-height:300px;box-sizing:border-box;justify-content:flex-start}
+#rkPl .noply.rk0 img{width:49px;height:48.4px;display:block}
+#rkPl .noply.rk0 b{font-size:15px;line-height:18px;font-weight:700;color:#d7d7d7;margin-top:18.6px}
+#rkPl .noply.rk0 small{font-size:13px;line-height:16px;color:#959595;margin-top:9px}
+#rkPl .noply.rk0 em{font-style:normal;font-size:10px;line-height:12px;color:#4c4c4c;letter-spacing:2px;margin-top:11px}
+#rkPl{border-radius:22px!important}
+/* qatorlar — 408.mp4 5:02 (crash): yutqazgan #4e3534 / pill #5d3b3a / matn #eca4a4 / chegara #944c4d; yutgan #2f4938 / pill #325840 / matn #8ce8ac / chegara #607568 */
+#rkPl .er .nm{overflow:visible}
+#rkPl .er .nm small{white-space:nowrap;font-size:13px;font-weight:600;position:relative;z-index:0}
+#rkPl .er .v{position:relative;z-index:1;white-space:nowrap}
+#rkPl .er.l{background:#4e3534!important;border-color:#944c4d!important}
+#rkPl .er.l .nm small,#rkPl .er.l .v{background:#5d3b3a!important;color:#eca4a4!important}
+#rkPl .er.l .gt{background:#573e3f!important;border-color:#914d4d!important}
+#rkPl .er.w{background:#2f4938!important;border-color:#607568!important}
+#rkPl .er.w .nm small,#rkPl .er.w .v{background:#325840!important;color:#8ce8ac!important}
+#rkPl .er.w .gt{background:#3a5443!important;border-color:#607568!important}
+#rkPl .er .nm b{overflow:visible!important;text-overflow:clip!important}
+#erkH span.live{transform:none!important;margin-top:0!important;height:var(--rk-chip-h)!important;align-self:flex-start}
+/* chiplar — 408.mp4 4:44/5:02 kadrlaridan chegara/fon */
+:root{--rk-c-red-bg:#422120;--rk-c-red-bd:#ae5054;--rk-c-grn-bg:#1a3c27;--rk-c-grn-bd:#389a5e;--rk-c-blu-bg:#1e2e46;--rk-c-blu-bd:#4574b0;--rk-c-pur-bg:#433349;--rk-c-pur-bd:#99679c;--rk-c-yel-bg:#463416;--rk-c-yel-bd:#af8622}
+#erkH .live{box-shadow:none!important}
+/* tugma gradientlari — 408.mp4 4:42 (Place bet) va 4:56 (Cash Out), chapdan o'ngga */
+#rkBtn:not(.e-grey):not(.e-cash){background:linear-gradient(90deg,#0aa6ea,#2560eb)!important}
+#rkBtn.e-cash{background:linear-gradient(90deg,#1dc457,#0ebb83)!important}
+/* ===== Rocket "Place bet" oynasi — 409.mp4 10:25.5 (390 px): varaq tepasi 58.4, fon #1e1e1e; sarlavha markazi 89; chiziq 122.7 (#2e2e2e);
+   tablar 139.9–197 (#222/#292929), faol 21.2–193 × 147.2–189.7 #a754f7; karta 205.6–420.5 #292929 chegara #2e2e2e;
+   plitka 31.8,221 85×85.6 #323232; nom 16/#fff markaz 248; narx #62a7fb markaz 274, ikonka 25.9; Auto cashout #adadad markaz 331, kalit 45×24.5;
+   tugma 32.5–358.2 × 355.5–405.9 #0097e8→#00c1f9; "Choose a different gift:" #a8a8a8 markaz 447.5;
+   to'r: 112.8 × 161.1, oraliq 10.6 / 12.6, tanlangan #1f2733 chegara #253c63, oddiy #292929 chegara #2e2e2e; narx belgisi #111 h 22.6 (+9.6);
+   rasm 86×85 (+12.3); nom markazi +113; model pilli 61.7×21.2 #1e1e1e matn #8c8c8c (+125.7) ===== */
+#betM.bm2 .mbox{background:#1e1e1e!important;max-height:calc(100% - 58.4px)!important;height:calc(100% - 58.4px);border-radius:16px 16px 0 0!important;padding:0 15.9px 20px!important;box-sizing:border-box;overflow-y:auto}
+#betM.bm2 .mhead{height:62.8px!important;margin:0 -15.9px!important;padding:0 15.9px!important;display:flex!important;align-items:center;justify-content:space-between;font-size:18px!important;font-weight:700!important;color:#fff;border-bottom:1.3px solid #2e2e2e!important;box-sizing:border-box}
+#betM .rg-x{width:33.2px!important;height:32.5px!important;padding:0!important;background:none!important;border:0!important}
+#betM .rg-x img{width:33.2px;height:32.5px;display:block}
+#betM.bm2 .mbody{padding:0!important}
+#betM.bm2 #btTabs{margin:16.2px 0 0!important;height:57.1px;background:#222!important;border-radius:14px!important;padding:7.3px 4.7px!important;box-sizing:border-box;display:flex;gap:0}
+#betM.bm2 #btTabs button{flex:1;height:42.5px;border-radius:11px!important;font-size:16px!important;font-weight:700!important;color:#afafaf!important;background:transparent!important;border:0!important;transition:background .15s,color .15s}
+#betM.bm2 #btTabs button.on{background:#a754f7!important;color:#fff!important}
+#btGift .rg-hero{margin-top:8.6px;background:#292929;border:1px solid #2e2e2e;border-radius:16px;padding:15.4px 15.9px 14.6px 15.9px;box-sizing:border-box;min-height:214.9px}
+#btGift .rg-top{display:flex;align-items:center;gap:14.3px}
+#btGift .rg-tile{width:85px;height:85.6px;border-radius:12px;background:#323232;display:grid;place-items:center;flex:none;overflow:hidden}
+#btGift .rg-tile .gi-wrap,#btGift .rg-tile img{width:85px;height:85px;object-fit:contain}
+#btGift .rg-inf b{display:block;font-size:16px;line-height:20px;font-weight:600;color:#fff}
+#btGift .rg-inf span{display:flex;align-items:center;gap:6.5px;margin-top:6px;font-size:16px;font-weight:700;color:#62a7fb}
+#btGift .rg-inf span img{width:25.9px;height:25.9px}
+#btGift .rg-auto{display:flex;align-items:center;justify-content:space-between;height:24.5px;margin-top:12.4px}
+#btGift .rg-auto span{font-size:14px;color:#adadad;font-weight:500}
+#btGift .rg-sw{transform:none}
+#btGift .acrow{margin-top:10px}
+#btGift .rg-go{display:block;width:100%;height:50.4px;margin-top:12px;border:0;border-radius:12px;background:linear-gradient(90deg,#0097e8,#00c1f9);color:#fff;font-size:16px;font-weight:700;font-family:inherit;transition:transform .1s,filter .1s}
+#btGift .rg-go:active{transform:scale(.97);filter:brightness(.92)}
+#btGift .rg-go:disabled{opacity:.6}
+#btGift .rg-lbl{margin-top:17.9px;font-size:14px;line-height:17px;color:#a8a8a8}
+#btGift .rg-grid{display:grid;grid-template-columns:repeat(3,112.8px);column-gap:10.6px;row-gap:12.6px;margin-top:14.3px}
+#btGift .rg-c{position:relative;height:161.1px;border-radius:12px;background:#292929;border:1px solid #2e2e2e;box-sizing:border-box;display:flex;flex-direction:column;align-items:center;cursor:pointer;transition:transform .1s}
+#btGift .rg-c:active{transform:scale(.97)}
+#btGift .rg-c.sel{background:#1f2733;border-color:#253c63}
+#btGift .rg-im{position:absolute;top:12.3px;left:50%;margin-left:-43px;width:86px;height:85px;border-radius:10px;overflow:hidden}
+#btGift .rg-im .gi-wrap,#btGift .rg-im img{width:86px;height:85px;object-fit:contain}
+#btGift .rg-p{position:absolute;top:9.6px;left:50%;transform:translateX(calc(-50% + 11px));height:22.6px;padding:0 7px;border-radius:8px;background:#111;display:flex;align-items:center;gap:4px;font-size:14px;font-weight:700;color:#fff;white-space:nowrap;z-index:1}
+#btGift .rg-p .gem{width:14px;height:14px}
+#btGift .rg-c b{position:absolute;top:104px;left:0;right:0;text-align:center;font-size:14px;line-height:18px;font-weight:600;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:0 4px}
+#btGift .rg-c em{position:absolute;top:125.7px;left:50%;transform:translateX(-50%);height:21.2px;min-width:61.7px;padding:0 9px;box-sizing:border-box;border-radius:8px;background:#1e1e1e;display:flex;align-items:center;gap:6px;font-style:normal;font-size:13px;color:#8c8c8c}
+#btGift .rg-c em i{width:9px;height:9px;border-radius:50%;background:#2c2c2c}
+/* varaq balandligi kontentga qarab (409.mp4 10:47.6 / 10:48.4), maksimal tepa 58.4 */
+#betM.bm2 .mbox{height:auto!important;max-height:calc(100% - 58.4px)!important;padding-bottom:44px!important}
+#btGift .rg-inf em{display:inline-flex;align-items:center;gap:6px;height:21.2px;padding:0 9px;margin-top:5px;border-radius:8px;background:#1e1e1e;font-style:normal;font-size:13px;color:#8c8c8c}
+#btGift .rg-inf em i{width:9px;height:9px;border-radius:50%;background:#2c2c2c}
+#btGift .rg-inf em+span{margin-top:6px}
+/* TON kartasi — 409.mp4 10:48.4: karta 287.9 (#282828, chegara #2e2e2e); "Available balance" 15/#fff markaz +30.5, qiymat 18/700;
+   "Bet amount" markaz +71.2; kiritish 33.2–356.8 × +90.2…+144.6 (#292929, chegara #323232), qiymat 17/700 markazda;
+   Auto cashout #a6a6a6 markaz +179.7; tugma +225.5…+275.9 #0097e8→#00c1f9 */
+#betM.bm2 #btCoin{margin-top:8px!important;background:#282828!important;border:1px solid #2e2e2e!important;border-radius:16px!important;padding:17px 16.3px 11px!important;box-sizing:border-box}
+#betM.bm2 #btCoin .mrow{display:flex;justify-content:space-between;align-items:center;height:27px;margin:0!important}
+#betM.bm2 #btCoin .mrow>span{font-size:15px;font-weight:500;color:#fff}
+#betM.bm2 #btCoin .mrow>b{display:flex;align-items:center;gap:6px;font-size:18px;font-weight:700;color:#fff}
+#betM.bm2 #btCoin .mrow>b .gem{width:20px;height:20px}
+#betM.bm2 #btCoin .lbl{margin:14px 0 0!important;font-size:15px;line-height:18px;font-weight:400;color:#fff}
+#betM.bm2 #btCoin .inp{position:relative;height:54.4px;margin-top:12px;border:1px solid #323232!important;border-radius:12px;background:#292929!important;display:flex;align-items:center}
+#betM.bm2 #btCoin .inp input{width:100%;height:100%;text-align:center;font-size:17px;font-weight:700;color:#fff;background:transparent;border:0;outline:0;padding:0 34px;font-family:inherit}
+#betM.bm2 #btCoin .inp .gm{position:absolute;right:14px;top:50%;margin-top:-7px;width:14px;height:14px}
+#betM.bm2 #btCoin .inp .gm .gem{width:14px;height:14px}
+#betM.bm2 #btCoin .mrow:has(#btAutoOn){margin-top:22.7px!important;height:24.5px}
+#betM.bm2 #btCoin .mrow:has(#btAutoOn)>span{color:#a6a6a6}
+#betM.bm2 #btGo{height:50.4px!important;margin-top:22px!important;border-radius:12px!important;background:linear-gradient(90deg,#0097e8,#00c1f9)!important;color:#fff!important;font-size:16px!important;font-weight:700!important;opacity:1!important}
+#betM.bm2 #btGo.dis{filter:saturate(.5) brightness(.75)}
+#btGift #btGoG{display:none!important}
+#betM.bm2 #btCoin .inp input{background:transparent!important;border:0!important;box-shadow:none!important;border-radius:0!important;margin:0!important}
+#betM.bm2 .mbox{padding-bottom:36px!important}
+#betM.bm2 #btGo{margin-top:33px!important}
+#betM.bm2 #btCoin{padding-bottom:12px!important;margin-bottom:12px!important}
+#betM.bm2 #btCoin .lbl{margin-top:18px!important}
+#betM.bm2 #btCoin{padding-bottom:16px!important;margin-bottom:29px!important}
+#betM.bm2 #btCoin .mrow>b,#betM.bm2 #btCoin .mrow>b .balv{font-size:18px!important;font-weight:700!important}
+#betM.bm2 #btTabs button{transition:none!important}   /* 409.mp4 10:48.6: tab almashishi 1 kadrda (≈45 ms) */

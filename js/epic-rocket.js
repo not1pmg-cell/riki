@@ -1,3 +1,4 @@
+window.ERK_ON = true;
 // =====================================================================
 //  ROCKET — Epic videosidan 1:1 (spec.md). O'yin mantig'i (RK, tikish, server) o'zgarmaydi,
 //  faqat ko'rinish va vaqtlar shu fayldan.
@@ -15,7 +16,7 @@ const BOOM_T = [0, 55, 96, 139, 179, 217, 242, 280, 305, 345, 384, 425, 465, 493
 const BOOM_IMG = BOOM_T.map((_, k) => { const im = new Image(); im.src = `assets/rocket/boom_${String(k).padStart(2, '0')}.png`; return im });
 const COUNT_COL = { 5: '#5fa3f6', 4: '#32d196', 3: '#f9bd23', 2: '#f77115', 1: '#ec4345' };   // 409.mp4 635.5–638.5 s
 const TRAIL_FLY = '#ded147', TRAIL_CRASH = '#d44242';   // crash: 408.mp4 353.3 s
-const Y0 = 312.7 - 56;   // iz y (ekranda 312.7 px; sahna ekran tepasidan 56 px pastda)
+const Y0 = 224.4;   // kanvas sahifadan 6.4 px pastda — sahifada iz y = 230.8 (408.mp4 4:42)
 // iz rangi — ko'paytiruvchiga qarab silliq (409.mp4 641.1–643.5 s; 408.mp4 346–352 s)
 const TC = [[1, [0x2d, 0x84, 0x63]], [1.3, [0x28, 0x93, 0x7b]], [1.5, [0x2d, 0x8f, 0xa2]], [1.86, [0x31, 0x86, 0xc5]], [4, [0x60, 0x67, 0xe5]], [5.2, [0x7e, 0x56, 0xdf]], [6.2, [0x94, 0x61, 0xa8]], [7.7, [0xa7, 0x6c, 0x68]]];
 function trailCol(m) { let j = 1; while (j < TC.length - 1 && TC[j][0] < m) j++; const [m0, c0] = TC[j - 1], [m1, c1] = TC[j], k = Math.max(0, Math.min(1, (m - m0) / (m1 - m0))); return '#' + c0.map((v, i) => Math.round(v + (c1[i] - v) * k).toString(16).padStart(2, '0')).join('') }
@@ -24,13 +25,13 @@ const W = 390, H = 300;
 const P0 = [0, 218], PC = [230, 210], P2 = [W, 125];          // iz egri chizig'i (31, 36 kadrlar)
 const bz = t => [(1 - t) ** 2 * P0[0] + 2 * (1 - t) * t * PC[0] + t * t * P2[0], (1 - t) ** 2 * P0[1] + 2 * (1 - t) * t * PC[1] + t * t * P2[1]];
 const chipCls = m => m < 1.2 ? 'red' : m < 2 ? 'grn' : m < 5 ? 'blu' : m < 10 ? 'pur' : 'yel';   // 408/409.mp4: 1.08 qizil, 1.20/1.52 yashil, 2.21/2.56/3.11 ko'k, 5.31/9.04 binafsha, 10.0/39.0 sariq
-const txtCol = m => m < 10 ? '#4181ef' : '#ec9e12';      // 1.48x → #4181ef, 80.03x → #ec9e12 (UNCLEAR: oraliq chegaralar)
+const txtCol = m => m < 2 ? '#4181ef' : m < 10 ? '#21c35c' : '#ec9e12';   // 1.20x/1.48x → #4181ef, 2.21x (408.mp4 5:02) → #21c35c, 80.03x → #ec9e12 (UNCLEAR: 5–10 oralig'i)
 const chipTxt = m => (m >= 10 ? m.toFixed(1) : m.toFixed(2)) + 'x';   // "11.3x", "3.11x"
 
 const stage = document.getElementById('rkStage');
 if (!stage) return;
 stage.insertAdjacentHTML('beforeend', `<div id="erk"><canvas id="erkCv"></canvas><div id="erkG" class="off"></div>
-  <div id="erkC"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="47.9" fill="none" stroke="#403630" stroke-width="4.25"/><circle id="erkA" cx="50" cy="50" r="47.9" fill="none" stroke-width="4.25" stroke-linecap="round" stroke-dasharray="301" stroke-dashoffset="0"/></svg><b id="erkN">5</b><i class="halo"></i></div>
+  <div id="erkC"><svg viewBox="0 0 100 100"><circle cx="50" cy="50" r="47.9" fill="none" stroke="#333a39" stroke-width="4.25"/><circle id="erkA" cx="50" cy="50" r="47.9" fill="none" stroke-width="4.25" stroke-linecap="round" stroke-dasharray="301" stroke-dashoffset="0"/></svg><b id="erkN">5</b><i class="halo"></i></div>
   <div id="erkT"></div><div id="erkH"></div></div>`);
 const cv = document.getElementById('erkCv'), cx = cv.getContext('2d');
 const G = document.getElementById('erkG'), C = document.getElementById('erkC'), A = document.getElementById('erkA'), N = document.getElementById('erkN'), TX = document.getElementById('erkT'), HI = document.getElementById('erkH');
@@ -48,7 +49,7 @@ function draw(now) {
   if (cur !== 'rocket') return;
   const ph = RK.phase;
   if (RK.round !== lastRound) { lastRound = RK.round; roundGift = pickGift() }
-  if (ph === 'crash' && lastPhase !== 'crash') boomAt = now;
+  if (ph === 'crash' && lastPhase !== 'crash') boomAt = (RK.crashAt && RK.crashAt <= now) ? RK.crashAt : now;
   lastPhase = ph;
   cx.setTransform(dpr, 0, 0, dpr, 0, 0); cx.clearRect(0, 0, W, H);
   // yulduzlar: uchishda chapga suriladi
@@ -68,16 +69,18 @@ function draw(now) {
   const m = crashed ? RK.crash : RK.m;
   const col = crashed ? TRAIL_CRASH : trailCol(m);
   const tf = Math.max(0, ((crashed ? RK.crashAt : now) - RK.t0) / 1000);
-  const tx = Math.min(W - 6, 21.6 + 18.3 * Math.pow(Math.max(0, tf - 1.38), 1.06));   // 408.mp4 5:37–5:47 + 409.mp4 10:39–10:43, xato ≈1.7 px
+  const tx = Math.min(W - 6, 21.6 + 18.3 * Math.pow(Math.max(0, tf - 1.38), 1.0424));   // 408.mp4 5:37–5:47 + 409.mp4 10:39–10:43, xato ≈1.7 px
   const yAt = x => Y0 - 4.61e-9 * Math.pow(Math.max(0, x - 60), 4.55);
   cx.lineCap = 'round'; cx.strokeStyle = col; cx.lineWidth = 7.3; cx.shadowColor = col; cx.shadowBlur = 9;
   cx.beginPath(); cx.moveTo(17, yAt(17)); for (let x = 20; x <= tx; x += 3) cx.lineTo(x, yAt(x)); cx.lineTo(tx, yAt(tx)); cx.stroke();
   if (!crashed) { cx.shadowColor = '#fff'; cx.shadowBlur = 12; cx.fillStyle = '#fff'; cx.beginPath(); cx.arc(tx, yAt(tx), 5, 0, 7); cx.fill() }
   cx.shadowBlur = 0;
-  tipX = 196; tipY = 179;   // sovg'a markazi: ekranda (196, 236) — 409.mp4 643.4 s
+  tipX = 192; tipY = 151.2;   // sovg'a/raketa markazi — 408.mp4 4:56
   if (!crashed) {
-    const g = RK.my && !RK.my.out && typeof giftFor === 'function' ? (giftFor(RK.my.amt * RK.m) || {}).g || roundGift : roundGift;
-    setGift(g); G.classList.remove('off');
+    // 408.mp4 4:42 (tikishsiz): markazda Stellar Rocket sovg'asi; 4:56 (tikish bilan): mening yutug'imga mos sovg'a
+    const mine = RK.my && !RK.my.out && typeof giftFor === 'function' ? (giftFor(RK.my.amt * RK.m) || {}).g : null;
+    const g = mine || (typeof byName === 'function' ? byName('Stellar Rocket') : roundGift) || roundGift;
+    setGift(g); G.classList.remove('off'); G.classList.toggle('rkt', !mine);
     const bob = Math.sin(now / 230) * 3;
     G.style.transform = `translate(${tipX - 56}px,${tipY - 56 + bob}px)`;
     TX.classList.remove('on');
@@ -103,11 +106,11 @@ function ui(now) {
   HI.innerHTML = first + (RK.hist || []).slice(0, 12).map(m => `<span class="${chipCls(m)}">${chipTxt(m)}</span>`).join('');
   const L = document.getElementById('rkPl');
   const bets = [...RK.bets].sort((a, b) => (b.me ? 1 : 0) - (a.me ? 1 : 0) || b.amt - a.amt);
-  if (!bets.length) L.innerHTML = `<div class="none"><i><svg class="ic" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="9" cy="8" r="3.6"/><path d="M2.5 20c0-3.6 2.9-6 6.5-6s6.5 2.4 6.5 6"/><path d="M15.5 4.6a3.6 3.6 0 0 1 0 6.8M21.5 20c0-2.8-1.6-4.8-4-5.6"/></svg></i><b>No players yet</b><small>Wait for next round</small><em>•••</em></div>`;
+  if (!bets.length) L.innerHTML = `<div class="noply rk0"><img src="assets/rocket/noply.png" alt=""><b>No players yet</b><small>Wait for next round</small><em>• • •</em></div>`;
   else {
     const rows = bets.slice(0, 5).map(b => {
       const lose = RK.phase === 'crash' && !b.out, m = b.out || (RK.phase === 'fly' ? RK.m : RK.phase === 'crash' ? RK.crash : 1);
-      const val = b.out ? b.amt * b.out : lose ? b.amt : b.amt * m;
+      const val = b.out ? b.amt * b.out : b.amt * m;   // yutqazganda ham amt×crash ko'rsatiladi (408.mp4 5:02: 6.73×2.21 = 14.87)
       const gg = typeof giftFor === 'function' ? (giftFor(val) || {}).g : null;
       return `<div class="er ${b.out ? 'w' : lose ? 'l' : ''}">${avHTML(b.name)}<div class="nm"><b>${esc(b.name)}${b.bot ? ' <span class="bt">BOT</span>' : ''}</b><small>${GEM}${fmt(b.amt)} ×${m.toFixed(2)}</small></div><span class="v">${GEM}${fmt(val)}</span><span class="gt">${gg ? GI(gg) : ''}</span></div>`;
     }).join('');
