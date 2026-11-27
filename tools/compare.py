@@ -24,7 +24,15 @@ def score(a, b, masks):
     d &= m
     return d, 100 * d.sum() / m.sum()
 
+def ensure_server():
+    import socket, subprocess, time
+    s = socket.socket()
+    try: s.connect(('127.0.0.1', 8765)); s.close(); return
+    except OSError: pass
+    subprocess.Popen(['python3', '-m', 'http.server', '8765'], cwd=R, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL, start_new_session=True); time.sleep(1.2)
+
 async def main(names):
+    ensure_server()
     async with async_playwright() as p:
         br = await p.chromium.launch(executable_path='/usr/bin/google-chrome', args=['--no-sandbox'])
         res = {}

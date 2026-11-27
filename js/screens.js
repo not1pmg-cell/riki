@@ -50,6 +50,7 @@ const dur = ms => { ms = Math.max(0, ms); const d = Math.floor(ms / 864e5), h = 
 const hms = ms => { ms = Math.max(0, ms); const h = Math.floor(ms / 36e5), m = Math.floor(ms % 36e5 / 6e4), s = Math.floor(ms % 6e4 / 1e3); return `${h}h ${pad2(m)}m ${pad2(s)}s` };
 const mask = n => n.length <= 4 ? n : n.slice(0, 2) + '***' + n.slice(-2);
 const sec = (id, html) => { let s = $id(id); if (!s) { s = document.createElement('section'); s.className = 'screen'; s.id = id; document.querySelector('.app').appendChild(s) } if (html != null) s.innerHTML = html; return s };
+window.copyTxt = (...a) => copyTxt(...a); window.openLink = (...a) => openLink(...a);
 function copyTxt(t) { (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(() => toast('Copied ✓')).catch(() => prompt('Nusxa oling:', t)) }
 document.addEventListener('click', e => { const a = e.target.closest && e.target.closest('a[href^="https://t.me/"]'); if (a) { e.preventDefault(); openLink(a.href) } });
 function openLink(u) { if (tg && u.startsWith('https://t.me/') && tg.openTelegramLink) tg.openTelegramLink(u); else if (tg && tg.openLink) tg.openLink(u); else window.open(u, '_blank') }
@@ -1567,10 +1568,11 @@ function liveStake(g, ton, items, extra) {
   const body = Object.assign({ g, ton, gifts: giftPayload(items), name: pubName(), photo: pubPhoto() }, extra || {});
   return api('/api/live/bet', { method: 'POST', body }).then(d => {
     LV.off = d.now - Date.now(); LV.st[g] = d; lvApply(g, d); hap('medium'); if (g !== 'rocket') WQ.hold = Date.now() + 90000;
-    logGame(g === 'rocket' ? 'Rocket' : g === 'tvt' ? 'TvT' : g === 'pvp' ? 'PvP' : 'Roulette', r2(ton + sumV(items.map(x => x.v))), 0, 'bet');
+    logGame(g === 'rocket' ? 'Rocket' : g === 'tvt' ? 'TvT' : g === 'pvp' ? 'PvP' : g === 'race' ? 'Race' : 'Roulette', r2(ton + sumV(items.map(x => x.v))), 0, 'bet');
   }).catch(e => { if (ton) setBal(ton); items.forEach(it => S.inv.unshift(it)); save(); toast(esc(e.message)) });
 }
-function lvApply(g, d) { try { (g === 'pvp' ? lvPvp : g === 'tvt' ? lvTvt : lvRocket)(d) } catch (e) { console.warn('live apply', e) } }
+function lvApply(g, d) { try { if (g === 'race') return window.rcSet && window.rcSet(d); (g === 'pvp' ? lvPvp : g === 'tvt' ? lvTvt : lvRocket)(d) } catch (e) { console.warn('live apply', e) } }
+Object.assign(window, { LV, lvPull, liveStake, srvNow, isMe, api, CUR });
 function lvPlayers(list) { return (list || []).map(p => ({ uid: p.uid, name: p.name, me: isMe(p.uid), bot: p.bot, ton: p.ton, gifts: toItems(p.gifts), amt: p.amt, c: p.c, photo: p.photo })) }
 function lvEnd(endAt, now) { return endAt ? Date.now() + (endAt - now) : 0 }
 

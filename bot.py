@@ -169,8 +169,12 @@ DEF_CFG = {"rk_pepe_min": RK_PEPE_MIN0, "ch_id": "", "ch_url": "", "dep_addr": "
            "bots_always": 1.0,                                                                 # 1 = botlar odam bo'lmasa ham doim o'ynaydi
            "top_on": False, "top_freq": "week", "top_dow": 6.0, "top_hour": 20.0,             # Top-10 rasmli post (kun/hafta)
            "poll_on": False, "poll_dow": 2.0, "poll_hour": 19.0,                              # haftalik "nima qo'shaylik?" so'rovnomasi                                                                      # premium emoji id'lari
-           "subs": [], "subs_on": True}                                                      # majburiy obuna kanallari
-GAMES = ["rocket", "pvp", "tvt", "roulette", "mines", "dice", "plinko", "upgrade", "crafts", "spins", "cases"]
+           "subs": [], "subs_on": True,                                                      # majburiy obuna kanallari
+           # RACE — standart qiymatlar Epic "Fairness" oynasidagi Config'dan (Screen_Recording_2026-11-27_145037.mp4, 1:00)
+           "race_cfg": {"coefficients": [50, 20, 12, 8, 4, 2], "minBet": 0.1, "maxBet": 200, "maxUserStake": 1200, "maxUserPayout": 10000,
+                        "maxRoundPayout": 50000, "bettingMs": 12000, "raceMs": 10100, "resultMs": 5000, "leaderboardMultiplier": 1},
+           "race_bots": 2.0}
+GAMES = ["rocket", "race", "pvp", "tvt", "roulette", "mines", "dice", "plinko", "upgrade", "crafts", "spins", "cases"]
 
 
 def cfg(k: str):
@@ -1507,6 +1511,111 @@ def bot_amt(cap: float | None = None) -> float:
     return round(max(lo, min(cap, v)), 2)
 
 
+# ================================================================ RACE (Epic "Race" — 1:1)
+RACERS = ["Plush Pepe", "Resistance Dog", "Scared Cat", "Kissed Frog", "Jolly Chimp", "Snoop Dogg"]
+RACE_BOTS = [(-30, "Astro"), (-31, "Comet"), (-32, "Nova"), (-33, "Orbit"), (-34, "Pulsar"), (-35, "Vega")]
+
+
+def race_cfg() -> dict:
+    c = dict(DEF_CFG["race_cfg"]); c.update(cfg("race_cfg") or {})
+    return c
+
+
+def race_cfg_json(c: dict) -> str:
+    keys = ["coefficients", "minBet", "maxBet", "maxUserStake", "maxUserPayout", "maxRoundPayout", "bettingMs", "raceMs", "resultMs", "leaderboardMultiplier"]
+    return json.dumps({k: c[k] for k in keys}, separators=(",", ":"))
+
+
+def race_order(seed: str, rid: str, chash: str, coefs: list) -> list:
+    """Provably fair: HMAC-SHA256(serverSeed, f"{roundId}:{configHash}:{counter}") → 48-bit r, rejection sampling,
+    og'irlik = round(1e6 / koeffitsiyent). Qolgan yuguruvchilar orasidan ketma-ket tanlanadi → to'liq marra tartibi."""
+    left = list(range(len(coefs))); out = []; n = 0
+    while left:
+        w = [int(round(1e6 / coefs[i])) for i in left]; T = sum(w)
+        h = hmac.new(bytes.fromhex(seed), f"{rid}:{chash}:{n}".encode(), hashlib.sha256).digest(); n += 1
+        r = int.from_bytes(h[:6], "big"); lim = (1 << 48) - ((1 << 48) % T)
+        if r >= lim:
+            continue
+        r %= T
+        for i, wi in zip(left, w):
+            if r < wi:
+                out.append(i); left.remove(i); break
+            r -= wi
+    return out
+
+
+def race_new(seed_hex: str) -> dict:
+    c = race_cfg(); cj = race_cfg_json(c); chash = hashlib.sha256(cj.encode()).hexdigest()
+    seed = hashlib.sha256(seed_hex.encode()).hexdigest()          # 32 bayt server seed (hex)
+    rid = str(uuid.uuid4())
+    commit = hashlib.sha256(f"{seed}:{rid}:{chash}".encode()).hexdigest()
+    t = now_ms()
+    return {"rid": rid, "seed": seed, "commit": commit, "hash": commit, "cfg": cj, "chash": chash, "cfgd": c,
+            "endAt": t + int(c["bettingMs"]), "raceAt": 0, "resAt": 0, "bets": [], "order": None, "theme": random.choice(["forest", "city"]),
+            "nbots": random.randint(0, max(0, int(cfg("race_bots"))))}
+
+
+def race_settle(R: dict) -> None:
+    c = R["cfgd"]; coefs = c["coefficients"]
+    R["order"] = race_order(R["seed"], R["rid"], R["chash"], coefs)
+    win = R["order"][0]
+    paid = 0.0; winners = set()
+    for i, b in enumerate(R["bets"]):
+        if b["racer"] == win:
+            w = round(b["amt"] * coefs[win], 2); b["win"] = w; paid += w; winners.add(b["uid"])
+        else:
+            b["win"] = 0
+    pot = round(sum(b["amt"] for b in R["bets"]), 2)
+    LIVE_HIST["race"].insert(0, {"id": R["id"], "rid": R["rid"], "win": win, "order": R["order"], "coef": coefs[win], "pot": pot, "paid": round(paid, 2),
+                                 "winners": len(winners), "players": len({b["uid"] for b in R["bets"]}), "t": now_ms() + int(c["raceMs"]),
+                                 "uids": sorted({b["uid"] for b in R["bets"]}), "seed": R["seed"], "commit": R["commit"], "chash": R["chash"], "cfg": R["cfg"],
+                                 "bets": [{k: b[k] for k in ("uid", "name", "photo", "bot", "racer", "amt", "win")} for b in R["bets"]]})
+    del LIVE_HIST["race"][100:]
+
+
+def race_pay(R: dict) -> None:
+    """Yutuqlar poyga tugagach (phase → done) to'lanadi — balans natijani oldindan ochib qo'ymasligi uchun."""
+    win = R["order"][0]; k = R["cfgd"]["coefficients"][win]
+    for i, b in enumerate(R["bets"]):
+        if b.get("win") and b["uid"] > 0:
+            try:
+                W.credit(b["uid"], b["win"], "win", f"Race #{R['id']} {RACERS[win]} {k}x", "race", idem=f"race:{R['id']}:{b['uid']}:{i}")
+            except WalletError as e:
+                log.warning("race pay %s: %s", b["uid"], e)
+            feed_add(b["uid"], b["name"], "Race", b["win"])
+
+
+def race_bot_tick(R: dict) -> None:
+    have = [b for b in R["bets"] if b.get("bot")]
+    if len(have) >= R["nbots"] or random.random() > .06 or now_ms() > R["endAt"] - 1500:
+        return
+    uid, nm = next(x for x in RACE_BOTS if x[0] not in {b["uid"] for b in have})
+    coefs = R["cfgd"]["coefficients"]
+    racer = random.choices(range(len(coefs)), weights=[1 / k for k in coefs])[0]
+    amt = min(bot_amt(), float(R["cfgd"]["maxBet"]))
+    R["bets"].append({"uid": uid, "name": nm, "photo": "", "bot": True, "racer": racer, "amt": round(amt, 2), "ton": round(amt, 2), "gifts": [], "t": now_ms()})
+
+
+def race_check(R: dict, uid: int, racer: int, amt: float) -> str:
+    c = R["cfgd"]; coefs = c["coefficients"]
+    if not (0 <= racer < len(coefs)):
+        return "Pick a racer"
+    if amt < c["minBet"]:
+        return f"Min bet is {c['minBet']} TON"
+    if amt > c["maxBet"]:
+        return f"Max bet is {c['maxBet']} TON"
+    mine = [b for b in R["bets"] if b["uid"] == uid]
+    if sum(b["amt"] for b in mine) + amt > c["maxUserStake"]:
+        return f"Max stake per round is {c['maxUserStake']} TON"
+    pay = sum(b["amt"] for b in mine if b["racer"] == racer) + amt
+    if pay * coefs[racer] > c["maxUserPayout"]:
+        return f"Max payout is {c['maxUserPayout']} TON"
+    tot = sum(b["amt"] for b in R["bets"] if b["racer"] == racer) + amt
+    if tot * coefs[racer] > c["maxRoundPayout"]:
+        return "Round payout limit reached for this racer"
+    return ""
+
+
 def new_round(g: str, rid: int) -> dict:
     seed = uuid.uuid4().hex + uuid.uuid4().hex
     base = {"id": rid, "phase": "wait", "seed": seed, "hash": hashlib.sha256(seed.encode()).hexdigest(), "createdAt": now_ms()}
@@ -1516,14 +1625,17 @@ def new_round(g: str, rid: int) -> dict:
         base.update({"startAt": now_ms() + int(RK_WAIT * 1000), "t0": 0, "crash": crash, "crashAt": 0, "bets": []})
     elif g == "tvt":
         base.update({"endAt": 0, "ice": [], "fire": [], "win": None, "doneAt": 0, "playAt": 0})
+    elif g == "race":
+        base.update(race_new(seed))
     else:
         base.update({"endAt": 0, "players": [], "winner": None, "spinAt": 0, "doneAt": 0})
     return base
 
 
 LIVE: dict = {"roulette": new_round("roulette", 708000 + random.randint(0, 9000)), "pvp": new_round("pvp", 468000 + random.randint(0, 900)),
-              "tvt": new_round("tvt", 25500 + random.randint(0, 900)), "rocket": new_round("rocket", 10200 + random.randint(0, 900))}
-LIVE_HIST: dict = {"roulette": [], "pvp": [], "tvt": [], "rocket": []}
+              "tvt": new_round("tvt", 25500 + random.randint(0, 900)), "rocket": new_round("rocket", 10200 + random.randint(0, 900)),
+              "race": new_round("race", 3000 + random.randint(0, 900))}
+LIVE_HIST: dict = {"roulette": [], "pvp": [], "tvt": [], "rocket": [], "race": []}
 live_lock = asyncio.Lock()
 
 
@@ -1739,6 +1851,18 @@ async def live_loop() -> None:
                     R["phase"] = "done"; R["doneAt"] = t
                 elif R["phase"] == "done" and t >= R["doneAt"] + DONE_TIME * 1000:
                     LIVE["tvt"] = new_round("tvt", R["id"] + 1)
+                R = LIVE["race"]
+                if R["phase"] == "wait":
+                    if int(cfg("live_bots")) > 0:
+                        race_bot_tick(R)
+                    if t >= R["endAt"]:
+                        race_settle(R); R["phase"] = "race"; R["raceAt"] = t
+                        store.save()
+                elif R["phase"] == "race" and t >= R["raceAt"] + int(R["cfgd"]["raceMs"]):
+                    R["phase"] = "done"; R["resAt"] = t
+                    race_pay(R); store.save()
+                elif R["phase"] == "done" and t >= R["resAt"] + int(R["cfgd"]["resultMs"]):
+                    LIVE["race"] = new_round("race", R["id"] + 1)
                 R = LIVE["rocket"]
                 if R["phase"] == "wait":
                     if "nbots" not in R:
@@ -1792,6 +1916,13 @@ def live_public(g: str) -> dict:
         out.update({"pepeMin": float(cfg("rk_pepe_min") or 0), "startAt": R["startAt"], "t0": R["t0"], "crashAt": R["crashAt"],
                     "crash": R["crash"] if R["phase"] == "crash" else None,
                     "bets": [{**{k: b[k] for k in ("uid", "name", "photo", "amt", "auto", "out", "gift")}, "bot": bool(b.get("bot"))} for b in R["bets"]]})
+    elif g == "race":
+        done = R["phase"] != "wait"
+        out.update({"rid": R["rid"], "endAt": R["endAt"], "raceAt": R["raceAt"], "resAt": R["resAt"], "cfg": R["cfg"], "chash": R["chash"], "theme": R["theme"],
+                    "coefs": R["cfgd"]["coefficients"], "raceMs": R["cfgd"]["raceMs"], "resultMs": R["cfgd"]["resultMs"], "bettingMs": R["cfgd"]["bettingMs"],
+                    "bets": [{**{k: b[k] for k in ("uid", "name", "photo", "racer", "amt")}, "bot": bool(b.get("bot")), "win": b.get("win") if done else None} for b in R["bets"]],
+                    "order": R["order"] if done else None, "seed": R["seed"] if R["phase"] == "done" else None,
+                    "hist": [{k: h[k] for k in ("id", "win", "coef", "pot", "winners", "players", "t", "uids")} for h in LIVE_HIST["race"] if h.get("t", 0) <= t][:100]})
     elif g == "tvt":
         out.update({"endAt": R["endAt"], "ice": pub_players(R["ice"]), "fire": pub_players(R["fire"]),
                     "win": R["win"] if R["phase"] != "wait" else None, "playAt": R["playAt"]})
@@ -1836,6 +1967,14 @@ async def h_live_bet(request: web.Request) -> web.Response:
             return web.json_response({"error": "Round in progress"}, status=409)
         if g == "rocket" and any(x["uid"] == who["uid"] for x in R["bets"]):
             return web.json_response({"error": "Bet already placed"}, status=409)
+        if g == "race":
+            try:
+                racer = int(b.get("racer", -1))
+            except (TypeError, ValueError):
+                racer = -1
+            err = race_check(R, who["uid"], racer, round(ton + sum(x["p"] for x in gifts), 2))
+            if err:
+                return web.json_response({"error": err}, status=400)
         if g == "tvt":
             team = b.get("team")
             if team not in ("ice", "fire"):
@@ -1867,9 +2006,25 @@ async def h_live_bet(request: web.Request) -> web.Response:
             R["bets"].append({**who, "amt": amt, "auto": round(auto, 2) if auto >= 1.01 else 0, "out": 0, "gift": bool(gifts)})
         elif g == "tvt":
             add_stake(R[b.get("team")], who, ton, gifts)
+        elif g == "race":
+            R["bets"].append({**who, "bot": False, "racer": racer, "amt": round(ton + sum(x["p"] for x in gifts), 2), "ton": ton, "gifts": gifts, "t": now_ms()})
         else:
             add_stake(R["players"], who, ton, gifts)
         return ok({**live_public(g), "bal": W.balance(int(user["id"]))})
+
+
+async def h_race_round(request: web.Request) -> web.Response:
+    """Race raund tafsilotlari (Game details + Fairness): faqat tugagan raundlar."""
+    auth_user(request)
+    try:
+        rid = int(request.query.get("id", "0"))
+    except ValueError:
+        rid = 0
+    t = now_ms()
+    h = next((x for x in LIVE_HIST["race"] if x["id"] == rid and x.get("t", 0) <= t), None)
+    if not h:
+        return web.json_response({"error": "not found"}, status=404)
+    return ok(h)
 
 
 async def h_live_cancel(request: web.Request) -> web.Response:
@@ -1950,6 +2105,7 @@ def make_app() -> web.Application:
     r.add_get("/api/live", h_live)
     r.add_post("/api/live/bet", h_live_bet)
     r.add_post("/api/live/cancel", h_live_cancel)
+    r.add_get("/api/race/round", h_race_round)
     r.add_post("/api/live/cashout", h_live_cashout)
     r.add_post("/api/promo", h_promo)
     r.add_get("/api/rewards", h_rewards)
@@ -2487,6 +2643,8 @@ def set_kb() -> InlineKeyboardMarkup:
             [ B(text=f"🚀 Rocket bots: {cfg('rk_min')}–{cfg('rk_max')}", callback_data="ad:sv:rk")],
             [B(text=(f"🐸 Rocket Pepe from {cfg('rk_pepe_min'):g} TON" if cfg("rk_pepe_min") else "🐸 Rocket Pepe: OFF (TON)"), callback_data="ad:sv:rk_pepe_min")],
             [B(text=f"🤝 Referral: {cfg('ref_pct'):g}% of deposits", callback_data="ad:sv:ref_pct")],
+            [B(text=f"🏁 Race: {' '.join(f'{k:g}x' for k in race_cfg()['coefficients'])} · bet {race_cfg()['minBet']:g}–{race_cfg()['maxBet']:g}", callback_data="ad:sv:race"),
+             B(text=f"🏁 Race bots: {cfg('race_bots'):g}", callback_data="ad:sv:race_bots")],
             [B(text=f"🎟 Ref tickets: {cfg('ref_tix'):g}", callback_data="ad:sv:ref_tix"), B(text=f"📅 Max/day: {cfg('ref_tix_day'):g}", callback_data="ad:sv:ref_tix_day")],
             [B(text=("🟢 Bots always play" if cfg("bots_always") else "⚪ Bots only with players"), callback_data="ad:botal")],
             [B(text=("🔴 Maintenance ON — tap to turn off" if cfg("maint") else "🟢 Maintenance OFF — tap to turn on"), callback_data="ad:maint")]]
@@ -2774,6 +2932,8 @@ async def on_admin_cb(cq: CallbackQuery, bot: Bot) -> None:
         ADMIN_WAIT[uid] = "sv:" + k
         hint = {"ton_rate": "balance per 1 TON, e.g. <code>100000</code>", "stars_rate": "balance per 1 Star, e.g. <code>800</code> (125 ⭐ = 100 000)",
                 "bot_max": "max bot bet, e.g. <code>1000</code>", "bot_rng": "bot bet range as <code>min max</code>, e.g. <code>0.1 1000</code>",
+                "race": "Race config as <code>key value</code>. Keys: <code>coef</code> (6 numbers, e.g. <code>coef 50 20 12 8 4 2</code>), <code>minBet</code>, <code>maxBet</code>, <code>maxUserStake</code>, <code>maxUserPayout</code>, <code>maxRoundPayout</code>, <code>bettingMs</code>, <code>raceMs</code>, <code>resultMs</code>. Applies from the next round.",
+                "race_bots": "max bots per Race round, e.g. <code>2</code> (0–6)",
                 "live_bots": "bots in PvP/TvT: <code>0</code> = off, <code>1</code> = on (Epic: 1 bot per PvP round, 1 per TvT team)", "rk": "rocket bots per round as <code>min max</code>, e.g. <code>3 4</code> (0–8)",
                 "post_min": "minimum win to post in the channel, e.g. <code>1000</code>",
                 "ab_hours": "auto bonus interval in hours, e.g. <code>1</code> or <code>0.5</code>", "ab_amount": "TON per player, e.g. <code>1000</code>",
@@ -3045,7 +3205,27 @@ async def on_admin_input(message: Message, bot: Bot) -> None:
     elif act.startswith("sv:"):
         k = act[3:]
         try:
-            if k == "rk":
+            if k == "race":
+                c = race_cfg(); key = parts[0] if parts else ""
+                if key == "coef":
+                    ks = [float(x) for x in parts[1:7]]
+                    if len(ks) != 6 or min(ks) <= 1:
+                        raise ValueError
+                    c["coefficients"] = [int(x) if x == int(x) else x for x in ks]
+                elif key in ("minBet", "maxBet", "maxUserStake", "maxUserPayout", "maxRoundPayout", "bettingMs", "raceMs", "resultMs"):
+                    v = float(parts[1])
+                    if v <= 0:
+                        raise ValueError
+                    c[key] = int(v) if key.endswith("Ms") else v
+                else:
+                    raise ValueError
+                upd = {"race_cfg": c}
+            elif k == "race_bots":
+                v = int(parts[0])
+                if not 0 <= v <= len(RACE_BOTS):
+                    raise ValueError
+                upd = {"race_bots": float(v)}
+            elif k == "rk":
                 a, b2 = (int(x) for x in (parts + parts)[:2])
                 if not (0 <= a <= b2 <= len(RK_BOTS)):
                     raise ValueError

@@ -255,7 +255,7 @@ function go(id, noPush) {
   const main = MAIN_HDR.includes(id);
   $('#hMain').style.display = main ? 'flex' : 'none';
   $('#hPill').style.display = main ? 'none' : 'flex';
-  $('#hTop').style.display = 'flex';   // trophy chip barcha o'yin ekranlarida (Epic: 🏆 #14 / 🏆 -)
+  $('#hTop').style.display = id === 'race' ? 'none' : 'flex';   // trophy chip o'yin ekranlarida; Race'da yo'q (Screen_Recording_2026-11-27)
   try { const rk = typeof lbData === 'function' ? lbData('pvp').rank : 0; $('#hRank').textContent = rk ? '#' + rk : '-' } catch (e) {}
   $('#hHelp').style.display = 'grid';
   $('#hHist').style.display = id === 'pvphub' ? 'none' : 'grid';

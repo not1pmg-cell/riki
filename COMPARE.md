@@ -52,3 +52,20 @@ frames2/53 = Profile, 54 = Leaderboard (qatorlar), 55 = Earn daily, 59 = Wealth 
 
 ## Savol (pul mantiqi)
 Backpack: originalda "Sell for 95.29" = sovg'a narxi (100%). Bizda server 95% to'laydi (wallet.py SELL_RATE = 0.95) va "Sell for 90.53" ko'rinadi. 1:1 uchun SELL_RATE = 1.0 kerak — tasdiqlang.
+
+## RACE (yangi o'yin — Screen_Recording_2026-11-27_145037.mp4)
+compare/race.png — Betting | Live | Result | History (original vs RIKI)
+
+| Qism | Holat | Izoh |
+|---|---|---|
+| Config / koeffitsiyent / vaqtlar | ✅ | Fairness oynasidagi Config bilan bir xil. **Config hash biznikida ham `85ab5034d7…` — originalnikiga bayt-ma-bayt mos** |
+| Provably fair | ✅ | SHA-256(serverSeed:roundId:configHash) majburiyat; HMAC-SHA256(serverSeed, roundId:configHash:counter), 48-bit, rejection sampling, og'irlik 1e6/k. Brauzerda tekshiriladi (sinov: to'g'ri → ✓, buzilgan tartib → ✕) |
+| Trek, banner (o'rmon/shahar), yo'laklar, iz, toj, marra, GO! | ⚠️ | PNG kadrlardan. Sprite'lar — sovg'a rasmlari (CDN), offline'da kadr kesimi |
+| Countdown halqa 12→4, katta 3-2-1 | ⚠️ | vaqt o'lchangan (1.0 s/raqam, 0.7 s ko'rinadi, 1.0→0.75 masshtab) |
+| GO! | ⚠️ | 24.10–24.50 s: masshtab 0.72→1.0, cho'qqi 24.27 |
+| Poyga harakati | ⚠️ | Lider progressi o'lchangan jadval (g'olib 7.75 s da marrada); quvib o'tishlar deterministik (round ID dan) |
+| Kartalar, o'rinlar (1st–6th), tanlangan yo'lak rangi | ⚠️ | |
+| Natija oynasi, tarix, tafsilotlar, Fairness, How it works, All bets, Bet gifts | ⚠️ | |
+| Play Hub kartasi | ⚠️ | statik kadr; kartadagi mini-poyga animatsiyasi UNCLEAR |
+
+UNCLEAR (Race): banner mavzusi qoidasi (o'rmon/shahar — raundga qarab tasodifiy qilindi); Play Hub kartasidagi animatsiya to'liq sikli (videoda kursor bilan yopilgan); "All bets" oynasi videoda ko'rinmadi; "Leaderboard multiplier" ma'nosi.
