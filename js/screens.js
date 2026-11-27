@@ -736,11 +736,14 @@ ENTER.backpack = bpRender;
 //  INVITE
 // =====================================================================
 ENTER.invite = () => {
-  $id('invite').innerHTML = `<div class="ivc"><i>${IC.users}</i><div><h3>${T('Earn up to')} <em>${(NET.ref ? NET.ref.pct : 10).toString().replace(/\.0+$/, '')}%</em><br>${T('by inviting friends')}</h3><small>${T('from their deposits')}</small></div><button class="q">${IC.help}</button></div>
-  <div class="ivb"><button class="btn-p" id="ivInv">${IC.share}Invite Friends</button><button class="btn-d" id="ivCp">${IC.copy}Copy Link</button></div>
-  <div class="ivs"><div>Total earned<b>${fmt(S.invEarn).replace(/(\.\d\d)$/, '$10')}${GEM}</b></div></div>
-  <div class="ivm"><b>My Invites <em>${S.ref}</em></b><div class="ne"><i>${IC.users}</i>No invites yet</div></div>`;
-  $id('ivInv').onclick = () => openLink(`https://t.me/share/url?url=${encodeURIComponent(refLink())}&text=${encodeURIComponent('🎁 ' + BRAND + ' — NFT gifts! Join:')}`);
+  const pct = (NET.ref ? NET.ref.pct : 10).toString().replace(/\.0+$/, '');
+  $id('invite').innerHTML = `<div class="ivc"><img class="ivt" src="assets/inv/tile_users.png" alt=""><div><h3>${T('Earn up to')} <em>${pct}%</em><br>${T('by inviting friends')}</h3><small>${T('from their deposits')}</small></div><button class="q" id="ivQ"><img src="assets/inv/btn_help.png" alt=""></button></div>
+  <div class="ivb"><button class="btn-p" id="ivInv"><img src="assets/inv/ic_share.png" alt="">Invite Friends</button><button class="btn-d" id="ivCp"><img src="assets/inv/ic_copy.png" alt="">Copy Link</button></div>
+  <div class="ivs"><div>Total earned<b>${fmt(S.invEarn).replace(/(\.\d\d)$/, '$10')}<img class="tgs" src="assets/ui/ic_gem_sm.png" alt=""></b></div></div>
+  <div class="ivm"><b>My Invites <em>${S.ref}</em></b><div class="ne">No invites yet</div></div>`;
+  $id('ivInv').onclick = () => openLink(`https://t.me/share/url?url=${encodeURIComponent(refLink())}&text=${encodeURIComponent(BRAND + ' — NFT gifts! Join:')}`);
+  // frames2/60: "How referral works" oynasi
+  $id('ivQ').onclick = () => { let m = $id('ivHow'); if (!m) { document.body.insertAdjacentHTML('beforeend', `<div class="modal sheet2" id="ivHow"><div class="mbox"><button class="mx" data-close><img src="assets/hub2/ic_x.png" alt=""></button><div class="ivh"><img class="ivt" src="assets/inv/tile_users.png" alt=""><b>How referral works</b></div><ol class="ivl"><li><i>1</i><span>Share your referral link with friends.</span></li><li><i>2</i><span>They join ${BRAND} using your link and make deposits.</span></li><li><i>3</i><span>You earn up to <em>${pct}%</em> from their deposits, credited to your balance.</span></li></ol><button class="ivok" data-close>Got it</button></div></div>`); m = $id('ivHow'); m.onclick = e => { if (e.target === m || e.target.closest('[data-close]')) m.classList.remove('on') } } m.classList.add('on') };
   $id('ivCp').onclick = () => copyTxt(refLink());
 };
 
@@ -1400,12 +1403,12 @@ const _goRL = go; go = function (id, np) { _goRL(id, np); offSync(); blockSync()
 
 // ---------------------------------------------------------------- BACKPACK (skrinshotdagidek)
 bpRender = function () {
-  const head = `<div class="bph">Backpack</div><div class="sendc"><div><b>Send gifts to <a class="lnk2" href="https://t.me/${GBOT}">our gift bot</a></b><small>Use them in upgrades and games</small></div><button id="bpSendB">${IC.ext}Send</button></div>`;
+  const head = `<div class="bph">Backpack</div><div class="sendc"><div><b>Send gifts to <a class="lnk2" href="https://t.me/${GBOT}">our gift bot</a></b><small>Use them in upgrades and games</small></div><button id="bpSendB"><img src="assets/bp/ic_send.png" alt="">Send</button></div>`;
   if (!S.inv.length) { $id('backpack').innerHTML = bpEmpty(); $id('bpSend').onclick = () => openLink(`https://t.me/${GBOT}`); $id('bpBuy').onclick = () => { go('home'); setTimeout(() => $id('boxGrid') && $id('boxGrid').scrollIntoView({ behavior: 'smooth' }), 120) } }
   else {
     const tot = sumV(S.inv.map(x => x.v));
-    $id('backpack').innerHTML = head + `<div class="bpbar"><span>${S.inv.length} gifts · ${g$(tot)}</span><button id="bpSellAll">Sell all</button></div><div class="bpg">${S.inv.map(it => { const g = GIFTS[it.g]; return `<div class="bpc" data-id="${it.id}" style="--rc:${TIER_C[tierOf(it.v)]}"><div class="im"><em>${fmt(it.v)}${GEM}</em>${GII(it)}</div><span class="bd">${it.m ? `<i style="background:${TIER_C[tierOf(it.v)]}"></i>${esc(it.m)}` : '<i></i>Random'}</span><b>${esc(g.n)}</b><button class="wd" data-a="wd">${IC.ext.replace('class="ic"', 'class="ic" style="width:16px;height:16px"')}Withdraw</button><button class="sl" data-a="sell"><small>Sell</small>${fmt(it.v * .95)}${GEM}</button><div class="two2"><button class="up" data-a="up">${IC.trend}Upgrade</button><button class="ph" data-a="ph">${ICO.pad}Play Hub</button></div></div>` }).join('')}</div>`;
-    $id('bpSellAll').onclick = () => { const v = r2(sumV(S.inv.map(x => x.v)) * .95); if (!confirm(`Sell all for ${fmt(v)} ${CUR}?`)) return; invDel(S.inv.map(x => x.id)); setBal(v); bpRender(); toastG(`+${fmt(v)} ${CUR}`) };
+    $id('backpack').innerHTML = head + `<div class="bpg">${S.inv.map(it => { const g = GIFTS[it.g]; return `<div class="bpc" data-id="${it.id}"><div class="im"><em>${fmt(it.v)}<img src="assets/ui/ic_gem_sm.png" alt=""></em>${GII(it)}</div><span class="bd ${it.m ? 'm' : ''}">${it.m ? `<i></i>${esc(it.m)}` : 'Random'}</span><b>${esc(g.n)}</b><button class="wd" data-a="wd"><img src="assets/bp/ic_withdraw.png" alt="">Withdraw</button><button class="sl" data-a="sell">Sell for <b>${fmt(it.v * .95)}</b><img src="assets/ui/ic_gem_sm.png" alt=""></button><div class="two2"><button class="up" data-a="up"><img src="assets/bp/ic_upgrade.png" alt="">Upgrade</button><button class="ph" data-a="ph"><img src="assets/bp/ic_playhub.png" alt="">Play Hub</button></div></div>` }).join('')}</div><div class="bphelp"><img src="assets/bp/ic_info.png" alt="">Need help? <a class="lnk2" href="https://t.me/${GBOT}">support</a></div>`;
+    const sa = $id('bpSellAll'); if (sa) sa.onclick = () => { const v = r2(sumV(S.inv.map(x => x.v)) * .95); if (!confirm(`Sell all for ${fmt(v)} ${CUR}?`)) return; invDel(S.inv.map(x => x.id)); setBal(v); bpRender(); toastG(`+${fmt(v)} ${CUR}`) };
   }
   const sb = $id('bpSendB'); if (sb) sb.onclick = () => openLink(`https://t.me/${GBOT}`);
 };
@@ -1704,7 +1707,7 @@ window.RIKI_TR = trOpen;
 
 // ---------------------------------------------------------------- P2P (nav) + Earn kartasi
 const navE = $('nav [data-go="earn"]');
-if (navE) { navE.innerHTML = `${ICO.coins}Earn<span class="badge" id="earnBadge" style="display:none"></span>` }
+if (navE) { navE.innerHTML = `<i class="nvi"></i>Earn<span class="badge" id="earnBadge" style="display:none"></span>` }
 // ---------------------------------------------------------------- Upgrade: Potential Profit + x2/x5/x10
 $('#upgrade .upcard').insertAdjacentHTML('beforeend', `<div class="upq" id="upQ"><button data-x="1.5">x1.5</button><button data-x="2">x2</button><button data-x="5">x5</button><button data-x="10">x10</button></div><div class="ppro" id="upPP"></div>`);
 $id('upQ').onclick = e => { const b = e.target.closest('[data-x]'); if (!b || UP.spinning) return; const fv = upFromVal(); if (!fv) { toast('Select your gift first'); return } const t = fv * +b.dataset.x; let best = null; for (const g of BYPRICE) { if (g.p > fv * 1.05 && g.p <= t) best = g } best = best || BYPRICE.find(g => g.p > fv * 1.05); if (best) { UP.to = best.i; upRender() } };

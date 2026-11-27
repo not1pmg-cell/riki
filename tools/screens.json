@@ -176,7 +176,8 @@
     390,
     66
    ]
-  ]
+  ],
+  "js": "document.getElementById('ivQ').click()"
  },
  "backpack": {
   "frame": "frames2/62_backpack_items.png",
@@ -188,7 +189,8 @@
     390,
     66
    ]
-  ]
+  ],
+  "js": "(()=>{const f=n=>GIFTS.findIndex(x=>x.n===n);S.inv=[{id:'a',g:f('Mini Oscar'),v:95.29},{id:'b',g:f('Plush Pepe'),v:14703.20,m:'Onyx Black'}];bpRender();const c=document.querySelector('#backpack .sendc');if(c)window.scrollTo(0,c.getBoundingClientRect().top+scrollY-72)})()"
  },
  "topup": {
   "frame": "frames2/65_topup_transfer.png",
