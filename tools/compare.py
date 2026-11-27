@@ -39,7 +39,7 @@ async def main(names):
         for n in names:
             c = SC[n]; o = orig(c['frame'])
             pg = await br.new_page(viewport={'width': 390, 'height': o.height}, device_scale_factor=1)
-            errs = []; pg.on('pageerror', lambda e: errs.append(str(e)))
+            errs = []; pg.on('pageerror', lambda e: errs.append(str(e) + ' @ ' + (e.stack or '')[:300].replace(chr(10), ' | ')))
             await pg.route('**/*', lambda r: r.abort() if not r.request.url.startswith('http://localhost') else r.continue_())
             await pg.goto('http://localhost:8765/index.html'); await pg.wait_for_timeout(1200)
             await pg.add_style_tag(content='#offLv{display:none!important}*{caret-color:transparent!important}')

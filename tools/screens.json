@@ -26,7 +26,7 @@
   "js": "(()=>{const g=(S.inv||[])[0];})()"
  },
  "mines": {
-  "frame": "frames2/31_mines_cashout.png",
+  "frame": "frames4/m_62.5.png",
   "go": "mines",
   "mask": [
    [
@@ -35,8 +35,7 @@
     390,
     66
    ]
-  ],
-  "js": "window.scrollTo(0,9.2)"
+  ]
  },
  "pvp": {
   "frame": "frames2/18_pvp_place_bet_empty.png",
@@ -215,5 +214,59 @@
     66
    ]
   ]
+ },
+ "mines_tap": {
+  "frame": "frames4/m_68.0.png",
+  "go": "mines",
+  "mask": [
+   [
+    0,
+    0,
+    390,
+    66
+   ]
+  ],
+  "js": "(()=>{const A=document.getElementById('bbA_mn');A.value='4.19';A.dispatchEvent(new Event('input'));A.focus()})()"
+ },
+ "mines_cash": {
+  "frame": "frames4/m_72.0.png",
+  "go": "mines",
+  "mask": [
+   [
+    0,
+    0,
+    390,
+    66
+   ]
+  ],
+  "js": "(()=>{S.bal=9600;renderBal&&renderBal();const A=document.getElementById('bbA_mn');A.value='4.19';A.dispatchEvent(new Event('input'));const M=RIKI_M2.st();M.on=true;M.bet=4.19;M.n=3;M.mines=new Set([0,12,18]);M.open=new Set();M.open.add(10);M.open.add(11);M.open.add(24);document.querySelectorAll('#m2Board .mx-t').forEach(t=>{const i=+t.dataset.i;if(M.open.has(i)){t.classList.add('rv','gem');t.querySelector('.o').src='assets/mines2/tile_gem.png'}});RIKI_M2.render()})()"
+ },
+ "mines_boom": {
+  "frame": "frames4/m_76.3.png",
+  "go": "mines",
+  "mask": [
+   [
+    0,
+    0,
+    390,
+    66
+   ]
+  ],
+  "js": "(()=>{S.bal=9600;renderBal&&renderBal();const A=document.getElementById('bbA_mn');A.value='4.19';A.dispatchEvent(new Event('input'));const M=RIKI_M2.st();M.on=true;M.bet=4.19;M.n=3;M.mines=new Set([0,12,18]);M.open=new Set();M.open.add(2);M.open.add(8);M.open.add(10);M.open.add(11);M.open.add(16);M.open.add(19);M.open.add(21);M.open.add(22);M.open.add(24);document.querySelectorAll('#m2Board .mx-t').forEach(t=>{const i=+t.dataset.i;if(M.open.has(i)){t.classList.add('rv','gem');t.querySelector('.o').src='assets/mines2/tile_gem.png'}});M.on=false;M.lost=true;RIKI_M2.boom(18);RIKI_M2.render()})()",
+  "wait": 170
+ },
+ "mines_win": {
+  "frame": "frames/55_mines_win_243x.png",
+  "go": "mines",
+  "mask": [
+   [
+    0,
+    0,
+    390,
+    66
+   ]
+  ],
+  "js": "(()=>{S.bal=9600;renderBal&&renderBal();const A=document.getElementById('bbA_mn');A.value='4.19';A.dispatchEvent(new Event('input'));const M=RIKI_M2.st();M.on=true;M.bet=4.19;M.n=3;M.mines=new Set([0,12,18]);M.open=new Set();M.open.add(10);M.open.add(11);M.open.add(24);document.querySelectorAll('#m2Board .mx-t').forEach(t=>{const i=+t.dataset.i;if(M.open.has(i)){t.classList.add('rv','gem');t.querySelector('.o').src='assets/mines2/tile_gem.png'}});RIKI_M2.render();document.getElementById('m2Go').click()})()",
+  "wait": 600
  }
 }

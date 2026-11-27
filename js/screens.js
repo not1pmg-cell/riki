@@ -1340,7 +1340,7 @@ document.querySelectorAll('.demo').forEach(e => e.textContent = 'DEMO');
 // =====================================================================
 rkSetSkin(); rkResize(); netInit();
 setTimeout(() => $id('splash').classList.add('off'), 900);
-setTimeout(() => $id('splash').remove(), 1400);
+setTimeout(() => { const sp = $id('splash'); sp && sp.remove() }, 1400);
 renderTasks();
 setInterval(() => {
   const r = $id('tvRes');
@@ -1795,35 +1795,60 @@ function betBar3(key, extra, ph) {
 }
 const GBOX = '<svg viewBox="0 0 24 24" class="gbx"><path d="M3 9h18v4H3zM5 13h14v8H5zM12 9v12M12 9c-2-4-6-4-6-1.5S9 9 12 9zm0 0c2-4 6-4 6-1.5S15 9 12 9z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>';
 const BOMBI = '<svg viewBox="0 0 24 24" width="20" height="20"><circle cx="10" cy="14" r="7" fill="#3f6212"/><circle cx="8" cy="12" r="2" fill="#a3e63566"/><path d="M14 8l3-3" stroke="#a16207" stroke-width="2.2" stroke-linecap="round"/><circle cx="18.5" cy="4" r="1.6" fill="#f97316"/></svg>';
+// MINES — har bir element 409.mp4 kadrlaridan: 62.5 s (bo'sh), 68.0 (miqdor kiritilgan), 69.6 (raund boshlandi), 70.2/72.0/75.6 (Cash Out),
+// 76.27–77.4 (mina: qizil), 81.0 (minalar soni — tizim ro'yxati), 84.5 (History), 88.8 (How it works); yutuq: frames/55 (desktop)
 sec('mines', `<div class="mn3-hid"><b id="m2Next"></b><b id="m2Prof"></b><b id="m2Left"></b><button id="m2Rand"></button><div id="m2N"></div></div>
-  <div class="mn2-chips mn3-chips" id="m2Chips"></div>
-  <div class="mn2-wrap mn3-wrap"><div class="mn2-board" id="m2Board">${Array.from({ length: 25 }, (_, i) => `<button class="t2" data-i="${i}"><span class="fr"><img class="mtile" src="assets/mines/tile_closed.png" alt="" draggable="false"></span><span class="bk"></span></button>`).join('')}</div><div class="mn2-win" id="m2Win"></div></div>
-  <div class="mn-dock"><button class="go3" id="m2Go">Enter a bet amount</button>
-  ${betBar3('mn', `<button class="mn2-dd" id="m2Dd"><img class="mbomb" src="assets/mines/ic_mine.png" alt=""><b id="m2DdN">3</b><img class="mchev" src="assets/ui/ic_chev.png" alt=""></button>`)}</div>`);
+  <div class="mx-chips" id="m2Chips"></div>
+  <div class="mx-card" id="m2Card"><img class="mx-glow r" src="assets/mines2/glow_red.png" alt=""><img class="mx-glow g" src="assets/mines2/glow_green.png" alt="">
+    <div class="mx-board" id="m2Board">${Array.from({ length: 25 }, (_, i) => `<button class="mx-t" data-i="${i}"><img class="c" src="assets/mines2/tile_closed.png" alt="" draggable="false"><img class="o" alt="" draggable="false"></button>`).join('')}</div>
+    <div class="mx-win" id="m2Win"></div></div>
+  <button class="mx-go" id="m2Go">Enter a bet amount</button>
+  <div class="mx-row" id="bb_mn"><div class="bbm mx-tog"><button data-m="gift"><img src="assets/ui/ic_gift_tog.png" alt=""></button><button data-m="ton" class="on"><img src="assets/ui/ic_gem_pill.png" alt=""></button></div>
+    <div class="mx-amt"><input id="bbA_mn" type="number" inputmode="decimal" placeholder="Amount" step="0.01"><div class="bbg" id="bbG_mn"></div><img class="g" src="assets/ui/ic_gem_sm.png" alt=""></div>
+    <label class="mx-sel" id="m2Dd"><img class="b" src="assets/mines/ic_mine.png" alt=""><b id="m2DdN">3</b><img class="v" src="assets/ui/ic_chev.png" alt=""><select id="m2Sel">${Array.from({ length: 24 }, (_, i) => `<option value="${i + 1}"${i === 2 ? ' selected' : ''}>${i + 1}</option>`).join('')}</select></label></div>`);
 function m2Render() {
   const k = M2.open.size, safe = 25 - M2.n;
   $id('m2Next').textContent = M2.on && k < safe ? m2Mul(k + 1).toFixed(2) + 'x' : m2Mul(1).toFixed(2) + 'x';
   $id('m2Prof').innerHTML = `${GEM}${fmt(M2.on && k ? M2.bet * m2Mul(k) - M2.bet : 0)}`;
   $id('m2Left').textContent = M2.on ? safe - k : safe;
-  const top = M2.n > 1 ? safe - 1 : safe;   // UNCLEAR: oltin chip qiymati (frames/52: n=3 → 560.62x = k21; frames/55: n=1 → 24.37x = k24)
-  let c = '<div class="mch-s">'; for (let i = 1; i < top; i++) c += `<span class="${M2.on && i === k + 1 ? 'cur' : M2.on && i <= k ? 'past' : ''}">${m2Mul(i).toFixed(2)}x</span>`; c += `</div><span class="max">${m2Mul(top).toFixed(2)}x</span>`;
-  $id('m2Chips').innerHTML = c; const cc = $('#m2Chips .cur'); if (cc) { const C = $('#m2Chips .mch-s'); C.scrollTo({ left: cc.offsetLeft - C.clientWidth / 2 + cc.offsetWidth / 2, behavior: 'smooth' }) }
-  const b = $id('m2Go');
-  if (M2.on) { if (k) { b.className = 'go3 grn'; b.innerHTML = `Cash Out ${GEM}${fmt(M2.bet * m2Mul(k))}` } else { b.className = 'go3 dim'; b.textContent = 'Pick a tile' } }
-  else { const v = BB.mn ? bbVal('mn') : 0; b.className = 'go3' + (v > 0 ? ' on' : ''); b.textContent = v > 0 ? 'Place Bet' : 'Enter a bet amount' }
-  $id('m2Rand').disabled = !M2.on; $id('m2Dd').classList.toggle('dis', M2.on);
-  $id('m2Board').classList.toggle('live', M2.on);
+  // chiplar (62.5/72.0): o'tganlar #676767, joriy — binafsha ramka, keyingilar #bebebe; o'ngda oltin chip
+  const top = M2.n > 1 ? safe - 1 : safe;   // UNCLEAR: oltin chip qiymati (n=3 → 560.62x = k21; n=1 → 24.37x = k24)
+  let c = '<div class="s">'; for (let i = 1; i < top; i++) c += `<span class="${(M2.on || M2.done) && i === k ? 'cur' : (M2.on || M2.done) && i < k ? 'past' : ''}">${m2Mul(i).toFixed(2)}x</span>`; c += `</div><span class="max">${m2Mul(top).toFixed(2)}x</span>`;
+  const C0 = $id('m2Chips'), sl = C0.firstChild ? C0.firstChild.scrollLeft : 0; C0.innerHTML = c; const S2 = C0.firstChild; S2.scrollLeft = sl;
+  // joriy chip — 3-o'ringa (75.6: 2 ta o'tgan chip chapda ko'rinadi)
+  const cc = S2.querySelector('.cur'); S2.scrollTo({ left: cc ? Math.max(0, cc.offsetLeft - 2 * 58.6) : 0, behavior: 'smooth' });
+  const b = $id('m2Go'), v = BB.mn ? bbVal('mn') : 0;
+  if (M2.boom) { b.className = 'mx-go'; b.textContent = '' }                                           // 76.3: bo'sh
+  else if (M2.on && k) { b.className = 'mx-go grn'; const g = byPriceGift(M2.bet * m2Mul(k)); b.innerHTML = `Cash Out ${g ? `<span class="gi">${GI(g)}</span>` : ''}${fmt(M2.bet * m2Mul(k))}<img class="g" src="assets/ui/ic_gem_sm.png" alt="">` }
+  else if (M2.on) { b.className = 'mx-go'; b.textContent = `Cashout 0.00 ${CUR}` }                    // 69.6
+  else { b.className = 'mx-go'; b.textContent = v > 0 ? 'Tap a cell to start the round' : 'Enter a bet amount' }   // 68.0 / 62.5
+  $id('bb_mn').classList.toggle('dis', !!M2.on);                                              // 69.6: pastki qator xira
+  $id('m2Rand').disabled = !M2.on;
 }
+function byPriceGift(v) { let best = null; for (const g of GIFTS) if (g.p <= v && (!best || g.p > best.p)) best = g; return best }
 function m2Flip(i, kind, dim) {
-  const t = $(`#m2Board .t2[data-i="${i}"]`); if (!t || t.classList.contains('rv')) return;
-  t.querySelector('.bk').innerHTML = kind === 'gem' ? GEMBIG : BOMB; t.classList.add('rv', kind); if (dim) t.classList.add('dim');
+  const t = $(`#m2Board .mx-t[data-i="${i}"]`); if (!t || t.classList.contains('rv')) return;
+  t.querySelector('.o').src = kind === 'gem' ? 'assets/mines2/tile_gem.png' : 'assets/mines2/tile_mine.png';
+  t.classList.add('rv', kind); if (dim) t.classList.add('dim');
 }
-function m2Reset() { $$('#m2Board .t2').forEach(t => { t.className = 't2'; t.querySelector('.bk').innerHTML = '' }); $id('m2Win').className = 'mn2-win' }
+function m2Reset() { $$('#m2Board .mx-t').forEach(t => { t.className = 'mx-t'; t.querySelector('.o').removeAttribute('src') }); $id('m2Win').className = 'mx-win'; $id('m2Card').className = 'mx-card'; M2.boom = false }
 function m2End(pay, mult) {
   M2.on = false; M2.done = true; M2.endAt = Date.now();
-  for (let i = 0; i < 25; i++) if (!M2.open.has(i)) setTimeout(() => m2Flip(i, M2.mines.has(i) ? 'bomb' : 'gem', true), 40 + (i % 5) * 30);
+  if (pay > 0) { for (const j of M2.mines) m2Flip(j, 'bomb'); M2.boom = true; setTimeout(() => { M2.boom = false; m2Render() }, 920) }   // frames/55: faqat minalar ochiladi, tugma bo'sh (UNCLEAR: davomiyligi — mina holatidagi 0.92 s olindi)
   if (M2.pf) { S.mh.unshift(Object.assign({}, M2.pf, { opened: M2.open.size, max: 25 - M2.n, pay, mult, pos: [...M2.mines] })); if (S.mh.length > 40) S.mh.length = 40; save(); M2.pf = null }
   m2Render();
+}
+// mina (409.mp4 76.27–77.42, 20 fps): urilgan katak qizil (+0), qolgan minalar shu kadrda ochiladi; +0.118 s qizil nur + oq chaqnash,
+// chaqnash +0.35 s gacha so'nadi; nur 2 to'lqin (cho'qqi .155, past .324, .47) va +0.92 s da o'chadi — taxta yopiladi
+function m2Boom(i) {
+  M2.boom = true; const t = $(`#m2Board .mx-t[data-i="${i}"]`);
+  t.querySelector('.o').src = 'assets/mines2/tile_hit0.png'; t.classList.add('rv', 'hit');
+  for (const j of M2.mines) if (j !== i) m2Flip(j, 'bomb');
+  hapN('error'); m2Render();
+  const card = $id('m2Card'); card.classList.remove('lose'); void card.offsetWidth; card.classList.add('lose');
+  setTimeout(() => { t.querySelector('.o').src = 'assets/mines2/tile_hit_flash.png' }, 118);   // 76.62: oq chaqnash
+  setTimeout(() => { t.querySelector('.o').src = 'assets/mines2/tile_hit.png' }, 230);           // 76.73: so'ngan
+  setTimeout(() => { M2.boom = false; m2Reset(); m2Render() }, 920);
 }
 function m2Start() {
   const a = bbTake('mn'); if (!a) return;
@@ -1833,37 +1858,38 @@ function m2Start() {
   M2.on = true; M2.lost = false; M2.bet = a; M2.open = new Set(); hap('medium'); m2Render();
 }
 function m2Pick(i) {
-  if (!M2.on || M2.open.has(i)) return; M2.open.add(i); const t = $(`#m2Board .t2[data-i="${i}"]`);
+  if (!M2.on || M2.open.has(i)) return; M2.open.add(i);
   if (M2.mines.has(i)) {
-    M2.on = false; M2.lost = true;   // BOMBA: raund darhol tugaydi — animatsiya paytida Cash Out bosib bo'lmaydi
-    m2Flip(i, 'bomb'); burst(t, ['#ef4444', '#f97316', '#fde047'], 18); hapN('error');
-    const bd = $id('m2Board'); bd.classList.remove('shake'); void bd.offsetWidth; bd.classList.add('shake');
-    logGame('Mines', M2.bet, 0, '💣'); setTimeout(() => m2End(0, 0), 350); return;
+    M2.on = false; M2.lost = true;
+    logGame('Mines', M2.bet, 0, '💣'); m2End(0, 0); m2Boom(i); return;
   }
-  m2Flip(i, 'gem'); burst(t, ['#34d399', '#a7f3d0'], 8); hap();
+  m2Flip(i, 'gem'); hap();
   if (M2.open.size === 25 - M2.n) return m2Cash();
   m2Render();
 }
 function m2Cash() {
   if (!M2.on || M2.lost || !M2.open.size || [...M2.open].some(i => M2.mines.has(i))) return;
   const k = M2.open.size, m = m2Mul(k), w = r2(M2.bet * m); payWin(w, 'Mines'); logGame('Mines', M2.bet, w, k + ' gems'); hapN('success');
-  const W = $id('m2Win'); W.innerHTML = `<b>${m.toFixed(2)}x</b><span>${GEM}+${fmt(w)}</span>`; W.className = 'mn2-win on';
+  const W = $id('m2Win'); W.innerHTML = m2WinHTML(m, w, typeof mIts !== 'undefined' ? mIts : null); W.className = 'mx-win on'; $id('m2Card').classList.add('win');
   m2End(w, m);
 }
-$id('m2Board').onclick = e => { const t = e.target.closest('.t2'); if (t) m2Pick(+t.dataset.i) };
-$id('m2Go').onclick = () => {
-  if (M2.busy) return;
-  if (M2.on) { if (M2.open.size && !M2.lost) m2Cash(); return }
-  if (M2.lost && !M2.done) return;                 // bomba animatsiyasi tugashini kutamiz
-  if (Date.now() - (M2.endAt || 0) < 450) return;  // tasodifiy ikki marta bosish
-  m2Start();
+// yutuq qutisi (frames/55): "2.43X", chiziq, sovg'a rasmi, nomi, qiymat (yashil pill)
+function m2WinHTML(m, w, its) {
+  const it = its && its[0], g = it ? GIFTS[it.g] : null;
+  return `<b>${m.toFixed(2)}X</b><i></i>${g ? `<span class="gi2">${GI(g)}</span><small>${esc(g.n)}</small>` : ''}<em><img src="assets/ui/ic_gem_sm.png" alt="">${fmt(it ? it.v : w)}</em>`;
+}
+$id('m2Board').onclick = async e => {   // 68.0→69.6: katakka bosish raundni boshlaydi
+  const t = e.target.closest('.mx-t'); if (!t || M2.boom || M2.busy) return; const i = +t.dataset.i;
+  if (!M2.on) { if (!(BB.mn && bbVal('mn') > 0)) { const A = $id('bbA_mn'); A.focus(); return } if (M2.done) m2Reset(); await m2Start(); if (!M2.on) return }
+  m2Pick(i);
 };
+$id('m2Go').onclick = () => { if (M2.busy || M2.boom) return; if (M2.on && M2.open.size && !M2.lost) m2Cash() };   // tugma faqat Cash Out
 $id('m2Rand').onclick = () => { if (!M2.on) return; const free = [...Array(25).keys()].filter(i => !M2.open.has(i)); if (free.length) m2Pick(pick(free)) };
-document.body.insertAdjacentHTML('beforeend', `<div class="modal sheet2" id="mnSh"><div class="mbox"><div class="mhead"><span>Number of mines</span><button class="mx" data-close>✕</button></div><div class="mbody"><div class="mnl" id="mnL">${Array.from({ length: 24 }, (_, i) => `<button data-n="${i + 1}"><span>${i + 1}</span><i></i></button>`).join('')}</div></div></div></div>`);
-window.RIKI_M2 = { st: () => M2, setN: n => m2SetN(n) };   // testlar uchun
-function m2SetN(n) { M2.n = n; $id('m2DdN').textContent = n; $$('#mnL button').forEach(x => x.classList.toggle('on', +x.dataset.n === n)); if (M2.done) { m2Reset(); M2.done = false } m2Render() }
-$id('m2Dd').onclick = () => { if (M2.on) return toast('Finish the current round first'); m2SetN(M2.n); openM('mnSh'); setTimeout(() => { const b = $('#mnL button.on'); b && b.scrollIntoView({ block: 'center' }) }, 60) };
-$id('mnL').onclick = e => { const b = e.target.closest('[data-n]'); if (!b) return; hap(); m2SetN(+b.dataset.n); setTimeout(() => closeM('mnSh'), 150) };
+// minalar soni — tizimning tanlash ro'yxati (81.0 s), shuning uchun oddiy <select>
+window.RIKI_M2 = { st: () => M2, setN: n => m2SetN(n), render: () => m2Render(), boom: i => m2Boom(i) };   // testlar uchun
+function m2SetN(n) { M2.n = n; $id('m2DdN').textContent = n; $id('m2Sel').value = n; if (M2.done) { m2Reset(); M2.done = false } m2Render() }
+$id('m2Sel').onchange = e => { if (M2.on) { e.target.value = M2.n; return } hap(); m2SetN(+e.target.value) };
+$id('bbA_mn').addEventListener('focus', () => $id('m2Card').classList.add('foc')); $id('bbA_mn').addEventListener('blur', () => $id('m2Card').classList.remove('foc'));   // 68.0: taxta xiralashadi
 bbInit('mn', () => { if (!M2.on) m2Render() });
 ENTER.mines = m2Render;
 
@@ -2499,16 +2525,15 @@ m2Start = async function () {
 };
 m2Pick = async function (i) {
   if (!wOn()) return _m2Pick(i); if (!M2.on || M2.open.has(i) || M2.busy) return;
-  M2.busy = true; const t = $(`#m2Board .t2[data-i="${i}"]`); t && t.classList.add('pend');
+  M2.busy = true; const t = $(`#m2Board .mx-t[data-i="${i}"]`); t && t.classList.add('pend');
   const r = await gPlay('mines/pick', { i }); M2.busy = false; t && t.classList.remove('pend'); if (!r) return;
   M2.open.add(i);
   if (!r.gem) {
     M2.on = false; M2.lost = true;
-    M2.mines = new Set(r.mines); m2Flip(i, 'bomb'); burst(t, ['#ef4444', '#f97316', '#fde047'], 18); hapN('error');
-    const bd = $id('m2Board'); bd.classList.remove('shake'); void bd.offsetWidth; bd.classList.add('shake');
-    gFinish(r, 'Mines', true); logGame('Mines', M2.bet, 0, '💣'); setTimeout(() => m2End(0, 0), 350); return;
+    M2.mines = new Set(r.mines);
+    gFinish(r, 'Mines', true); logGame('Mines', M2.bet, 0, '💣'); m2End(0, 0); m2Boom(i); return;
   }
-  m2Flip(i, 'gem'); burst(t, ['#34d399', '#a7f3d0'], 8); hap();
+  m2Flip(i, 'gem'); hap();
   if (r.end) return m2Done(r);
   m2Render();
 };
@@ -2518,12 +2543,16 @@ m2Cash = async function () {
 };
 function m2Done(r) {
   M2.mines = new Set(r.mines); const w = r.pay, m = r.mult;
-  const mIts = gFinish(r, 'Mines', true); logGame('Mines', M2.bet, w, M2.open.size + ' gems'); hapN('success'); winFx('Mines', r.cash, mIts);
-  const W = $id('m2Win'); W.innerHTML = `<b>${m.toFixed(2)}x</b><span>${GEM}+${fmt(w)}</span>`; W.className = 'mn2-win on';
+  const mIts = gFinish(r, 'Mines', true); logGame('Mines', M2.bet, w, M2.open.size + ' gems'); hapN('success');
+  const W = $id('m2Win'); W.innerHTML = m2WinHTML(m, w, typeof mIts !== 'undefined' ? mIts : null); W.className = 'mx-win on'; $id('m2Card').classList.add('win');
   m2End(w, m);
 }
-$id('m2Board').onclick = e => { const t = e.target.closest('.t2'); if (t) m2Pick(+t.dataset.i) };
-$id('m2Go').onclick = () => { if (M2.on) { if (M2.open.size) m2Cash(); return } m2Start() };
+$id('m2Board').onclick = async e => {   // 68.0→69.6: katakka bosish raundni boshlaydi
+  const t = e.target.closest('.mx-t'); if (!t || M2.boom || M2.busy) return; const i = +t.dataset.i;
+  if (!M2.on) { if (!(BB.mn && bbVal('mn') > 0)) { const A = $id('bbA_mn'); A.focus(); return } if (M2.done) m2Reset(); await m2Start(); if (!M2.on) return }
+  m2Pick(i);
+};
+$id('m2Go').onclick = () => { if (M2.busy || M2.boom) return; if (M2.on && M2.open.size) m2Cash() };
 $id('m2Rand').onclick = () => { if (!M2.on) return; const free = [...Array(25).keys()].filter(i => !M2.open.has(i)); if (free.length) m2Pick(pick(free)) };
 async function gSyncState() {   // ochiq Mines raundi va free spins — serverdan (boshqa telefondan boshlangan bo'lsa ham)
   if (!wOn()) return;

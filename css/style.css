@@ -2582,8 +2582,6 @@ nav button[data-go="home"],nav button[data-go="home"].on{background:#242424!impo
 /* O'yinlarda pastki panel ekran pastida (frames/52 Mines, 63 Plinko, 67 Dice): panel pastki menyudan ~10 px yuqorida */
 .screen.dockpad.on{display:flex!important;flex-direction:column;min-height:calc(100vh - 54px - 71px)}
 .screen.dockpad.on>.dock{position:static!important;margin-top:auto!important;margin-bottom:10px!important}
-#mines.on #m2Go{margin-top:auto!important}
-#mines.on .bb3{margin-bottom:10px!important}
 #dice.on .dc3-b{margin-top:auto!important;margin-bottom:10px!important}
 /* Farm Box — 408.mp4 0:36–0:46 */
 .reel2 .tl.none{padding:0;overflow:hidden;background:none!important}
