@@ -1914,7 +1914,7 @@ ENTER.dice = () => d2Sync();
 // =====================================================================
 //  UPGRADE
 // =====================================================================
-sec('upgrade', `<div class="up2-wheel eu-dial" id="u2Wheel"><img class="eu-base" src="assets/up/dial_base.png" alt="" draggable="false"><svg class="eu-arc" viewBox="0 0 390 333"><circle id="u2Arc" cx="195" cy="166" r="117.3"/><circle id="u2Arc2" cx="195" cy="166" r="147.3"/></svg>
+sec('upgrade', `<div class="up2-wheel eu-dial" id="u2Wheel"><img class="eu-base" src="assets/up/dial_base.png" alt="" draggable="false"><svg class="eu-arc" viewBox="0 0 390 332.7"><circle id="u2Arc" cx="195" cy="166" r="117.3"/><circle id="u2Arc2" cx="195" cy="166" r="147.3"/></svg>
     <b class="eu-l l100">100</b><b class="eu-l l50a">50</b><b class="eu-l l50b">50</b><b class="eu-l l0">0</b>
     <div class="up2-nd eu-nd" id="u2Nd"><img src="assets/up/needle.png" alt="" draggable="false"></div><div class="up2-cen eu-cen"><b id="u2Ch"></b><small id="u2Lv"></small></div></div>
   <div class="eu-cards"><button class="up2-c eu-c" id="u2From"></button><img class="eu-arr" src="assets/up/btn_arrow.png" alt="" draggable="false"><button class="up2-c eu-c tgt" id="u2To"></button></div>

@@ -1,32 +1,32 @@
 /* UPGRADE 1:1 — frames/45 (bo'sh), 47, 49 (49.8%), 50, 51. Kadr 585 px kenglik → K = 390/585 = 0.6667. */
-#upgrade.on{display:flex!important;flex-direction:column;background:#111111!important;padding:0 15px 20px!important}
+#upgrade.on{display:flex!important;flex-direction:column;background:#111111!important;padding:0 16.6px 20px!important;overflow-x:hidden}
 #upgrade>*{order:5}
-#upgrade .eu-dial{order:1;position:relative;width:390px!important;max-width:none!important;height:332.7px!important;aspect-ratio:auto!important;margin:5px -15px 0!important;align-self:center;animation:none!important}
-#upgrade .eu-base{position:absolute;left:0;top:0;width:390px;height:332.7px;pointer-events:none}
+#upgrade .eu-dial{order:1;position:relative;width:458.6px!important;max-width:none!important;height:391.3px!important;aspect-ratio:auto!important;margin:13.1px 0 0 -50.9px!important;align-self:flex-start;animation:none!important}
+#upgrade .eu-base{position:absolute;left:0;top:0;width:458.6px;height:391.3px;pointer-events:none}
 /* yashil yoy — faqat shu chiziladi (o'lchangan: r 107.3–127.3, bo'sh #3e865e / yon #34874d, tayyor #4ed586 / yon #40d56a) */
-#upgrade .eu-arc{position:absolute;left:0;top:0;width:390px;height:332.7px;transform:none!important;overflow:visible}
+#upgrade .eu-arc{position:absolute;left:0;top:0;width:458.6px;height:391.3px;transform:none!important;overflow:visible}
 #upgrade #u2Arc{fill:none;stroke:#3a8659;stroke-width:20px;transition:stroke-dasharray .45s,stroke-dashoffset .45s,stroke .3s}
 #upgrade #u2Arc2{fill:none;stroke:#3a8659;stroke-width:1.6px;transition:stroke-dasharray .45s,stroke-dashoffset .45s,stroke .3s}
 #upgrade .eu-on #u2Arc{stroke:#47d57c;filter:drop-shadow(0 0 5px rgba(64,213,106,.55))}
 #upgrade .eu-on #u2Arc2{stroke:#47d57c}
-#upgrade .eu-l{position:absolute;transform:translate(-50%,-50%);font-size:11.5px;font-weight:800;color:#fff;line-height:1;z-index:3;pointer-events:none}
-#upgrade .l100{left:194.7px;top:50.7px}#upgrade .l50a{left:78.7px;top:166.7px}#upgrade .l50b{left:311.3px;top:166.7px}#upgrade .l0{left:194.7px;top:283.3px}
-#upgrade .eu-nd{position:absolute!important;inset:auto;left:186.7px!important;top:6px!important;right:auto!important;bottom:auto!important;width:17.3px;height:57.3px;transform-origin:8.67px 160px!important;z-index:4}
+#upgrade .eu-l{position:absolute;transform:translate(-50%,-50%);font-size:13.5px;font-weight:800;color:#fff;line-height:1;z-index:3;pointer-events:none}
+#upgrade .l100{left:229px;top:59.6px}#upgrade .l50a{left:92.6px;top:196px}#upgrade .l50b{left:366.1px;top:196px}#upgrade .l0{left:229px;top:333.2px}
+#upgrade .eu-nd{position:absolute!important;inset:auto;left:219.6px!important;top:7.1px!important;right:auto!important;bottom:auto!important;width:20.3px;height:67.4px;transform-origin:10.2px 188.2px!important;z-index:4}
 #upgrade .eu-nd i{display:none}
 #upgrade .eu-nd img{width:100%;height:100%;display:block}
-#upgrade .eu-cen{position:absolute!important;left:135px!important;top:106px!important;right:auto!important;bottom:auto!important;width:120px;height:120px;background:none!important;box-shadow:none!important;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;animation:none!important}
-#upgrade #u2Ch{color:#eba838!important;font-size:34px;font-weight:900;line-height:1}
-#upgrade #u2Ch small{font-size:18px}
-#upgrade #u2Ch img{width:28px;height:28px;display:block;margin:-8px 0 14px}
-#upgrade #u2Lv{font-size:9.1px;font-weight:800;color:#8a8a8a;letter-spacing:.1px;max-width:84px;text-align:center;line-height:1.2;margin-top:3px}
+#upgrade .eu-cen{position:absolute!important;left:158.8px!important;top:124.7px!important;right:auto!important;bottom:auto!important;width:141px;height:141px;background:none!important;box-shadow:none!important;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;animation:none!important}
+#upgrade #u2Ch{color:#eba838!important;font-size:40px;font-weight:900;line-height:1}
+#upgrade #u2Ch small{font-size:21px}
+#upgrade #u2Ch img{width:32.9px;height:32.9px;display:block;margin:-9px 0 16px}
+#upgrade #u2Lv{font-size:10.7px;font-weight:800;color:#8a8a8a;letter-spacing:.1px;max-width:99px;text-align:center;line-height:1.2;margin-top:3px}
 #upgrade .e-idle #u2Lv{color:#10d379}
 #upgrade .up2-wheel.win .up2-cen,#upgrade .up2-wheel.lose .up2-cen{box-shadow:none!important}
 /* kartalar: src y 593–787 (129.3 px), r ~13, fon #262626, chiziqsiz */
-#upgrade .eu-cards{order:2;position:relative;display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-top:0}
-#upgrade .eu-c{height:129.3px!important;border:0!important;border-radius:13.3px!important;background:#262626!important;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:22px 6px 0!important;gap:0;opacity:1!important}
-#upgrade .eu-c .eu-pl{width:45.3px;height:45.3px;display:block;margin-bottom:12px}
-#upgrade .eu-c b{font-size:14.6px;font-weight:700;color:#10d579!important;line-height:1.15}
-#upgrade .eu-c small{font-size:10px;color:#1a754b!important;margin-top:4px;line-height:1.2;text-align:center}
+#upgrade .eu-cards{order:2;position:relative;display:grid;grid-template-columns:1fr 1fr;gap:16.5px;margin-top:-1.5px}
+#upgrade .eu-c{height:151.9px!important;border:0!important;border-radius:15.6px!important;background:#262626!important;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding:25.9px 6px 0!important;gap:0;opacity:1!important}
+#upgrade .eu-c .eu-pl{width:53.3px;height:53.3px;display:block;margin-bottom:14px}
+#upgrade .eu-c b{font-size:17.1px;font-weight:700;color:#10d579!important;line-height:1.15}
+#upgrade .eu-c small{font-size:11.8px;color:#1a754b!important;margin-top:4px;line-height:1.2;text-align:center}
 #upgrade .eu-c.tgt b{color:#444444!important}
 #upgrade .eu-c.tgt small{color:#373737!important}
 #upgrade .eu-c.tgt.on b{color:#10d579!important}
@@ -36,16 +36,16 @@
 #upgrade .eu-c .rb{display:none}
 #upgrade .eu-c .gi-wrap{width:64px;height:64px}
 #upgrade .eu-c em{background:none!important;color:#5ab4f0;font-size:11px;padding:0;margin-top:2px}
-#upgrade .eu-arr{position:absolute;left:50%;top:50%;width:40.7px;height:40.7px;margin:-20.35px 0 0 -20.35px;z-index:3;pointer-events:none}
+#upgrade .eu-arr{position:absolute;left:50%;top:50%;width:47.8px;height:47.8px;margin:-23.9px 0 0 -23.9px;z-index:3;pointer-events:none}
 /* presetlar: src y 804–843, w 84, oraliq 8, fon #1e1e1e, chegara #404040 → 35% #b4400f, 55% #c49a14, 75% #38c657 */
-#upgrade .eu-q{order:3;margin-top:11.3px!important;display:grid!important;grid-template-columns:repeat(6,1fr);gap:5.3px}
-#upgrade .eu-q button{height:26.7px;border-radius:6px;border:1px solid transparent!important;background:linear-gradient(#1e1e1e,#1e1e1e) padding-box,linear-gradient(#404040,#404040) border-box!important;font-size:13px;font-weight:700;color:#575557}
+#upgrade .eu-q{order:3;margin-top:12.6px!important;display:grid!important;grid-template-columns:repeat(6,1fr);gap:7.4px}
+#upgrade .eu-q button{height:31.2px;border-radius:7px;border:1px solid transparent!important;background:linear-gradient(#1e1e1e,#1e1e1e) padding-box,linear-gradient(#404040,#404040) border-box!important;font-size:15.3px;font-weight:700;color:#575557}
 #upgrade .eu-q button.p35{background:linear-gradient(#1e1e1e,#1e1e1e) padding-box,linear-gradient(165deg,#404040 62%,#b4400f) border-box!important}
 #upgrade .eu-q button.p55{background:linear-gradient(#1e1e1e,#1e1e1e) padding-box,linear-gradient(165deg,#404040 62%,#c49a14) border-box!important}
 #upgrade .eu-q button.p75{background:linear-gradient(#1e1e1e,#1e1e1e) padding-box,linear-gradient(165deg,#404040 55%,#38c657) border-box!important}
 #upgrade.has-from .eu-q button{color:#cacaca}
 /* tugma: src y 860–933 (48.7 px), r 9.3, #292929, matn #7e7e7e */
-#upgrade .eu-go{order:4;margin-top:11.3px!important;height:48.7px!important;border-radius:9.3px!important;background:#292929!important;color:#7e7e7e!important;font-size:15px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;border:0!important;box-shadow:none!important}
+#upgrade .eu-go{order:4;margin-top:12.6px!important;height:57.3px!important;border-radius:11px!important;background:#292929!important;color:#7e7e7e!important;font-size:17.6px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px;border:0!important;box-shadow:none!important}
 #upgrade .eu-go.grn{background:linear-gradient(90deg,#2dea6d,#aaff82)!important;color:#282929!important}
 #upgrade .eu-go .eu-ui{width:16px;height:16px}
 #upgrade .howc,#upgrade .how{display:none!important}

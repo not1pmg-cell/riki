@@ -9,14 +9,14 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@500;600;700;800;900&display=swap" rel="stylesheet">
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
-<link rel="stylesheet" href="css/style.css?v=20261126e">
-<link rel="stylesheet" href="css/epic-rocket.css?v=1">
-<link rel="stylesheet" href="css/epic-pvp.css?v=1">
-<link rel="stylesheet" href="css/epic-upgrade.css?v=1">
-<link rel="stylesheet" href="css/epic-transfer.css?v=1">
-<link rel="stylesheet" href="css/epic-topup.css?v=1">
-<link rel="stylesheet" href="css/epic-hub.css?v=1">
-<link rel="stylesheet" href="css/epic-1to1.css?v=1">
+<link rel="stylesheet" href="css/style.css?v=20261127a">
+<link rel="stylesheet" href="css/epic-rocket.css?v=20261127a">
+<link rel="stylesheet" href="css/epic-pvp.css?v=20261127a">
+<link rel="stylesheet" href="css/epic-upgrade.css?v=20261127a">
+<link rel="stylesheet" href="css/epic-transfer.css?v=20261127a">
+<link rel="stylesheet" href="css/epic-topup.css?v=20261127a">
+<link rel="stylesheet" href="css/epic-hub.css?v=20261127a">
+<link rel="stylesheet" href="css/epic-1to1.css?v=20261127a">
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true"><defs>
@@ -127,26 +127,24 @@
 
 <!-- TVT -->
 <section class="screen dockpad" id="tvt">
-  <div class="tvhead">
-    <div class="side sice"><small><span data-icon="snow"></span>Ice</small><b><span class="gm"></span><span id="tvIt">0.00</span></b><div class="mx2"><i id="tvIx">x0</i><span class="stk" id="tvIa"></span></div></div>
-    <div class="ringc"><svg viewBox="0 0 104 104"><circle cx="52" cy="52" r="46" stroke="#313131" stroke-width="8" fill="#141414"/><circle id="tvRing" cx="52" cy="52" r="46" stroke="#8b5cf6" stroke-width="8" fill="none" stroke-linecap="round" stroke-dasharray="289" stroke-dashoffset="289"/></svg><b id="tvTimer">VS</b></div>
-    <div class="side sfire"><small>Fire<span data-icon="flame"></span></small><b><span id="tvFt">0.00</span><span class="gm"></span></b><div class="mx2"><span class="stk" id="tvFa"></span><i id="tvFx">x0</i></div></div>
+  <div class="tvcard" id="tvArena">
+    <img class="tvbase" src="assets/tvt/arena_base.png" alt="" draggable="false">
+    <div class="tvice" id="tvIce"><span class="ip" id="tvIp">50%</span></div>
+    <div id="tvFire"><span class="fp" id="tvFp">50%</span></div>
+    <div class="tvh">
+      <div class="side sice"><small><img src="assets/hub2/ic_snow.png" alt="">Ice</small><b><img class="tgs" src="assets/ui/ic_gem_sm.png" alt=""><span id="tvIt">0.00</span></b><i id="tvIx">x0</i></div>
+      <div class="ringc"><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="27.2" stroke="#2e2e33" stroke-width="4.5" fill="#141218"/><circle id="tvRing" cx="32" cy="32" r="27.2" stroke="#f9bd23" stroke-width="4.5" fill="none" stroke-linecap="round" stroke-dasharray="170.9" stroke-dashoffset="170.9" transform="rotate(-90 32 32)"/></svg><b id="tvTimer">VS</b></div>
+      <div class="side sfire"><small>Fire<img src="assets/hub2/ic_flame.png" alt=""></small><b><span id="tvFt">0.00</span><img class="tgs" src="assets/ui/ic_gem_sm.png" alt=""></b><i id="tvFx">x0</i></div>
+    </div>
+    <div class="tvstk l" id="tvIav"></div><div class="tvstk r" id="tvFav"></div>
+    <div class="ball idle" id="tvBall"><img src="assets/tvt/ball.png" alt=""></div>
+    <div class="apill top" id="tvMsg"></div><div class="tvbub" id="tvBub"></div><div class="apill bot" id="tvWin"></div>
+    <span id="tvIa" hidden></span><span id="tvFa" hidden></span>
   </div>
-  <div class="arena" id="tvArena">
-    <div class="ice" id="tvIce"><span id="tvIp">50%</span>
-      <svg class="crys" viewBox="0 0 200 120" preserveAspectRatio="none"><defs><linearGradient id="cr1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#7dd3fc"/></linearGradient></defs><path d="M10 120 L22 30 L34 120Z M30 120 L48 10 L62 120Z M58 120 L70 50 L84 120Z M78 120 L92 70 L104 120Z M100 120 L110 85 L122 120Z" fill="url(#cr1)" opacity=".85"/></svg>
-      <div class="avs" id="tvIav"></div></div>
-    <div class="fire" id="tvFire"><span id="tvFp">50%</span>
-      <svg class="cracks" viewBox="0 0 300 260" preserveAspectRatio="none"><path d="M0 200 L60 170 L120 190 L180 150 L240 170 L300 140 M120 190 L140 230 M180 150 L170 110" stroke="#fb923c" stroke-width="2" fill="none"/></svg>
-      <svg class="flm" viewBox="0 0 300 150" preserveAspectRatio="none"><defs><linearGradient id="fl1" x1="0" y1="1" x2="0" y2="0"><stop offset="0" stop-color="#fde68a"/><stop offset=".5" stop-color="#f97316"/><stop offset="1" stop-color="#dc2626" stop-opacity="0"/></linearGradient></defs><path d="M20 150 Q30 90 45 120 Q55 60 70 150Z" fill="url(#fl1)"/><path d="M200 150 Q210 40 235 100 Q250 30 270 150Z" fill="url(#fl1)"/><path d="M240 150 Q255 70 270 110 Q285 50 300 150Z" fill="url(#fl1)"/><path d="M60 150 Q70 100 85 130 Q95 90 105 150Z" fill="url(#fl1)" opacity=".8"/></svg>
-      <div class="avs" id="tvFav"></div></div>
-    <div class="ball idle" id="tvBall"></div>
-    <div class="apill top" id="tvMsg"></div><div class="apill bot" id="tvWin"></div>
-  </div>
-  <div class="tvlist"><div class="tabs3" id="tvTabs"><button data-f="all" class="on">All <span id="tcA"></span></button><button data-f="ice"><span data-icon="snow"></span>Ice <span id="tcI"></span></button><button data-f="fire"><span data-icon="flame"></span>Fire <span id="tcF"></span></button></div><div id="tvRows"></div></div>
+  <div class="tvlist"><div class="tabs3" id="tvTabs"><button data-f="all" class="on">All <span id="tcA"></span></button><button data-f="ice"><img src="assets/hub2/ic_snow.png" alt="">Ice <span id="tcI"></span></button><button data-f="fire"><img src="assets/hub2/ic_flame.png" alt="">Fire <span id="tcF"></span></button></div><div id="tvRows"></div></div>
   <div class="dock">
-    <div class="brow"><div class="tog y" data-tog="tv"><button data-m="gift" data-icon="gift"></button><button data-m="coin" class="on"><span class="gm"></span></button></div><div class="inp"><input id="tvAmt" type="number" inputmode="decimal" placeholder="TON amount" step="0.01"><span class="gm"></span></div></div>
-    <div class="jb"><button class="jice" data-team="ice"><span data-icon="snow"></span>Join Ice</button><button class="jfire" data-team="fire"><span data-icon="flame"></span>Join Fire</button></div>
+    <div class="brow"><div class="tog y" data-tog="tv"><button data-m="gift"><img class="tgi" src="assets/ui/ic_gift_tog.png" alt=""></button><button data-m="coin" class="on"><img class="tgk" src="assets/pvp/ic_gem_dark.png" alt=""></button></div><div class="inp"><input id="tvAmt" type="number" inputmode="decimal" placeholder="TON amount" step="0.01"><img class="tgs" src="assets/ui/ic_gem_sm.png" alt=""></div></div>
+    <div class="jb"><button class="jice" data-team="ice"><img src="assets/hub2/ic_snow.png" alt=""><span>Join Ice</span></button><button class="jfire" data-team="fire"><img src="assets/hub2/ic_flame.png" alt=""><span>Join Fire</span></button></div>
   </div>
 </section>
 
@@ -306,9 +304,9 @@
 <div class="res-ov" id="resOv"></div>
 <div id="toast"></div>
 
-<script src="js/i18n.js?v=20261126a"></script>
+<script src="js/i18n.js?v=20261127a"></script>
 <script src="js/vendor/lottie.min.js"></script>
-<script src="js/app.js?v=20261126e"></script>
-<script src="js/screens.js?v=20261126e"></script>
-<script src="js/epic-rocket.js?v=1"></script>
+<script src="js/app.js?v=20261127a"></script>
+<script src="js/screens.js?v=20261127a"></script>
+<script src="js/epic-rocket.js?v=20261127a"></script>
 </body></html>

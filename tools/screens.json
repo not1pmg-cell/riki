@@ -12,40 +12,30 @@
   ]
  },
  "upgrade": {
-  "frame": "frames/45_upgrade_empty.png",
+  "frame": "frames2/26_upgrade_select_target.png",
   "go": "upgrade",
   "mask": [
    [
     0,
     0,
     390,
-    62
-   ],
-   [
-    0,
-    725,
-    390,
-    800
+    66
    ]
-  ]
+  ],
+  "js": "(()=>{const g=(S.inv||[])[0];})()"
  },
  "mines": {
-  "frame": "frames/52_mines_empty.png",
+  "frame": "frames2/31_mines_cashout.png",
   "go": "mines",
   "mask": [
    [
     0,
     0,
     390,
-    62
-   ],
-   [
-    0,
-    725,
-    390,
-    800
+    66
    ]
-  ]
+  ],
+  "js": "window.scrollTo(0,9.2)"
  },
  "pvp": {
   "frame": "frames2/18_pvp_place_bet_empty.png",
@@ -53,8 +43,24 @@
   "js": "document.querySelector('#pvRing').style.setProperty('animation','none','important')"
  },
  "tvt": {
-  "frame": "frames2/21_tvt_waiting_for_ice.png",
-  "go": "tvt"
+  "frame": "frames/06_tvt_countdown.png",
+  "go": "tvt",
+  "mask": [
+   [
+    0,
+    0,
+    390,
+    62
+   ],
+   [
+    0,
+    725,
+    390,
+    800
+   ]
+  ],
+  "js": "TV.ice=[{name:'Amber Raven 974',amt:4,me:1,t:3},{name:'karimov',amt:677000,t:1},{name:'Ice',amt:68.33,bot:1,t:0}];TV.fire=[{name:'7',amt:10000000,t:2},{name:'Fire',amt:62.41,bot:1,t:0}];TV.end=Date.now()+16500;tvRender(true)",
+  "wait": 900
  },
  "playhub": {
   "frame": "frames2/30_playhub.png",

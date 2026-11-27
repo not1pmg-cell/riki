@@ -217,7 +217,7 @@ const avHTML = (name, cls = '') => {
 const bot = () => ({ name: pick(BOTN), bot: true });
 // Bot tikishi: ko'pincha kichik, ba'zan katta — eng ko'pi 1000
 function botAmt(cap) { const r = Math.random(); const v = r < .55 ? rnd(.1, 3) : r < .85 ? rnd(3, 60) : r < .97 ? rnd(60, 300) : rnd(300, 1000); return Math.round(Math.min(cap || 1000, v) * 100) / 100 }
-const BOTAV = { PvP: '🤖', Ice: '🧊', Fire: '🔥' };
+const BOTAV = { Ice: '<img src="assets/bots/ice.png" alt="">', Fire: '<img src="assets/bots/fire.png" alt="">' };   // frames/06 ro'yxatidan kesilgan (emoji emas)
 
 function fillStatic() {
   $$('.gm').forEach(e => e.innerHTML = GEM);
@@ -600,9 +600,9 @@ const TV = { phase: 'wait', end: 0, ice: [], fire: [], filter: 'all', game: 9120
 const tvSum = t => TV[t].reduce((s, p) => s + p.amt, 0);
 function tvReset() { TV.phase = 'wait'; TV.end = 0; TV.ice = []; TV.fire = []; TV.win = null; TV.game++; $('#tvIce').classList.remove('lose'); $('#tvArena').classList.remove('play'); $('#tvFire').classList.remove('lose'); $('#tvWin').classList.remove('on'); tvRender(true); tvBallHome() }
 function tvAdd(team, name, amt, me, gifts) {
-  const tw = $('#tvWin'); if (tw) { tw.innerHTML = `${esc(name)}${!me ? ' <span class="bt">BOT</span>' : ''} ${GEM}+${fmt(amt)}${gifts && gifts.length ? ' 🎁' : ''}`; tw.classList.add('on'); clearTimeout(tw._t); tw._t = setTimeout(() => tw.classList.remove('on'), 4000) }
+  // jonli pufak (#tvBub) tvRender'da chiziladi — frames/06 "Amber Raven … +4.00"
   let p = TV[team].find(x => x.name === name && !!x.me === !!me);
-  if (p) { p.amt = Math.round((p.amt + amt) * 100) / 100; if (gifts) p.gifts = (p.gifts || []).concat(gifts) } else TV[team].push({ name, amt, me, gifts: gifts || [], bot: !me });
+  if (p) { p.amt = Math.round((p.amt + amt) * 100) / 100; p.t = Date.now(); if (gifts) p.gifts = (p.gifts || []).concat(gifts) } else TV[team].push({ name, amt, me, gifts: gifts || [], bot: !me, t: Date.now() });
   if (TV.ice.length && TV.fire.length && !TV.end) TV.end = Date.now() + 20000;
 }
 function tvTick() {
@@ -684,24 +684,30 @@ function tvRender(force) {
   $('#tvIx').textContent = 'x' + (it ? (tot / it).toFixed(2) : '0'); $('#tvFx').textContent = 'x' + (ft ? (tot / ft).toFixed(2) : '0');
   const ip = tot ? it / tot * 100 : 50;
   $('#tvIp').textContent = Math.round(ip) + '%'; $('#tvFp').textContent = Math.round(100 - ip) + '%';
-  $('#tvIce').style.flexBasis = clamp(ip, 12, 88) + '%';
+  $('#tvIce').style.width = clamp(ip, 12, 88) + '%';   // frames/06: 6% → ~12% (min), frames/02: 50%
   const rem = TV.end && TV.phase === 'wait' ? Math.max(0, (TV.end - Date.now()) / 1000) : 0;
-  $('#tvTimer').textContent = TV.phase === 'wait' ? (TV.end ? Math.ceil(rem) : 'VS') : TV.phase === 'play' ? '⚡' : '✓';
-  $('#tvRing').style.strokeDashoffset = TV.end && TV.phase === 'wait' ? 289 * (1 - rem / 20) : TV.phase === 'wait' ? 289 : 0;
+  $('#tvTimer').textContent = TV.phase === 'wait' ? (TV.end ? Math.ceil(rem) : 'VS') : '';
+  $('#tvRing').style.strokeDashoffset = TV.end && TV.phase === 'wait' ? 170.9 * (1 - rem / 20) : 170.9;
+  $('#tvArena').classList.toggle('cd', !!(TV.end && TV.phase === 'wait'));
+  { const mi = TV.ice.some(p => p.me), mf = TV.fire.some(p => p.me), ji = $('#tvt .jice'), jf = $('#tvt .jfire');   // frames/06: qo'shilgan tomon "Add to …" (rangli), boshqasi kulrang "Join …"
+    if (ji && jf) { ji.querySelector('span').textContent = mi ? 'Add to Ice' : 'Join Ice'; jf.querySelector('span').textContent = mf ? 'Add to Fire' : 'Join Fire'; ji.classList.toggle('off', mf); jf.classList.toggle('off', mi) } } $('#tvArena').classList.toggle('noply', !TV.ice.length && !TV.fire.length);
   const msg = $('#tvMsg');
   if (TV.phase === 'wait' && (!TV.ice.length || !TV.fire.length)) { msg.textContent = !TV.ice.length && !TV.fire.length ? "Waiting for players" : !TV.ice.length ? 'Waiting for Ice' : 'Waiting for Fire'; msg.classList.add('on') } else msg.classList.remove('on');
   if (!force && Date.now() - tvLast < 400) return; tvLast = Date.now();
-  const stk = arr => arr.slice(0, 3).map(p => avHTML(p.name)).join('');
-  $('#tvIa').innerHTML = stk(TV.ice); $('#tvFa').innerHTML = stk(TV.fire);
-  $('#tvIav').innerHTML = stk(TV.ice); $('#tvFav').innerHTML = stk(TV.fire);
+  // avatar to'plami: 1 ta avatar + "+N" (frames/06: chapda "+2", o'ngda 3 ta ustma-ust)
+  const stk = (arr, side) => { if (!arr.length) return ''; const sh = [...arr].sort((a, b) => b.amt - a.amt); const n = side === 'r' ? Math.min(3, sh.length) : 1; const av = sh.slice(0, n).map(p => pvAv(p)).join(''); const more = sh.length - n; return side === 'r' ? `${more > 0 ? `<em>+${more}</em>` : ''}${av}` : `${av}${more > 0 ? `<em>+${more}</em>` : ''}` };
+  $('#tvIav').innerHTML = stk(TV.ice, 'l'); $('#tvFav').innerHTML = stk(TV.fire, 'r');
+  const lastJ = [...TV.ice, ...TV.fire].sort((a, b) => (b.t || 0) - (a.t || 0))[0];
+  $('#tvBub').innerHTML = lastJ ? `${pvAv(lastJ)}<b>${esc(lastJ.name)}</b><em><img src="assets/ui/ic_gem_sm.png" alt="">+${fmt(lastJ.amt)}</em>` : ''; $('#tvBub').classList.toggle('on', !!lastJ && TV.phase === 'wait');
   $('#tcA').textContent = TV.ice.length + TV.fire.length; $('#tcI').textContent = TV.ice.length; $('#tcF').textContent = TV.fire.length;
   const rows = [];
   ['ice', 'fire'].forEach(t => { if (TV.filter === 'all' || TV.filter === t) TV[t].forEach(p => rows.push([t, p])) });
-  rows.sort((a, b) => b[1].amt - a[1].amt);
+  rows.sort((a, b) => (b[1].me ? 1 : 0) - (a[1].me ? 1 : 0) || b[1].amt - a[1].amt);   // frames/06: o'zim birinchi
   $('#tvRows').innerHTML = rows.map(([t, p]) => {
     const ts = tvSum(t) || 1;
-    const chips = p.gifts && p.gifts.length ? `<div class="gch">${p.gifts.slice(0, 3).map(gi => `<span>${GI(GIFTS[gi])}</span>`).join('')}</div>` : `<div class="gch"><span>${g$(p.amt)}</span></div>`;
-    return `<div class="trow"><div class="avw">${avHTML(p.name)}<span class="tb" style="background:${t === 'ice' ? '#0e7490' : '#c2410c'}">${t === 'ice' ? '❄' : '🔥'}</span></div><div><b>${esc(p.name)}</b>${p.bot ? ' <span class="bt">BOT</span>' : ''}${p.me ? ' <span class="bt">YOU</span>' : ''}<small style="color:${t === 'ice' ? '#67e8f9' : '#fdba74'}">${(p.amt / ts * 100).toFixed(1)}% of ${t === 'ice' ? 'Ice' : 'Fire'}</small></div>${chips}<span class="r">${g$(p.amt)}</span></div>`;
+    const chips = p.gifts && p.gifts.length ? `<div class="gch">${p.gifts.slice(0, 3).map(gi => `<span>${GI(GIFTS[gi])}</span>`).join('')}</div>` : `<div class="gch"><span><img src="assets/ui/ic_gem_sm.png" alt="">${fmt(p.amt)}</span></div>`;
+    const pc = (p.amt / ts * 100), pcs = (Math.round(pc * 10) / 10).toFixed(1).replace(/\.0$/, '');
+    return `<div class="trow ${p.me ? 'me' : ''}"><div class="avw">${pvAv(p)}<span class="tb t${t[0]}"><img src="assets/hub2/ic_${t === 'ice' ? 'snow' : 'flame'}.png" alt=""></span></div><div class="tn"><b>${esc(p.name)}${p.bot ? ' <span class="bt">BOT</span>' : ''}${p.me ? ' <span class="yb">YOU</span>' : ''}</b>${p.bot || p.me ? '' : `<small class="s${t[0]}">${pcs}% of ${t === 'ice' ? 'Ice' : 'Fire'}</small>`}</div>${chips}<span class="r"><img src="assets/ui/ic_gem_sm.png" alt="">${fmt(p.amt)}</span></div>`;
   }).join('') || '<div class="empty">No players yet</div>';
 }
 $$('#tvTabs button').forEach(b => b.onclick = () => { TV.filter = b.dataset.f; $$('#tvTabs button').forEach(x => x.classList.toggle('on', x === b)); tvRender(true) });

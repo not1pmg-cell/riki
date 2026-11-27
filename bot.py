@@ -29,6 +29,7 @@ import asyncio
 import hashlib
 import hmac
 import json
+import re
 import logging
 import math
 import os
@@ -1971,6 +1972,9 @@ def make_app() -> web.Application:
 dp = Dispatcher()
 
 
+UI_VER = "20261127a"   # Mini App kesh-buster (index.html ?v= bilan bir xil)
+
+
 def webapp_url(start_param: str = "") -> str:
     """Mini App havolasi: server manzili (?api=) avtomatik qo'shiladi — ilova o'zi serverga ulanadi."""
     url = WEBAPP_URL
@@ -1983,6 +1987,8 @@ def webapp_url(start_param: str = "") -> str:
         q.append("gb=" + quote(GIFT_BOT, safe=""))
     if start_param:
         q.append("tgWebAppStartParam=" + quote(start_param, safe=""))
+    url = re.sub(r"([?&])v=[^&]*&?", r"\1", url).rstrip("?&")
+    q.append("v=" + UI_VER)
     if q:
         url += ("&" if "?" in url else "?") + "&".join(q)
     return url
