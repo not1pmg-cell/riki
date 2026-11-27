@@ -10,12 +10,25 @@ const KEY = 'riki_lang';
 const q = new URLSearchParams(location.search);
 let lang = (q.get('lang') || '').toLowerCase();
 try { if (lang === 'uz' || lang === 'en') localStorage.setItem(KEY, lang); else lang = localStorage.getItem(KEY) || '' } catch (e) {}
-if (lang !== 'uz' && lang !== 'en') {
-  const tl = (((window.Telegram || {}).WebApp || {}).initDataUnsafe || {}).user;
-  lang = tl && /^uz/.test(tl.language_code || '') ? 'uz' : 'en';
-}
+if (lang !== 'uz' && lang !== 'en') lang = 'en';   // standart — ingliz (original kabi); o'zbekcha faqat tanlanganda
 
 const UZ = {
+  'Add to Ice': "Ice'ga qo'shish",
+  'Add to Fire': "Fire'ga qo'shish",
+  'How referral works': "Taklif qanday ishlaydi",
+  'Got it': "Tushunarli",
+  'Share your referral link with friends.': "Taklif havolangizni do'stlaringizga yuboring.",
+  'Sell for': "Sotish",
+  'Waiting for players..': "O'yinchilar kutilmoqda..",
+  'WAITING': "KUTILMOQDA",
+  'Send gifts to': "Sovg'alarni yuboring:",
+  'our gift bot': "sovg'a botimizga",
+  'Use them in upgrades and games': "Ularni upgrade va o'yinlarda ishlating",
+  'TON amount': "TON miqdori",
+  'SELECT GIFTS TO UPGRADE': "UPGRADE UCHUN SOVG'A TANLANG",
+  'Waiting for Ice': "Ice kutilmoqda",
+  'Waiting for Fire': "Fire kutilmoqda",
+  'All': "Hammasi",
   // pastki menyu va sarlavha
   'Backpack': 'Ryukzak', 'Invite': 'Taklif', 'Home': 'Asosiy', 'Leaderboard': 'Reyting', 'Earn': 'Ishlash',
   'Your balance': 'Balansingiz', 'Deposit': 'Depozit', 'Live': 'Jonli',

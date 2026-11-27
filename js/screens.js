@@ -6,7 +6,7 @@
 'use strict';
 const CUR = CFG.CUR || 'GRAM';
 const BRAND = CFG.BRAND || 'RIKI';
-const GBOT = CFG.GIFT_BOT || 'your_gift_bot';
+const GBOT = 'buyernewss';   // Send gift → https://t.me/buyernewss (foydalanuvchi ko'rsatmasi K)
 const $id = id => document.getElementById(id);
 const svgI = p => `<svg class="ic" viewBox="0 0 24 24">${p}</svg>`;
 const IC = {
@@ -51,6 +51,7 @@ const hms = ms => { ms = Math.max(0, ms); const h = Math.floor(ms / 36e5), m = M
 const mask = n => n.length <= 4 ? n : n.slice(0, 2) + '***' + n.slice(-2);
 const sec = (id, html) => { let s = $id(id); if (!s) { s = document.createElement('section'); s.className = 'screen'; s.id = id; document.querySelector('.app').appendChild(s) } if (html != null) s.innerHTML = html; return s };
 function copyTxt(t) { (navigator.clipboard ? navigator.clipboard.writeText(t) : Promise.reject()).then(() => toast('Copied ✓')).catch(() => prompt('Nusxa oling:', t)) }
+document.addEventListener('click', e => { const a = e.target.closest && e.target.closest('a[href^="https://t.me/"]'); if (a) { e.preventDefault(); openLink(a.href) } });
 function openLink(u) { if (tg && u.startsWith('https://t.me/') && tg.openTelegramLink) tg.openTelegramLink(u); else if (tg && tg.openLink) tg.openLink(u); else window.open(u, '_blank') }
 
 // ---------- holat qo'shimchalari ----------

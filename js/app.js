@@ -544,7 +544,7 @@ function pvSpin(forced) {
   setTimeout(() => { const c = tr.querySelector('.wcard'); c && c.classList.add('w') }, 7100);
 }
 let pvLast = 0;
-const pvAv = p => p.photo ? `<span class="av" style="background:#393939 url('${esc(p.photo)}') center/cover"></span>` : avHTML(p.name);
+const pvAv = p => (p.bot && BOTAV[p.name]) ? avHTML(p.name) : p.photo ? `<span class="av" style="background:#393939 url('${esc(p.photo)}') center/cover"></span>` : avHTML(p.name);
 // o'yinchilar yoyning TEPA-O'RTASIDAN boshlab joylashadi (8,7,9,6,…) — chetdagilar ekrandan chiqib ketadi
 const PV_SLOT = [5, 4, 6, 3, 7, 2, 8, 1, 9, 0, 10];   // 11 ta katak: tepa-o'rtadan boshlab
 function pvRender(force) {
