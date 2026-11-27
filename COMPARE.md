@@ -8,24 +8,24 @@ Davom ettirish: shu jadvaldagi ⚠️/❌ qatorlardan boshlanadi.
 
 | Ekran | Original kadr | Diff % | Holat | Qolgan farq |
 |---|---|---|---|---|
-| home | frames2/01_home.png | 19.5% | ⚠️ | Free24 cooldown holati mock qilinmagan; Live lenta mock TON plitkalari |
-| upgrade | frames2/26_upgrade_select_target.png | 9.4% | ⚠️ | kadrda sovg'a tanlangan (Mousse Cake), bizda bo'sh; dial ±3 px |
-| mines | frames2/31_mines_cashout.png | 14.9% | ⚠️ | kadr o'yin holatida (Cash Out, ochilgan plitka); ochilgan plitka/bomba san'ati PNG emas |
-| pvp | frames2/18_pvp_place_bet_empty.png | 9.4% | ⚠️ | kafel matni RIKI GIFT; o'yinchilar bilan holat (frames/19) qilinmagan |
+| home | frames2/01_home.png | 19.2% | ⚠️ | Free24 cooldown holati mock qilinmagan; Live lenta mock TON plitkalari |
+| upgrade | frames2/26_upgrade_select_target.png | 9.2% | ⚠️ | kadrda sovg'a tanlangan (Mousse Cake), bizda bo'sh; dial ±3 px |
+| mines | frames2/31_mines_cashout.png | 14.6% | ⚠️ | kadr o'yin holatida (Cash Out, ochilgan plitka); ochilgan plitka/bomba san'ati PNG emas |
+| pvp | frames2/18_pvp_place_bet_empty.png | 9.2% | ⚠️ | kafel matni RIKI GIFT; o'yinchilar bilan holat (frames/19) qilinmagan |
 | tvt | frames/06_tvt_countdown.png | 28.6% | ⚠️ | desktop kadr (scrollbar 380px); halqa sariq (ko'rsatmangiz) |
-| playhub | frames2/30_playhub.png | 17.4% | ⚠️ | Crafts kartasi desktopdan; Live lenta mock |
-| rocket_wait | frames2/13_rocket_waiting_5.png | 35.5% | ⚠️ | kadrda bet oynasi ochiq; Rocket sahifasi alohida o'lchanadi |
-| spins | frames2/34_spins.png | 38.1% | ⚠️ | plitkalar ochilgan holatda; Buy Features/Double Chance kartalari |
-| plinko | frames2/37_plinko.png | 33.3% | ⚠️ | piramida o'lchami, Easy/Medium/Hard tugmalari |
-| dice | frames2/39_dice.png | 25.4% | ⚠️ | slayder, maydonlar o'lchami |
-| crafts | frames2/43_crafts_mode.png | 18.6% | ⚠️ | slotlar, rejim kartalari |
-| profile | frames2/48_profile.png | 34.8% | ⚠️ | VIP kartasi, Guest/anonim holat |
-| leader | frames2/53_leaderboard.png | 38.8% | ⚠️ | qator o'lchamlari, top-3 |
-| earn | frames2/54_earn.png | 34.1% | ⚠️ | vazifalar ro'yxati |
-| invite | frames2/59_invite.png | 25.8% | ⚠️ | taklif kartasi |
-| backpack | frames2/61_backpack.png | 45.3% | ⚠️ | bo'sh/to'la holat |
-| topup | frames2/63_topup_ton.png | 33.5% | ⚠️ | TON/Stars tablari |
-| pvphub | frames2/14b_pvphub_loaded.png | 29.7% | ⚠️ | kartalar, leaderboard (1d948fe) |
+| playhub | frames2/30_playhub.png | 17.2% | ⚠️ | Crafts kartasi desktopdan; Live lenta mock |
+| rocket_wait | frames2/13_rocket_waiting_5.png | 35.3% | ⚠️ | kadrda bet oynasi ochiq; Rocket sahifasi alohida o'lchanadi |
+| spins | frames2/34_spins.png | 37.8% | ⚠️ | plitkalar ochilgan holatda; Buy Features/Double Chance kartalari |
+| plinko | frames2/37_plinko.png | 33.1% | ⚠️ | piramida o'lchami, Easy/Medium/Hard tugmalari |
+| dice | frames2/39_dice.png | 25.1% | ⚠️ | slayder, maydonlar o'lchami |
+| crafts | frames2/43_crafts_mode.png | 18.4% | ⚠️ | slotlar, rejim kartalari |
+| profile | frames2/48_profile.png | 34.6% | ⚠️ | VIP kartasi, Guest/anonim holat |
+| leader | frames2/54_earn.png (kadr nomi xato — aslida Leaderboard) | 9.5% | ⚠️ | qator o'lchamlari, top-3 |
+| earn | frames2/55_earn_daily_tasks.png | 21.2% | ⚠️ | vazifalar ro'yxati |
+| invite | frames2/60_my_invites.png | 7.7% | ⚠️ | taklif kartasi |
+| backpack | frames2/62_backpack_items.png | 22.6% | ⚠️ | bo'sh/to'la holat |
+| topup | frames2/65_topup_transfer.png | 12.9% | ⚠️ | TON/Stars tablari |
+| pvphub | frames2/14b_pvphub_loaded.png | 29.4% | ⚠️ | kartalar, leaderboard (1d948fe) |
 | Boxes (02–09), PvP tarix/g'olib/detallar (16,17,19,20), TvT tarix/fair (23,24), Upgrade natija (28,29), Spins/Plinko/Dice/Crafts qo'shimcha holatlari, VIP/til (49–52), Earn tablar (55–58), My invites (60), Backpack items/withdraw (62,70), Top Up Stars/Transfer (64–69), VIP box (71) | frames2 | — | ❌ | navbatda |
 
 ## Harakatlar (motion)
@@ -46,3 +46,9 @@ Davom ettirish: shu jadvaldagi ⚠️/❌ qatorlardan boshlanadi.
 5. TvT ice > 20% bo'lgandagi muz san'ati — kadrlar faqat 6–20% ni ko'rsatadi.
 6. PvP qo'lqoplar harakati (bo'sh holatda) — statik kadr.
 7. Earn qizil badge — kadrlarda ko'rinmadi.
+
+## Eslatma: kadr nomlari
+frames2/53 = Profile, 54 = Leaderboard (qatorlar), 55 = Earn daily, 59 = Wealth ro'yxati, 60 = Invite + "How referral works", 62 = Backpack (sovg'alar), 65 = Top Up Transfer.
+
+## Savol (pul mantiqi)
+Backpack: originalda "Sell for 95.29" = sovg'a narxi (100%). Bizda server 95% to'laydi (wallet.py SELL_RATE = 0.95) va "Sell for 90.53" ko'rinadi. 1:1 uchun SELL_RATE = 1.0 kerak — tasdiqlang.
