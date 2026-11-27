@@ -8,14 +8,25 @@ Davom ettirish: shu jadvaldagi ⚠️/❌ qatorlardan boshlanadi.
 
 | Ekran | Original kadr | Diff % | Holat | Qolgan farq |
 |---|---|---|---|---|
-| Home | frames2/01_home | 21.3% | ⚠️ | Live lenta bo'sh (mock yo'q), Free24 kartasi cooldown holatida emas; banner chiplar o'rni ±2 px |
-| Upgrade (bo'sh) | frames2/26 (target tanlash) | 9.5% | ⚠️ | Kadrda Mousse Cake tanlangan, bizda bo'sh holat; dial ±3 px |
-| Mines | frames2/31 (o'yin davomida) | 14.9% | ⚠️ | Kadr o'yin holatida (Cash Out, ochilgan plitka), bizda bo'sh; ochilgan plitka/bomba san'ati hali PNG emas |
-| PvP (bo'sh) | frames2/18 | 9.3% | ⚠️ | Kafel matni "RIKI GIFT" (nom o'zgarishi), kafel soyasi; o'yinchilar bilan holat (frames/19) hali o'lchanmagan |
-| TvT (countdown) | frames/06 (desktop) | 29.1% | ⚠️ | Desktop kadrda scrollbar (380 px) — to'g'ri telefon kadri yo'q; halqa sariq (sizning ko'rsatmangiz, desktopda binafsha) |
-| PvP Hub | frames2/14b | — | ⚠️ | oldingi commitda (1d948fe) |
-| Banners | frames2/01 | — | ⚠️ | avtoskroll/nuqtalar — videoda ko'rinmadi (UNCLEAR) |
-| Boxes, Crafts, Dice, Plinko, Spins, Rocket, Backpack, Invite, Leaderboard, Earn, Profile, Top Up, Withdraw, modallar | frames2/02–72 | — | ❌ | navbatda |
+| home | frames2/01_home.png | 19.5% | ⚠️ | Free24 cooldown holati mock qilinmagan; Live lenta mock TON plitkalari |
+| upgrade | frames2/26_upgrade_select_target.png | 9.4% | ⚠️ | kadrda sovg'a tanlangan (Mousse Cake), bizda bo'sh; dial ±3 px |
+| mines | frames2/31_mines_cashout.png | 14.9% | ⚠️ | kadr o'yin holatida (Cash Out, ochilgan plitka); ochilgan plitka/bomba san'ati PNG emas |
+| pvp | frames2/18_pvp_place_bet_empty.png | 9.4% | ⚠️ | kafel matni RIKI GIFT; o'yinchilar bilan holat (frames/19) qilinmagan |
+| tvt | frames/06_tvt_countdown.png | 28.6% | ⚠️ | desktop kadr (scrollbar 380px); halqa sariq (ko'rsatmangiz) |
+| playhub | frames2/30_playhub.png | 17.4% | ⚠️ | Crafts kartasi desktopdan; Live lenta mock |
+| rocket_wait | frames2/13_rocket_waiting_5.png | 35.5% | ⚠️ | kadrda bet oynasi ochiq; Rocket sahifasi alohida o'lchanadi |
+| spins | frames2/34_spins.png | 38.1% | ⚠️ | plitkalar ochilgan holatda; Buy Features/Double Chance kartalari |
+| plinko | frames2/37_plinko.png | 33.3% | ⚠️ | piramida o'lchami, Easy/Medium/Hard tugmalari |
+| dice | frames2/39_dice.png | 25.4% | ⚠️ | slayder, maydonlar o'lchami |
+| crafts | frames2/43_crafts_mode.png | 18.6% | ⚠️ | slotlar, rejim kartalari |
+| profile | frames2/48_profile.png | 34.8% | ⚠️ | VIP kartasi, Guest/anonim holat |
+| leader | frames2/53_leaderboard.png | 38.8% | ⚠️ | qator o'lchamlari, top-3 |
+| earn | frames2/54_earn.png | 34.1% | ⚠️ | vazifalar ro'yxati |
+| invite | frames2/59_invite.png | 25.8% | ⚠️ | taklif kartasi |
+| backpack | frames2/61_backpack.png | 45.3% | ⚠️ | bo'sh/to'la holat |
+| topup | frames2/63_topup_ton.png | 33.5% | ⚠️ | TON/Stars tablari |
+| pvphub | frames2/14b_pvphub_loaded.png | 29.7% | ⚠️ | kartalar, leaderboard (1d948fe) |
+| Boxes (02–09), PvP tarix/g'olib/detallar (16,17,19,20), TvT tarix/fair (23,24), Upgrade natija (28,29), Spins/Plinko/Dice/Crafts qo'shimcha holatlari, VIP/til (49–52), Earn tablar (55–58), My invites (60), Backpack items/withdraw (62,70), Top Up Stars/Transfer (64–69), VIP box (71) | frames2 | — | ❌ | navbatda |
 
 ## Harakatlar (motion)
 

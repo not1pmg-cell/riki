@@ -67,5 +67,149 @@
   "frame": "frames2/30_playhub.png",
   "go": "playhub",
   "js": "S.myFeed=Array.from({length:8},()=>({kind:'ton',v:1,name:'x',t:1}));feedDraw()"
+ },
+ "rocket_wait": {
+  "frame": "frames2/13_rocket_waiting_5.png",
+  "go": "rocket",
+  "mask": [
+   [
+    0,
+    0,
+    390,
+    66
+   ]
+  ]
+ },
+ "spins": {
+  "frame": "frames2/34_spins.png",
+  "go": "spins",
+  "mask": [
+   [
+    0,
+    0,
+    390,
+    66
+   ]
+  ]
+ },
+ "plinko": {
+  "frame": "frames2/37_plinko.png",
+  "go": "plinko",
+  "mask": [
+   [
+    0,
+    0,
+    390,
+    66
+   ]
+  ]
+ },
+ "dice": {
+  "frame": "frames2/39_dice.png",
+  "go": "dice",
+  "mask": [
+   [
+    0,
+    0,
+    390,
+    66
+   ]
+  ]
+ },
+ "crafts": {
+  "frame": "frames2/43_crafts_mode.png",
+  "go": "crafts",
+  "mask": [
+   [
+    0,
+    0,
+    390,
+    66
+   ]
+  ]
+ },
+ "profile": {
+  "frame": "frames2/48_profile.png",
+  "go": "profile",
+  "mask": [
+   [
+    0,
+    0,
+    390,
+    66
+   ]
+  ]
+ },
+ "leader": {
+  "frame": "frames2/53_leaderboard.png",
+  "go": "leader",
+  "mask": [
+   [
+    0,
+    0,
+    390,
+    66
+   ]
+  ]
+ },
+ "earn": {
+  "frame": "frames2/54_earn.png",
+  "go": "earn",
+  "mask": [
+   [
+    0,
+    0,
+    390,
+    66
+   ]
+  ]
+ },
+ "invite": {
+  "frame": "frames2/59_invite.png",
+  "go": "invite",
+  "mask": [
+   [
+    0,
+    0,
+    390,
+    66
+   ]
+  ]
+ },
+ "backpack": {
+  "frame": "frames2/61_backpack.png",
+  "go": "backpack",
+  "mask": [
+   [
+    0,
+    0,
+    390,
+    66
+   ]
+  ]
+ },
+ "topup": {
+  "frame": "frames2/63_topup_ton.png",
+  "go": "topup",
+  "mask": [
+   [
+    0,
+    0,
+    390,
+    66
+   ]
+  ]
+ },
+ "pvphub": {
+  "frame": "frames2/14b_pvphub_loaded.png",
+  "go": "pvphub",
+  "mask": [
+   [
+    0,
+    0,
+    390,
+    66
+   ]
+  ]
  }
 }
