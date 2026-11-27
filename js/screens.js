@@ -1742,7 +1742,7 @@ function burst(el, col, n) { const r = el.getBoundingClientRect(); for (let i = 
 // ---------------------------------------------------------------- umumiy tikish paneli (TON yoki sovg'a)
 const BB = {};
 function betBar(key) {
-  return `<div class="bb2" id="bb_${key}"><div class="bbm"><button data-m="ton" class="on">${GEM}</button><button data-m="gift">${IC.gift}</button></div><div class="bbi"><input id="bbA_${key}" type="number" inputmode="decimal" placeholder="Bet amount" step="0.01"><div class="bbg" id="bbG_${key}"></div><span class="gm">${GEM}</span></div><div class="bbq"><button data-q="half">½</button><button data-q="dbl">2×</button><button data-q="max">Max</button></div></div>`;
+  return `<div class="bb2" id="bb_${key}"><div class="bbm"><button data-m="ton" class="on">${GEM}</button><button data-m="gift">${IC.gift}</button></div><div class="bbi"><input id="bbA_${key}" type="number" inputmode="decimal" placeholder="Bet amount" step="0.01"><div class="bbg" id="bbG_${key}"></div><span class="gm"><img class="tgs" src="assets/ui/ic_gem_sm.png" alt=""></span></div><div class="bbq"><button data-q="half">½</button><button data-q="dbl">2×</button><button data-q="max">Max</button></div></div>`;
 }
 function bbInit(key, onChange) {
   BB[key] = { mode: 'ton', items: [], on: onChange || (() => {}) };
@@ -1780,26 +1780,27 @@ function bbTake(key, min) {
 //  MINES
 // =====================================================================
 const M2 = { on: false, n: 3, bet: 0, mines: new Set(), open: new Set(), pf: null, done: false };
-const RTP = g => ((CFG.RTP || {})[g] || { mines: 97, dice: 98, upgrade: 95, cases: 92, plinko: 100, spins: 100, crafts: 100 }[g]) / 100;
-const m2Mul = k => { let m = 1; for (let i = 0; i < k; i++) m *= (25 - i) / (25 - M2.n - i); return Math.floor(m * RTP('mines') * 100) / 100 };
+const RTP = g => ((CFG.RTP || {})[g] || { mines: 97.5, dice: 98, upgrade: 95, cases: 92, plinko: 100, spins: 100, crafts: 100 }[g]) / 100;
+const m2Mul = k => { let m = 1; for (let i = 0; i < k; i++) m *= (25 - i) / (25 - M2.n - i); return Math.floor(m * RTP('mines') * 100 + 1e-9) / 100 };   // floor(fair·0.975) — frames/52,55 qiymatlari bilan tekshirilgan
 // video uslubidagi tikish paneli: [sovg'a | TON] + miqdor (+ qo'shimcha)
 function betBar3(key, extra, ph) {
-  return `<div class="bb2 bb3" id="bb_${key}"><div class="bbm"><button data-m="gift">${IC.gift}</button><button data-m="ton" class="on">${GEM}</button></div><div class="bbi"><input id="bbA_${key}" type="number" inputmode="decimal" placeholder="${ph || 'Amount'}" step="0.01"><div class="bbg" id="bbG_${key}"></div><span class="gm">${GEM}</span></div>${extra || ''}</div>`;
+  return `<div class="bb2 bb3" id="bb_${key}"><div class="bbm"><button data-m="gift"><img class="tgi" src="assets/ui/ic_gift_tog.png" alt=""></button><button data-m="ton" class="on"><img class="tgg" src="assets/ui/ic_gem_pill.png" alt=""></button></div><div class="bbi"><input id="bbA_${key}" type="number" inputmode="decimal" placeholder="${ph || 'Amount'}" step="0.01"><div class="bbg" id="bbG_${key}"></div><span class="gm"><img class="tgs" src="assets/ui/ic_gem_sm.png" alt=""></span></div>${extra || ''}</div>`;
 }
 const GBOX = '<svg viewBox="0 0 24 24" class="gbx"><path d="M3 9h18v4H3zM5 13h14v8H5zM12 9v12M12 9c-2-4-6-4-6-1.5S9 9 12 9zm0 0c2-4 6-4 6-1.5S15 9 12 9z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/></svg>';
 const BOMBI = '<svg viewBox="0 0 24 24" width="20" height="20"><circle cx="10" cy="14" r="7" fill="#3f6212"/><circle cx="8" cy="12" r="2" fill="#a3e63566"/><path d="M14 8l3-3" stroke="#a16207" stroke-width="2.2" stroke-linecap="round"/><circle cx="18.5" cy="4" r="1.6" fill="#f97316"/></svg>';
 sec('mines', `<div class="mn3-hid"><b id="m2Next"></b><b id="m2Prof"></b><b id="m2Left"></b><button id="m2Rand"></button><div id="m2N"></div></div>
   <div class="mn2-chips mn3-chips" id="m2Chips"></div>
-  <div class="mn2-wrap mn3-wrap"><div class="mn2-board" id="m2Board">${Array.from({ length: 25 }, (_, i) => `<button class="t2" data-i="${i}"><span class="fr">${GBOX}</span><span class="bk"></span></button>`).join('')}</div><div class="mn2-win" id="m2Win"></div></div>
-  <button class="go3" id="m2Go">Enter a bet amount</button>
-  ${betBar3('mn', `<button class="mn2-dd" id="m2Dd">${BOMBI}<b id="m2DdN">3</b><svg viewBox="0 0 24 24" width="16" height="16"><path d="M6 9l6 6 6-6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button>`)}`);
+  <div class="mn2-wrap mn3-wrap"><div class="mn2-board" id="m2Board">${Array.from({ length: 25 }, (_, i) => `<button class="t2" data-i="${i}"><span class="fr"><img class="mtile" src="assets/mines/tile_closed.png" alt="" draggable="false"></span><span class="bk"></span></button>`).join('')}</div><div class="mn2-win" id="m2Win"></div></div>
+  <div class="mn-dock"><button class="go3" id="m2Go">Enter a bet amount</button>
+  ${betBar3('mn', `<button class="mn2-dd" id="m2Dd"><img class="mbomb" src="assets/mines/ic_mine.png" alt=""><b id="m2DdN">3</b><img class="mchev" src="assets/ui/ic_chev.png" alt=""></button>`)}</div>`);
 function m2Render() {
   const k = M2.open.size, safe = 25 - M2.n;
   $id('m2Next').textContent = M2.on && k < safe ? m2Mul(k + 1).toFixed(2) + 'x' : m2Mul(1).toFixed(2) + 'x';
   $id('m2Prof').innerHTML = `${GEM}${fmt(M2.on && k ? M2.bet * m2Mul(k) - M2.bet : 0)}`;
   $id('m2Left').textContent = M2.on ? safe - k : safe;
-  let c = ''; for (let i = 1; i <= safe; i++) c += `<span class="${M2.on && i === k + 1 ? 'cur' : M2.on && i <= k ? 'past' : ''}${i === safe ? ' max' : ''}">${m2Mul(i).toFixed(2)}x</span>`;
-  $id('m2Chips').innerHTML = c; const cc = $('#m2Chips .cur'); if (cc) { const C = $id('m2Chips'); C.scrollTo({ left: cc.offsetLeft - C.clientWidth / 2 + cc.offsetWidth / 2, behavior: 'smooth' }) }
+  const top = M2.n > 1 ? safe - 1 : safe;   // UNCLEAR: oltin chip qiymati (frames/52: n=3 → 560.62x = k21; frames/55: n=1 → 24.37x = k24)
+  let c = '<div class="mch-s">'; for (let i = 1; i < top; i++) c += `<span class="${M2.on && i === k + 1 ? 'cur' : M2.on && i <= k ? 'past' : ''}">${m2Mul(i).toFixed(2)}x</span>`; c += `</div><span class="max">${m2Mul(top).toFixed(2)}x</span>`;
+  $id('m2Chips').innerHTML = c; const cc = $('#m2Chips .cur'); if (cc) { const C = $('#m2Chips .mch-s'); C.scrollTo({ left: cc.offsetLeft - C.clientWidth / 2 + cc.offsetWidth / 2, behavior: 'smooth' }) }
   const b = $id('m2Go');
   if (M2.on) { if (k) { b.className = 'go3 grn'; b.innerHTML = `Cash Out ${GEM}${fmt(M2.bet * m2Mul(k))}` } else { b.className = 'go3 dim'; b.textContent = 'Pick a tile' } }
   else { const v = BB.mn ? bbVal('mn') : 0; b.className = 'go3' + (v > 0 ? ' on' : ''); b.textContent = v > 0 ? 'Place Bet' : 'Enter a bet amount' }
@@ -1913,31 +1914,36 @@ ENTER.dice = () => d2Sync();
 // =====================================================================
 //  UPGRADE
 // =====================================================================
-sec('upgrade', `<div class="up3-top"><div class="up3-col"><span class="up3-lb"><i>1</i>Your Gift</span><button class="up2-c" id="u2From"></button></div><div class="up2-arr"><svg viewBox="0 0 24 24" width="22" height="22"><path d="M13 2L4 14h7l-1 8 9-12h-7z" fill="#fff"/></svg></div><div class="up3-col"><span class="up3-lb"><i>2</i>Target Gift</span><button class="up2-c tgt" id="u2To"></button></div></div>
-  <div class="up2-wheel up3-wheel" id="u2Wheel"><div class="up3-ring">${Array.from({ length: 72 }, (_, i) => `<i style="transform:rotate(${i * 5}deg)"></i>`).join('')}</div><div class="up3-disc" id="u2Disc"></div><svg viewBox="0 0 220 220" style="display:none"><circle id="u2Arc"/></svg>
-    <div class="up2-nd" id="u2Nd"><i></i></div><div class="up2-cen"><b id="u2Ch">100.0%</b><small id="u2Lv">VERY HIGH</small></div></div>
+sec('upgrade', `<div class="up2-wheel eu-dial" id="u2Wheel"><img class="eu-base" src="assets/up/dial_base.png" alt="" draggable="false"><svg class="eu-arc" viewBox="0 0 390 333"><circle id="u2Arc" cx="195" cy="166" r="117.3"/><circle id="u2Arc2" cx="195" cy="166" r="147.3"/></svg>
+    <b class="eu-l l100">100</b><b class="eu-l l50a">50</b><b class="eu-l l50b">50</b><b class="eu-l l0">0</b>
+    <div class="up2-nd eu-nd" id="u2Nd"><img src="assets/up/needle.png" alt="" draggable="false"></div><div class="up2-cen eu-cen"><b id="u2Ch"></b><small id="u2Lv"></small></div></div>
+  <div class="eu-cards"><button class="up2-c eu-c" id="u2From"></button><img class="eu-arr" src="assets/up/btn_arrow.png" alt="" draggable="false"><button class="up2-c eu-c tgt" id="u2To"></button></div>
   <div class="up2-tog" style="display:none"><button data-m="gift" class="on">${IC.gift} Gift</button><button data-m="ton">${GEM} ${CUR}</button></div>
   <div class="inp up2-ton" id="u2TonW" style="display:none"><input id="u2Ton" type="number" inputmode="decimal" placeholder="${CUR} amount" step="0.01"><span class="gm">${GEM}</span></div>
-  <div class="up2-q" id="u2Q">${[2, 4, 8].map(x => `<button data-x="${x}">X${x}</button>`).join('')}${[35, 55, 75].map(p => `<button data-pct="${p}">${p}%</button>`).join('')}</div>
-  <button class="go3 up3-go" id="u2Go"></button>
-  ${howBlock('upgrade', true)}`);
+  <div class="up2-q eu-q" id="u2Q">${[2, 4, 8].map(x => `<button data-x="${x}">X${x}</button>`).join('')}${[35, 55, 75].map(p => `<button data-pct="${p}" class="p${p}">${p}%</button>`).join('')}</div>
+  <button class="go3 up3-go eu-go" id="u2Go"></button>`);
 const upLvl = c => c >= 80 ? 'VERY HIGH' : c >= 50 ? 'HIGH' : c >= 25 ? 'MEDIUM' : c >= 10 ? 'LOW' : 'VERY LOW';
 const U2 = { rot: 0 };
+// yashil yoy: 0 (pastda) markazli, uzunligi = chance% (frames/45: bo'sh = 50%, 49: 49.8%). r 117.3 (src 161–191 → 107.3–127.3), ingichka halqa r 147.3
+function euArc(p, on) { const L = 2 * Math.PI * 117.3, L2 = 2 * Math.PI * 147.3, A = $id('u2Arc'), B = $id('u2Arc2'); if (!A) return;
+  A.style.strokeDasharray = `${L * p / 100} ${L}`; A.style.strokeDashoffset = `${-L * (0.25 - p / 200)}`;
+  B.style.strokeDasharray = `${L2 * p / 100} ${L2}`; B.style.strokeDashoffset = `${-L2 * (0.25 - p / 200)}`;
+  $id('u2Wheel').classList.toggle('eu-on', on) }
 const u2From = () => UP.mode === 'gift' ? (invGet(UP.from) ? invGet(UP.from).v : 0) : r2(parseFloat($id('u2Ton').value) || 0);
 const u2Chance = () => { const f = u2From(); return f && UP.to != null ? clamp(f / GIFTS[UP.to].p * RTP('upgrade') * 100, .5, 90) : 0 };
 function u2Render() {
   const it = UP.mode === 'gift' ? (invGet(UP.from) || (UP.spinning ? U2.lockIt : null)) : null, fv = UP.spinning && U2.lockIt ? U2.lockIt.v : u2From();
-  $id('u2From').innerHTML = it ? `<span class="rb" style="--rc:${rarC(it.v)}"></span>${GII(it)}<b>${esc(GIFTS[it.g].n)}</b><em>${GEM}${fmt(it.v)}</em>` : UP.mode === 'ton' && fv ? `<span class="rb" style="--rc:#38bdf8"></span><span class="bigg">${GEM}</span><b>${CUR}</b><em>${GEM}${fmt(fv)}</em>` : `<span class="pl2">＋</span><b>Select Gifts</b><small>From your backpack</small>`;
+  $id('u2From').innerHTML = it ? `<span class="rb" style="--rc:${rarC(it.v)}"></span>${GII(it)}<b>${esc(GIFTS[it.g].n)}</b><em>${GEM}${fmt(it.v)}</em>` : UP.mode === 'ton' && fv ? `<span class="rb" style="--rc:#38bdf8"></span><span class="bigg">${GEM}</span><b>${CUR}</b><em>${GEM}${fmt(fv)}</em>` : `<img class="eu-pl" src="assets/up/plus_green.png" alt=""><b>Select Gifts</b><small>From your backpack</small>`;
   const tg_ = UP.to != null ? GIFTS[UP.to] : null;
-  $id('u2To').innerHTML = tg_ ? `<span class="rb" style="--rc:${rarC(tg_.p)}"></span>${GI(tg_)}<b>${esc(tg_.n)}</b><em>${GEM}${fmt(tg_.p)}</em>` : `<span class="pl2">＋</span><b>Choose Target</b><small>Or use a preset below</small>`;
+  $id('u2To').innerHTML = tg_ ? `<span class="rb" style="--rc:${rarC(tg_.p)}"></span>${GI(tg_)}<b>${esc(tg_.n)}</b><em>${GEM}${fmt(tg_.p)}</em>` : `<img class="eu-pl" src="assets/up/plus_${fv ? 'green' : 'grey'}.png" alt=""><b>Choose Target</b><small>Or use a preset below</small>`;
   const ch = UP.spinning && U2.lock ? U2.lock : u2Chance(), shown = ch || 100;
-  $id('u2Disc').style.setProperty('--p', shown * 3.6 + 'deg');
-  $id('u2Ch').innerHTML = ch ? `${shown.toFixed(1).replace(/\.(\d)$/, '.<small>$1%</small>')}` : `${IC.gift}`;   // frames/45,47,49
+  euArc(ch ? shown : 50, !!ch); $id('upgrade').classList.toggle('has-from', !!fv); $id('u2To').classList.toggle('on', !!fv);
+  $id('u2Ch').innerHTML = ch ? `${shown.toFixed(1).replace(/\.(\d)$/, '.<small>$1%</small>')}` : `<img src="assets/up/gift_green.png" alt="">`;   // frames/45,47,49
   $id('u2Lv').textContent = ch ? upLvl(shown) : fv ? 'SELECT TARGET TO UPGRADE' : 'SELECT GIFTS TO UPGRADE';
   $id('u2Wheel').classList.toggle('e-idle', !ch);
-  $id('u2Ch').style.color = shown >= 25 ? '#34d399' : shown >= 10 ? '#fbbf24' : '#f87171';
+
   $$('.up2-tog button').forEach(b => b.classList.toggle('on', b.dataset.m === UP.mode)); $id('u2TonW').style.display = UP.mode === 'ton' ? '' : 'none';
-  const g = $id('u2Go'); g.className = 'go3 up3-go' + (ch && !UP.spinning ? ' grn' : ''); g.innerHTML = UP.spinning ? `<span class="csp2"></span>Upgrading...` : ch ? `<svg class="ic" viewBox="0 0 24 24"><path d="M7 11l5-5 5 5M7 17l5-5 5 5"/></svg>Upgrade` : fv ? 'Select target to upgrade' : 'Select gifts to upgrade';
+  const g = $id('u2Go'); g.className = 'go3 up3-go eu-go' + (ch && !UP.spinning ? ' grn' : ''); g.innerHTML = UP.spinning ? `<img class="eu-ui" src="assets/up/ic_upgrade.png" alt="">Upgrading...` : ch ? `<img class="eu-ui" src="assets/up/ic_upgrade.png" alt="">Upgrade` : fv ? 'Select target to upgrade' : 'Select gifts to upgrade';
 }
 $id('u2From').onclick = () => { if (UP.spinning || UP.mode !== 'gift') return; pickGifts({ multi: false, title: 'Select your gift', done: id => { UP.from = id; if (UP.to != null && GIFTS[UP.to].p <= u2From()) UP.to = null; u2Render() } }) };
 $id('u2To').onclick = () => { if (UP.spinning) return; const fv = u2From(); if (!fv) { toast('Select your gift first'); return } pickGifts({ source: 'cat', title: 'Select target gift', filter: g => g.p > fv * 1.05 && g.p <= fv * 200, done: gi => { UP.to = gi; u2Render() } }) };
@@ -1969,16 +1975,16 @@ $id('u2Q').onclick = e => {
 $id('u2Go').onclick = async () => {
   const ch = u2Chance(); if (!ch || UP.spinning) return; const fv = u2From(), tg_ = GIFTS[UP.to];
   if (UP.mode === 'ton') { if (fv > S.bal) { toast('Insufficient balance'); return } if (fv < .1) { toast('Minimum 0.10'); return } setBal(-fv) } else { U2.lockIt = invGet(UP.from); invDel([UP.from]) }
-  UP.spinning = true; U2.lock = ch; U2.lockTo = UP.to; u2Render(); const W = $id('u2Wheel'); W.className = 'up2-wheel up3-wheel uspin';
+  UP.spinning = true; U2.lock = ch; U2.lockTo = UP.to; u2Render(); const W = $id('u2Wheel'); W.className = 'up2-wheel eu-dial uspin';
   const r = Math.random() * 100, win = r < ch;
   const land = win ? rnd(.08, .92) * ch : ch + rnd(.08, .92) * (100 - ch); // yashil yoy ichida = yutuq
-  U2.rot += 360 * 6 + (360 - (U2.rot % 360)) + land * 3.6;
+  U2.rot += 360 * 6 + (360 - (U2.rot % 360)) + ((180 - ch * 1.8 + land * 3.6) % 360 + 360) % 360;
   const nd = $id('u2Nd'); nd.style.transition = 'transform 4.6s cubic-bezier(.12,.75,.1,1)'; nd.style.transform = `rotate(${U2.rot}deg)`;
   hap('medium'); await sleep(4700);
-  UP.spinning = false; U2.lock = 0; U2.lockIt = null; W.className = 'up2-wheel up3-wheel ' + (win ? 'win' : 'lose');
+  UP.spinning = false; U2.lock = 0; U2.lockIt = null; W.className = 'up2-wheel eu-dial ' + (win ? 'win' : 'lose');
   if (win) { const it = addItem(tg_, tg_.p); burst(W, ['#34d399', '#fde047', '#a78bfa'], 26); logGame('Upgrade', fv, tg_.p, tg_.n); setTimeout(() => rwSheet('upgrade', it && it.g != null ? it : { g: GIFTS.indexOf(tg_), v: tg_.p }, 0), 500) }
   else { logGame('Upgrade', fv, 0, tg_.n); hapN('error'); setTimeout(() => showRes(false, tg_, 'Upgrade failed', `${ch.toFixed(1)}% chance`), 500) }
-  UP.from = null; if (UP.mode === 'ton') $id('u2Ton').value = ''; setTimeout(() => { W.className = 'up2-wheel up3-wheel'; u2Render() }, 1600); u2Render();
+  UP.from = null; if (UP.mode === 'ton') $id('u2Ton').value = ''; setTimeout(() => { W.className = 'up2-wheel eu-dial'; u2Render() }, 1600); u2Render();
 };
 ENTER.upgrade = u2Render;
 
@@ -2602,16 +2608,16 @@ $id('u2Go').onclick = async () => {
   const r = await gPlay('upgrade', { amount: UP.mode === 'ton' ? fv : 0, items: UP.mode === 'gift' ? [UP.from] : [], to: tg_.sh });
   if (!r) { UP.spinning = false; U2.lock = 0; U2.lockIt = null; u2Render(); return }
   gStake(r); U2.lock = r.ch; u2Render();
-  const W = $id('u2Wheel'); W.className = 'up2-wheel up3-wheel uspin';
+  const W = $id('u2Wheel'); W.className = 'up2-wheel eu-dial uspin';
   const land = r.r;   // server soni: chance'dan kichik — yashil yoyda
-  U2.rot += 360 * 6 + (360 - (U2.rot % 360)) + land * 3.6;
+  U2.rot += 360 * 6 + (360 - (U2.rot % 360)) + ((180 - r.ch * 1.8 + land * 3.6) % 360 + 360) % 360;
   const nd = $id('u2Nd'); nd.style.transition = 'transform 4.6s cubic-bezier(.12,.75,.1,1)'; nd.style.transform = `rotate(${U2.rot}deg)`;
   hap('medium'); await sleep(4700);
-  UP.spinning = false; U2.lock = 0; U2.lockIt = null; W.className = 'up2-wheel up3-wheel ' + (r.win ? 'win' : 'lose');
+  UP.spinning = false; U2.lock = 0; U2.lockIt = null; W.className = 'up2-wheel eu-dial ' + (r.win ? 'win' : 'lose');
   const uIts = gFinish(r, 'Upgrade', true);
   if (r.win) { burst(W, ['#34d399', '#fde047', '#a78bfa'], 26); logGame('Upgrade', fv, tg_.p, tg_.n); winFx('Upgrade', 0, uIts) }
   else { logGame('Upgrade', fv, 0, tg_.n); hapN('error'); setTimeout(() => showRes(false, tg_, 'Upgrade failed', `${r.ch.toFixed(1)}% chance`), 500) }
-  UP.from = null; if (UP.mode === 'ton') $id('u2Ton').value = ''; setTimeout(() => { W.className = 'up2-wheel up3-wheel'; u2Render() }, 1600); u2Render();
+  UP.from = null; if (UP.mode === 'ton') $id('u2Ton').value = ''; setTimeout(() => { W.className = 'up2-wheel eu-dial'; u2Render() }, 1600); u2Render();
 };
 
 // ---------------------------------------------------------------- CRAFTS

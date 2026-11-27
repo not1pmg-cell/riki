@@ -20,7 +20,7 @@ import uuid
 from wallet import U, Wallet, WalletError, to_t, to_u
 
 # ------------------------------------------------------------------ o'yin jadvallari (ilovadagi bilan bir xil)
-RTP_DEF = {"mines": 97, "dice": 98, "upgrade": 95, "cases": 92, "plinko": 100, "spins": 100, "crafts": 100}
+RTP_DEF = {"mines": 97.5, "dice": 98, "upgrade": 95, "cases": 92, "plinko": 100, "spins": 100, "crafts": 100}
 PL_M = {
     "easy": [10, 3, 1.6, 1.4, 1.1, 1, .5, 1, 1.1, 1.4, 1.6, 3, 10],
     "med": [33, 11, 4, 2, 1.1, .6, .3, .6, 1.1, 2, 4, 11, 33],

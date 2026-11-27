@@ -255,7 +255,8 @@ function go(id, noPush) {
   const main = MAIN_HDR.includes(id);
   $('#hMain').style.display = main ? 'flex' : 'none';
   $('#hPill').style.display = main ? 'none' : 'flex';
-  $('#hTop').style.display = ['pvphub', 'pvp', 'tvt'].includes(id) ? 'grid' : 'none';   // 408.mp4 6:04 (hub), 6:16 (pvp)
+  $('#hTop').style.display = 'flex';   // trophy chip barcha o'yin ekranlarida (Epic: 🏆 #14 / 🏆 -)
+  try { const rk = typeof lbData === 'function' ? lbData('pvp').rank : 0; $('#hRank').textContent = rk ? '#' + rk : '-' } catch (e) {}
   $('#hHelp').style.display = 'grid';
   $('#hHist').style.display = id === 'pvphub' ? 'none' : 'grid';
   window.scrollTo(0, 0);

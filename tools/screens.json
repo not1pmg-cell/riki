@@ -1,0 +1,62 @@
+{
+ "home": {
+  "frame": "frames2/01_home.png",
+  "go": "home",
+  "mask": [
+   [
+    60,
+    20,
+    200,
+    50
+   ]
+  ]
+ },
+ "upgrade": {
+  "frame": "frames/45_upgrade_empty.png",
+  "go": "upgrade",
+  "mask": [
+   [
+    0,
+    0,
+    390,
+    62
+   ],
+   [
+    0,
+    725,
+    390,
+    800
+   ]
+  ]
+ },
+ "mines": {
+  "frame": "frames/52_mines_empty.png",
+  "go": "mines",
+  "mask": [
+   [
+    0,
+    0,
+    390,
+    62
+   ],
+   [
+    0,
+    725,
+    390,
+    800
+   ]
+  ]
+ },
+ "pvp": {
+  "frame": "frames2/18_pvp_place_bet_empty.png",
+  "go": "pvp"
+ },
+ "tvt": {
+  "frame": "frames2/21_tvt_waiting_for_ice.png",
+  "go": "tvt"
+ },
+ "playhub": {
+  "frame": "frames2/30_playhub.png",
+  "go": "playhub"
+ }
+}

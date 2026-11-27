@@ -157,7 +157,7 @@ def check_init_data(init_data: str) -> dict | None:
 
 
 # ================================================================ SOZLAMALAR (admin paneldan o'zgaradi)
-RTP_DEF = {"mines": 97, "dice": 98, "upgrade": 95, "cases": 92, "plinko": 100, "spins": 100}
+RTP_DEF = {"mines": 97.5, "dice": 98, "upgrade": 95, "cases": 92, "plinko": 100, "spins": 100}
 RK_PEPE_MIN0 = float(os.getenv("RK_PEPE_MIN", "10000"))   # Rocket: shu tikishdan Pepe beriladi
 DEF_CFG = {"rk_pepe_min": RK_PEPE_MIN0, "ch_id": "", "ch_url": "", "dep_addr": "", "tix_per_ton": 5000.0, "ref_tix": 5.0, "ref_tix_day": 50.0, "ref_pct": 10.0, "ton_rate": TON_RATE, "stars_rate": STARS_RATE, "bot_max": 1000.0, "bot_min": 0.1, "rk_min": 3, "rk_max": 4,
            "off": [], "maint": False, "rtp": RTP_DEF, "post_on": bool(CHANNEL_ID), "post_min": 1000.0,

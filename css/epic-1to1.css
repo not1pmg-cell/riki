@@ -1,0 +1,74 @@
+/* ==== 1:1 o'lchamlar (telefon kadrlari frames2/*, K = 390/588, Telegram sarlavhasi src 0–122 kesilgan) ==== */
+/* --- HOME (frames2/01_home) --- */
+#home.on{padding:0 15.9px 110px!important}
+#home .live{margin:20.2px 0 0!important;height:47.8px;gap:0!important;align-items:center}
+#home .live .lbl{width:24px;flex:none;font-size:12.5px;margin-left:-6px}
+#home .feed{gap:3.3px!important;margin-left:8.2px}
+.fi{width:49px!important;height:47.8px!important;border-radius:7.3px!important}
+.epic-home-banners{gap:12px!important;margin:16.6px 0 0!important}
+.epic-ban{aspect-ratio:540/154!important;border-radius:13.3px!important;box-shadow:none!important;background:#181818!important}
+.epic-ban .rkx{background:#3fc875!important;text-shadow:none!important;box-shadow:none!important;font-style:normal!important;border-radius:.9cqw!important;font-weight:800!important}
+.epic-ban .rkx.a{left:61.0%!important;top:18.2%!important;min-width:17.0%!important;height:12.3%!important;transform:translate(-50%,-50%) rotate(20.6deg)!important;font-size:3.6cqw!important}
+.epic-ban .rkx.b{left:63.9%!important;top:69.8%!important;min-width:10.7%!important;height:11.0%!important;transform:translate(-50%,-50%) rotate(9deg)!important;font-size:2.6cqw!important}
+.epic-ban .rkx.c{left:93.1%!important;top:60.9%!important;min-width:9.6%!important;height:11.0%!important;transform:translate(-50%,-50%) rotate(22deg)!important;font-size:2.6cqw!important}
+.epic-ban .rkx.d{left:86.4%!important;top:92.2%!important;min-width:7.0%!important;height:7.8%!important;transform:translate(-50%,-50%) rotate(8deg)!important;font-size:2.0cqw!important}
+/* --- NAV (frames2/01_home: fon #2c2c2c→#1e1e1e, Home pill src 247–341 × 1143–1243, chegara #2d2d2d, ichi #252525, ikonka/matn #979797) --- */
+nav{background:linear-gradient(#2c2c2c,#1e1e1e 30%)!important;border-top:0!important;padding:8px 6px 25px!important}
+nav .in{align-items:center!important;gap:0!important}
+nav button{color:#979797!important;font-size:12.6px!important;font-weight:500!important;gap:4px!important;padding:0!important;height:66.3px;justify-content:center;background:none!important;border:1px solid transparent!important;box-shadow:none!important}
+nav button svg{width:24.5px!important;height:24.5px!important;stroke:#979797!important;stroke-width:1.8!important}
+nav button.on{background:#252525!important;border:1px solid #2d2d2d!important;color:#fff!important;font-weight:600!important;flex:0 0 62.3px!important;border-radius:13.3px!important}
+nav button.on svg{stroke:#fff!important}
+nav button.on:before{display:none!important}
+nav button[data-go="home"]{flex:0 0 62.3px!important;background:#252525!important;border:1px solid #2d2d2d!important;border-radius:13.3px!important}
+#earnBadge{position:absolute;top:6px;left:calc(50% + 6px);min-width:15px;height:15px;padding:0 4px;border-radius:8px;background:#ef4444;color:#fff;font-size:9.5px;font-weight:800;line-height:15px}
+/* --- HEADER (frames2/01_home: avatar 46 @ y5.3 x15.9, Deposit 37.2 tall; frames2/15_pvp_waiting: tugmalar 36.5×39.8 @ y17.2, r9.3, balans pill 152×39.8) --- */
+#hMain{padding:5.3px 15.9px 0!important;height:64px;box-sizing:border-box;border-bottom:1px solid #444346!important;background:#242424!important}
+#hMain .av.big{width:46px!important;height:46px!important}
+#hMain .depbtn{height:37.2px!important;margin-top:-1px}
+.avw,.avw2{position:relative;flex:none;display:block}
+.avb2{position:absolute;right:-4px;bottom:-4px;width:17.2px;height:17.2px;pointer-events:none}
+.avb{display:none!important}
+#hPill{padding:17.2px 15.9px 0!important;height:auto!important;align-items:flex-start!important}
+#hPill .hic{gap:9.9px!important;align-items:center}
+#hAv{width:37.1px!important;height:37.1px!important}
+#hPill .ib{width:36.5px!important;height:39.8px!important;border-radius:9.3px!important;background:#262626!important;border:1px solid #393939!important}
+#hPill .ib img{width:22px;height:22px}
+#hTop{width:auto!important;padding:0 11px!important;display:flex!important;flex-direction:row!important;align-items:center;gap:6px}
+#hTop img{width:20px!important;height:20px!important}
+#hTop b{font-size:13px;font-weight:700;color:#d2d2d2}
+#hPill .pill{height:39.8px!important;min-width:152px;border-radius:9.3px!important;background:#262626!important;border:1px solid #3b3b3b!important}
+/* --- MINES (frames/52_mines_empty, K=2/3) --- */
+#mines.on{padding:0 14.7px 0!important}
+#mines .mn3-chips{display:flex!important;gap:6px!important;margin:9px 0 0!important;height:24px;overflow:visible!important;align-items:center}
+#mines .mch-s{display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;flex:1;min-width:0;padding-left:1.3px;-webkit-mask-image:linear-gradient(90deg,#000 80%,transparent 98%);mask-image:linear-gradient(90deg,#000 80%,transparent 98%)}
+#mines .mch-s::-webkit-scrollbar{display:none}
+#mines .mn3-chips span{flex:none;width:43.3px;height:24px;padding:0!important;display:grid;place-items:center;border-radius:6.7px!important;background:#242424!important;border:0!important;font-size:10px!important;font-weight:700!important;color:#c3c3c3!important;box-shadow:none!important}
+#mines .mn3-chips span.past{color:#c3c3c3!important;background:#242424!important}
+#mines .mn3-chips span.cur{background:#242424!important;box-shadow:inset 0 0 0 1px #6d5bd0!important;color:#fff!important}
+#mines .mn3-chips span.max{width:56px;background:#3c3320!important;box-shadow:inset 0 0 0 1px #7e7654!important;color:#f9dc4d!important;margin-left:4px}
+#mines .mn3-wrap{margin-top:8px!important;width:360.6px!important;height:auto!important;padding:10px!important;border-radius:16px!important;background:#252525!important;border:1px solid #2f2f2f!important;box-shadow:none!important;box-sizing:border-box}
+#mines .mn2-board{width:auto!important;height:auto!important;display:grid!important;grid-template-columns:repeat(5,64px)!important;grid-auto-rows:64px!important;gap:5.3px!important}
+#mines .t2{width:64px!important;height:64px!important;padding:0!important;background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important}
+#mines .t2 .fr{position:absolute;inset:0;background:none!important;border:0!important;box-shadow:none!important;border-radius:0!important}
+#mines .t2 .fr .mtile{width:64.4px;height:64.4px;display:block}
+#mines .mn-dock{margin-top:auto;margin-bottom:20px;background:#1e1e1e;border-radius:16px;padding:14px 13.3px;display:flex;flex-direction:column;gap:10.7px}
+#mines #m2Go{margin:0!important;height:41.3px!important;border-radius:10px!important;background:#292929!important;color:#7d7d7d!important;font-size:14px!important;font-weight:700!important}
+#mines .bb3{margin:0!important;gap:7.3px!important;height:38px;display:flex}
+#mines .bb3 .bbm{width:88.7px;height:38px;padding:3.3px!important;border-radius:19px!important;background:#272727!important;gap:0!important;flex:none;box-sizing:border-box}
+#mines .bb3 .bbm button{width:41px!important;height:31.4px!important;border-radius:16px!important;flex:1;display:grid;place-items:center;background:none!important;box-shadow:none!important}
+#mines .bb3 .bbm button.on{background:#a33ff1!important}
+#mines .bb3 .bbm .tgi{width:19.3px}#mines .bb3 .bbm .tgg{width:17.3px}
+#mines .bb3 .bbi{height:38px!important;border-radius:10px!important;background:#292929!important;border:1px solid #353535!important;flex:1;padding:0 12px!important;box-sizing:border-box}
+#mines .bb3 .bbi input{font-size:14px!important;text-align:center;color:#fff}
+#mines .bb3 .bbi input::placeholder{color:#99a3b5!important;font-weight:700}
+#mines .bb3 .bbi .tgs{width:16.7px;display:block}
+#mines .bb3 .mn2-dd{width:72.6px;height:38px!important;border-radius:10px!important;background:#292929!important;border:1px solid #353535!important;display:flex;align-items:center;padding:0 8px!important;gap:4px;box-sizing:border-box}
+#mines .mbomb{width:22.7px}#mines .mchev{width:15.3px;margin-left:auto}
+#mines #m2DdN{font-size:14px;font-weight:800;color:#fff}
+#mines.on{display:flex!important;flex-direction:column}
+#mines #m2Chips{margin-top:auto!important}
+#mines .mn-dock{margin-top:auto!important}
+#mines .bb3 .bbm button{flex:1 1 auto!important;width:auto!important}
+#mines .bb3 .bbm button[data-m="ton"]{flex:0 0 35.3px!important}
+#mines .bb3 .bbi input{background:none!important;border:0!important;box-shadow:none!important;outline:0;padding:0!important;width:100%}
