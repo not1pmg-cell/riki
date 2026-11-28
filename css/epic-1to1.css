@@ -85,8 +85,10 @@ nav .in{margin-top:-1.3px}
 #tvt.on{padding:0 15.9px!important;display:flex!important;flex-direction:column}
 #tvt .tvcard{position:relative;margin-top:9.3px;width:358.2px;height:172.5px;border-radius:13.3px;overflow:hidden;flex:none;background:none!important;border:0!important;box-shadow:none!important}
 #tvt .tvbase{position:absolute;inset:0;width:100%;height:100%;display:block}
-#tvt .tvice{position:absolute;left:0;top:0;bottom:0;width:20%;background:url(../assets/tvt/ice_layer.png) right top/auto 100% no-repeat;transition:width .6s cubic-bezier(.2,.8,.2,1);flex:none!important;border:0!important}
-#tvt .tvice::before{content:"";position:absolute;inset:0 112.4px 0 0;background:url(../assets/tvt/ice_layer.png) left top/auto 100% no-repeat}
+/* muz: o'ng tomonda tishli chekka (ice_layer_edge, 112.4 px), chapda choksiz to'ldiruvchi tayl (ice_layer_fill, repeat-x) —
+   har qanday foizda muz bitta yaxlit bo'lak bo'lib qoladi (avval 50% dan oshganda ikkinchi tishli chekka chiqib, muz "bo'linib" ketardi) */
+#tvt .tvice{--ip:20%;position:absolute;left:0;top:0;bottom:0;width:calc(var(--ip) + 39px);background:url(../assets/tvt/ice_layer_edge.png) right top/auto 100% no-repeat;transition:width .6s cubic-bezier(.2,.8,.2,1);flex:none!important;border:0!important}
+#tvt .tvice::before{content:"";position:absolute;inset:0 62px 0 0;background:url(../assets/tvt/ice_layer_fill.png) left top/auto 100% repeat-x}
 #tvt #tvFire{position:absolute;inset:0;pointer-events:none;background:none!important;border:0!important}
 #tvt .ip,#tvt .fp{position:absolute;top:83px;font-size:14px;font-weight:800;color:#fff;z-index:3}
 #tvt .ip{left:5.3px}#tvt .fp{right:6px}
@@ -333,7 +335,7 @@ input[type=number]{-moz-appearance:textfield;appearance:textfield}
 #tvt .tvcard.play{height:204.3px}
 #tvt .tvcard.play .tvbase{content:url(../assets/tvt/arena_play.png)}
 #tvt .tvcard.play .tvh{display:none}
-#tvt .tvcard.play .tvice{background-image:url(../assets/tvt/ice_play.png)!important}
-#tvt .tvcard.play .tvice::before{background-image:url(../assets/tvt/ice_play.png)!important}
+#tvt .tvcard.play .tvice{width:calc(var(--ip) + 54px);background-image:url(../assets/tvt/ice_play_edge.png)!important}
+#tvt .tvcard.play .tvice::before{right:74px;background-image:url(../assets/tvt/ice_play_fill.png)!important}
 #tvt .tvcard.play .ip,#tvt .tvcard.play .fp{top:7px;font-size:15px}
 #tvt .tvcard.play .tvbub{display:none!important}

@@ -622,14 +622,16 @@ function tvTick() {
   if (cur === 'tvt') tvRender(); if (cur === 'pvphub') pvHub();
 }
 const TB = { x: 0, y: 0, vx: 0, vy: 0, mode: 'idle' };
-function tvBallHome() { const ar = $('#tvArena'), b = $('#tvBall'); TB.x = ar.clientWidth * ($('#tvIce').getBoundingClientRect().width / ar.clientWidth); TB.y = ar.clientHeight / 2; b.style.left = TB.x + 'px'; b.style.top = TB.y + 'px'; b.style.display = 'block'; b.className = 'ball idle' }
+// muz qatlamining tishli cheti element o'ng chetidan ~39 px (o'yin holatida ~54 px) ichkarida
+const tvEdge = () => $('#tvIce').getBoundingClientRect().width - ($('#tvArena').classList.contains('play') ? 54 : 39);
+function tvBallHome() { const ar = $('#tvArena'), b = $('#tvBall'); TB.x = tvEdge(); TB.y = ar.clientHeight / 2; b.style.left = TB.x + 'px'; b.style.top = TB.y + 'px'; b.style.display = 'block'; b.className = 'ball idle' }
 async function tvPlay(forced) {
   TV.phase = 'play';
   const it = tvSum('ice'), ft = tvSum('fire'), tot = it + ft;
   const win = forced || (Math.random() < it / tot ? 'ice' : 'fire'); TV.win = win;
   const ball = $('#tvBall'), ar = $('#tvArena'); ar.classList.add('play'); ball.className = 'ball'; ball.style.display = 'block';
   const W = ar.clientWidth, H = ar.clientHeight, R = 13;
-  const border = () => $('#tvIce').getBoundingClientRect().width - 8;
+  const border = () => tvEdge();
   let x = border(), y = H / 2, sp = rnd(13, 16), an = rnd(0, Math.PI * 2);
   let vx = Math.cos(an) * sp, vy = Math.sin(an) * sp;
   const t0 = performance.now(), dur = 7000;
@@ -684,7 +686,7 @@ function tvRender(force) {
   $('#tvIx').textContent = 'x' + (it ? (tot / it).toFixed(2) : '0'); $('#tvFx').textContent = 'x' + (ft ? (tot / ft).toFixed(2) : '0');
   const ip = tot ? it / tot * 100 : 50;
   $('#tvIp').textContent = Math.round(ip) + '%'; $('#tvFp').textContent = Math.round(100 - ip) + '%';
-  $('#tvIce').style.width = clamp(ip, 12, 88) + '%';   // frames/06: 6% → ~12% (min), frames/02: 50%
+  $('#tvIce').style.setProperty('--ip', clamp(ip, 12, 88) + '%');   // frames/06: 6% → ~12% (min), frames/02: 50% — tishli chegara aynan shu foizda (CSS: width = --ip + tish masofasi)
   const rem = TV.end && TV.phase === 'wait' ? Math.max(0, (TV.end - Date.now()) / 1000) : 0;
   $('#tvTimer').textContent = TV.phase === 'wait' ? (TV.end ? Math.ceil(rem) : 'VS') : '';
   $('#tvRing').style.strokeDashoffset = TV.end && TV.phase === 'wait' ? 170.9 * (1 - rem / 20) : 170.9;

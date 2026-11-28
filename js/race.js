@@ -186,9 +186,15 @@ function rcStatic() {
 async function rcBet() {
   const d = RC.d; if (!d || d.phase !== 'wait' || RC.sel < 0) return;
   const amt = Math.round((parseFloat($id('rAmt').value) || 0) * 100) / 100; if (!(amt > 0)) return toast(T('Enter a bet amount'));
+  let c = {}; try { c = JSON.parse(d.cfg || '{}') } catch (e) {}
+  if (c.minBet != null && amt < c.minBet) return toast(`${T('Min bet is')} ${c.minBet} ${CUR}`);
+  if (c.maxBet != null && amt > c.maxBet) return toast(`${T('Max bet is')} ${c.maxBet} ${CUR}`);
+  if (d.endAt && srvNow() > d.endAt - 500) return toast(T('Round in progress'));
   if (amt > S.bal) return toast(T('Not enough balance'));
-  setBal(-amt);
-  liveStake('race', amt, [], { racer: RC.sel });
+  const btn = $id('rBtn'); if (btn.dataset.busy) return; btn.dataset.busy = 1;
+  // pul serverda yechiladi (/api/live/bet); bu yerda faqat ekrandagi balans — wallet/op ga ketmaydi
+  (window.wSkip || (f => f()))(() => setBal(-amt));
+  liveStake('race', amt, [], { racer: RC.sel }).finally(() => { delete btn.dataset.busy });
 }
 
 // ---- natija oynasi (r_038: WINNER · ROUND #3065)

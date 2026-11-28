@@ -2403,7 +2403,7 @@ rkDraw = function (now) {
 //  Har o'zgarish /api/wallet/op orqali serverga boradi (takror so'rovdan himoyalangan id bilan);
 //  server tekshiradi va haqiqiy balansni qaytaradi. Live o'yinlar, depozit, bonus, transfer — to'liq serverda.
 // =====================================================================
-const LIVE_SCR = { rocket: 1, pvp: 1, tvt: 1, pvphub: 1 };
+const LIVE_SCR = { rocket: 1, pvp: 1, tvt: 1, pvphub: 1, race: 1 };   // live o'yinlar: pul serverda (/api/live/bet) yechiladi — /api/wallet/op ga yuborilmaydi
 const GAME_OF = { mines: 'mines', dice: 'dice', plinko: 'plinko', spins: 'spins', upgrade: 'upgrade', crafts: 'crafts', boxp: 'cases', cases: 'cases', market: 'market', backpack: 'backpack' };
 const WQ = { q: [], pend: [], busy: false, ctx: null, hold: 0, n: 0, t: 0 };
 const wOn = () => !!(NET.on && API);
@@ -2754,7 +2754,7 @@ async function gCatalog() {
 // v14: PvP SOLO kartasidagi harfli avatarlar o'rniga sovg'a rasmlari
 $$('#home .b-pvp .sav .av').forEach((a, i) => { const g = byName(['Plush Pepe', "Durov's Cap", 'Heart Locket'][i] || 'Plush Pepe'); a.textContent = ''; a.innerHTML = GI(g); a.classList.add('gav') });
 window.RIKI_W = { on: () => wOn(), skip: wSkip, with: wWith, pull: wPull };
-Object.assign(window, { RIKI_STAKE: (g, ton, items, ex) => liveStake(g, ton, items, ex), winSheet, offSync, M2, m2Pick, u2Render, c2Render, NET, pushStats, pullFeed, balModal });
+Object.assign(window, { wSkip, RIKI_STAKE: (g, ton, items, ex) => liveStake(g, ton, items, ex), winSheet, offSync, M2, m2Pick, u2Render, c2Render, NET, pushStats, pullFeed, balModal });
 // =====================================================================
 //  PvP — g'olib oynasi (hamma ko'radi): Winner · Game # · chance · Rewards
 // =====================================================================
